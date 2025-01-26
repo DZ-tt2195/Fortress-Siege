@@ -30,9 +30,8 @@ public class PlayerBase : MovingTroop
         this.transform.SetParent(Manager.instance.canvas.transform);
         this.image.color = (player.playerPosition == 0) ? Color.white : Color.black;
         myText.color = (player.playerPosition == 0) ? Color.black : Color.white;
-        this.transform.localPosition = new(player.playerPosition == 0 ? -1100 : 225, 225);
+        this.transform.localPosition = new(player.playerPosition == 0 ? -1100 : 470, 225);
 
         UpdateText();
     }
-
 }

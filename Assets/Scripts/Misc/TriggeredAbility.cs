@@ -31,27 +31,3 @@ public class TriggeredAbility
         return WhenTriggered(logged, parameters);
     }
 }
-
-public class PickUpDiscard : TriggeredAbility
-{
-    public PickUpDiscard(PhotonCompatible source, Func<string, object[], bool> condition, Func<int, object[], object> ability) : base(source, condition, ability)
-    {
-    }
-
-    public static object[] CheckParameters(Player player)
-    {
-        return new object[1] { player };
-    }
-}
-
-public class PlayedCard : TriggeredAbility
-{
-    public PlayedCard(PhotonCompatible source, Func<string, object[], bool> condition, Func<int, object[], object> ability) : base(source, condition, ability)
-    {
-    }
-
-    public static object[] CheckParameters(Player player, CardData dataFile)
-    {
-        return new object[2] { player, dataFile };
-    }
-}

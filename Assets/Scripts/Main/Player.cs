@@ -6,9 +6,9 @@ using TMPro;
 using UnityEngine.UI;
 using System.Linq;
 using MyBox;
-using System.Reflection;
 using System;
 
+public enum PlayerType { Human, Computer }
 public class Player : PhotonCompatible
 {
 
@@ -16,6 +16,7 @@ public class Player : PhotonCompatible
 
     [Foldout("Player info", true)]
     [ReadOnly] public int playerPosition;
+    public PlayerType myType { get; private set; }
     public Photon.Realtime.Player realTimePlayer { get; private set; }
     public int coins { get; private set; }
     public PlayerBase myBase { get; private set; }
@@ -25,7 +26,6 @@ public class Player : PhotonCompatible
     [SerializeField] TMP_Text resourceText;
     Button resignButton;
     Transform keepHand;
-    Transform keepDiscard;
 
     [Foldout("Choices", true)]
     public int choice { get; private set; }
@@ -43,14 +43,17 @@ public class Player : PhotonCompatible
 
         resignButton = GameObject.Find("Resign Button").GetComponent<Button>();
         keepHand = transform.Find("Keep Hand");
-        keepDiscard = transform.Find("Keep Discard");
-        this.coins = 10;
     }
 
     private void Start()
     {
         if (PhotonNetwork.IsConnected && pv.AmOwner)
-            DoFunction(() => SendName( PlayerPrefs.GetString("Online Username")), RpcTarget.AllBuffered);
+        {
+            if (PhotonNetwork.CurrentRoom.MaxPlayers == 1 && Manager.instance.storePlayers.childCount == 0)
+                DoFunction(() => SendName("Computer"), RpcTarget.AllBuffered);
+            else
+                DoFunction(() => SendName(PlayerPrefs.GetString("Online Username")), RpcTarget.AllBuffered);
+        }
     }
 
     [PunRPC]
@@ -61,9 +64,10 @@ public class Player : PhotonCompatible
         this.transform.SetParent(Manager.instance.storePlayers);
     }
 
-    internal void AssignInfo(int position)
+    internal void AssignInfo(int position, PlayerType type)
     {
         this.playerPosition = position;
+        this.myType = type;
         Manager.instance.storePlayers.transform.localScale = Manager.instance.canvas.transform.localScale;
         this.transform.localPosition = Vector3.zero;
         if (PhotonNetwork.IsConnected)
@@ -73,9 +77,21 @@ public class Player : PhotonCompatible
         {
             GameObject obj = Manager.instance.MakeObject(CarryVariables.instance.playerBasePrefab.gameObject);
             DoFunction(() => GetBase(obj.GetComponent<PhotonView>().ViewID), RpcTarget.All);
-            DoFunction(() => FindCardsFromDeck( 5, -1 ), RpcTarget.MasterClient);
-            resignButton.onClick.AddListener(() => Manager.instance.DoFunction(() => Manager.instance.DisplayEnding(this.playerPosition), RpcTarget.All));
-            Invoke(nameof(MoveScreen), 0.25f);
+            if (this.myType == PlayerType.Human)
+            {
+                resignButton.onClick.AddListener(() => Manager.instance.DoFunction(() => Manager.instance.DisplayEnding(this.playerPosition), RpcTarget.All));
+                Invoke(nameof(MoveScreen), 0.2f);
+                pv.Owner.NickName = this.name;
+            }
+            StartCoroutine(DelayDraw());
+
+            IEnumerator DelayDraw()
+            {
+                if (this.myType == PlayerType.Computer)
+                    yield return new WaitForSeconds(0.2f);
+                DoFunction(() => FindCardsFromDeck(4, -1), RpcTarget.MasterClient);
+                Manager.instance.DoFunction(() => Manager.instance.PlayerDone());
+            }
         }
     }
 
@@ -83,9 +99,7 @@ public class Player : PhotonCompatible
     void GetBase(int PV)
     {
         myBase = PhotonView.Find(PV).gameObject.GetComponent<PlayerBase>();
-        myBase.AssignPlayer(this, 15);
-        if (InControl())
-            Manager.instance.DoFunction(() => Manager.instance.PlayerDone(), RpcTarget.MasterClient);
+        myBase.AssignPlayer(this, 20);
     }
 
     #endregion
@@ -99,9 +113,10 @@ public class Player : PhotonCompatible
 
         for (int i = 0; i < cardsToDraw; i++)
         {
-            listOfCardIDs[i] = Manager.instance.deck.GetChild(i).GetComponent<Card>().cardID;
+            Card nextCard = Manager.instance.deck.GetChild(0).GetComponent<Card>();
+            nextCard.transform.SetParent(null);
+            listOfCardIDs[i] = nextCard.pv.ViewID;
         }
-
         this.DoFunction(() => DrawCards(listOfCardIDs, logged));
     }
 
@@ -110,10 +125,10 @@ public class Player : PhotonCompatible
     {
         for (int i = 0; i < cardsToDraw.Length; i++)
         {
-            Card card = Manager.instance.allCards[cardsToDraw[i]];
+            Card card = PhotonView.Find(cardsToDraw[i]).GetComponent<Card>();
             cardsInHand.Add(card);
 
-            if (InControl())
+            if (InControl() && this.myType == PlayerType.Human)
                 Log.instance.AddText($"{this.name} draws {card.name}.", logged);
             else
                 Log.instance.AddText($"{this.name} draws 1 card.", logged);
@@ -151,7 +166,7 @@ public class Player : PhotonCompatible
 
             Vector2 newPosition = new(startingX + difference * i, -540);
             StartCoroutine(nextCard.MoveCard(newPosition, 0.25f, Vector3.one));
-            if (InControl())
+            if (InControl() && myType == PlayerType.Human)
                 StartCoroutine(nextCard.RevealCard(0.25f));
         }
     }
@@ -159,11 +174,10 @@ public class Player : PhotonCompatible
     [PunRPC]
     void DiscardFromHand(int cardID, int logged)
     {
-        Card card = Manager.instance.allCards[cardID];
+        Card card = PhotonView.Find(cardID).GetComponent<Card>();
         cardsInHand.Remove(card);
 
         Log.instance.AddText($"{this.name} discards {card.name}.", logged);
-        card.transform.SetParent(keepDiscard);
         StartCoroutine(card.MoveCard(new(0, -1000), 0.25f, Vector3.one));
         SortHand();
     }
@@ -171,6 +185,7 @@ public class Player : PhotonCompatible
     [PunRPC]
     public void GainLoseCoin(int amount, int logged)
     {
+        coins += amount;
         if (amount >= 0)
             Log.instance.AddText($"{this.name} gains ${amount}.", logged);
         else
@@ -216,14 +231,14 @@ public class Player : PhotonCompatible
 
     public void PlayCard(Card card, Action action, int logged)
     {
-        Log.instance.DoFunction(() => Log.instance.AddText($"{this.name} plays {chosenCard.name}.", logged));
-        DoFunction(() => DiscardFromHand(chosenCard.cardID, -1));
-        DoFunction(() => GainLoseCoin(-1 * chosenCard.dataFile.cost, logged));
+        Log.instance.DoFunction(() => Log.instance.AddText($"{this.name} plays {card.name}.", logged));
+        DoFunction(() => DiscardFromHand(card.pv.ViewID, -1));
+        DoFunction(() => GainLoseCoin(-1 * card.coinCost, logged));
 
-        void youPlayedCard() => Manager.instance.ResolveAbilities(nameof(PlayedCard), PlayedCard.CheckParameters(this, card.dataFile), logged);
-        AddDecisionReact(youPlayedCard, true);
+        //void youPlayedCard() => Manager.instance.ResolveAbilities(nameof(PlayedCard), PlayedCard.CheckParameters(this, card.dataFile), logged);
+        //AddDecisionReact(youPlayedCard, true);
         AddDecisionReact(action, false);
-        chosenCard.OnPlayEffect(this, logged);
+        card.OnPlayEffect(this, logged);
     }
 
     #endregion
@@ -327,6 +342,60 @@ public class Player : PhotonCompatible
                 nextCard.button.onClick.RemoveAllListeners();
                 nextCard.button.interactable = false;
                 nextCard.border.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    public void ChooseRow(List<Row> listOfColumns, string changeInstructions, Action action)
+    {
+        if (action != null) Manager.instance.Instructions(changeInstructions);
+        Popup popup = null;
+        IEnumerator haveCardsEnabled = KeepCardsOn();
+
+        AddDecisionReact(Disable, action != null);
+        AddDecisionReact(action, false);
+
+        if (listOfColumns.Count == 0 && action != null)
+        {
+            PopStack();
+        }
+        else if (listOfColumns.Count == 1 && action != null)
+        {
+            DecisionMade(Manager.instance.allRows.IndexOf(listOfColumns[0]));
+        }
+        else
+        {
+            StartCoroutine(haveCardsEnabled);
+        }
+
+        IEnumerator KeepCardsOn()
+        {
+            float elapsedTime = 0f;
+            while (elapsedTime < 0.3f)
+            {
+                for (int j = 0; j < listOfColumns.Count; j++)
+                {
+                    Button nextButton = listOfColumns[j].button;
+
+                    nextButton.onClick.RemoveAllListeners();
+                    nextButton.interactable = true;
+                    nextButton.onClick.AddListener(() => DecisionMade(Manager.instance.allRows.IndexOf(listOfColumns[j])));
+                }
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        void Disable()
+        {
+            StopCoroutine(haveCardsEnabled);
+            if (popup != null)
+                Destroy(popup.gameObject);
+
+            foreach (Row nextColumn in Manager.instance.allRows)
+            {
+                nextColumn.button.onClick.RemoveAllListeners();
+                nextColumn.button.interactable = false;
             }
         }
     }

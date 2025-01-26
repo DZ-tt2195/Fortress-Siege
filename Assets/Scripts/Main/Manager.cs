@@ -10,11 +10,10 @@ using System.Linq;
 using System;
 
 [Serializable]
-public class Column
+public class Row
 {
-    [SerializeField] Transform transform;
-    [HideInInspector] public MovingTroop p1Troop = null;
-    [HideInInspector] public MovingTroop p2Troop = null;
+    public Button button;
+    [HideInInspector] public MovingTroop[] playerTroops;
     [HideInInspector] public MovingTroop environment = null;
 }
 
@@ -26,7 +25,7 @@ public class Manager : PhotonCompatible
     public static Manager instance;
 
     [Foldout("Players", true)]
-    public List<Player> playersInOrder { get; private set; }
+    public List<Player> playersInOrder;
     public Transform storePlayers { get; private set; }
 
     [Foldout("Gameplay", true)]
@@ -38,8 +37,8 @@ public class Manager : PhotonCompatible
 
     [Foldout("Cards", true)]
     public Transform deck;
-    public List<Card> allCards { get; private set; }
-    public List<Column> allColumns = new();
+    public Transform discard;
+    public List<Row> allRows = new();
 
     [Foldout("UI and Animation", true)]
     [SerializeField] TMP_Text instructions;
@@ -85,13 +84,22 @@ public class Manager : PhotonCompatible
 
     private void Start()
     {
+        if (PhotonNetwork.CurrentRoom.MaxPlayers == 1)
+            MakeObject(CarryVariables.instance.playerPrefab.gameObject);
         MakeObject(CarryVariables.instance.playerPrefab.gameObject);
+
+        foreach (Row row in allRows)
+            row.playerTroops = new MovingTroop[2];
+
         if (PhotonNetwork.IsMasterClient)
         {
-            for (int i = 0; i < CarryVariables.instance.cardScripts.Count; i++)
+            while (deck.childCount < 20)
             {
-                GameObject next = MakeObject(CarryVariables.instance.cardPrefab.gameObject);
-                DoFunction(() => AddCard(next.GetComponent<PhotonView>().ViewID, CarryVariables.instance.cardScripts[i]), RpcTarget.AllBuffered);
+                for (int i = 0; i < CarryVariables.instance.cardScripts.Count; i++)
+                {
+                    GameObject next = MakeObject(CarryVariables.instance.cardPrefab.gameObject);
+                    DoFunction(() => AddCard(next.GetComponent<PhotonView>().ViewID, CarryVariables.instance.cardScripts[i]), RpcTarget.AllBuffered);
+                }
             }
         }
         StartCoroutine(Setup());
@@ -101,6 +109,13 @@ public class Manager : PhotonCompatible
     {
         CoroutineGroup group = new(this);
         group.StartCoroutine(WaitForPlayers());
+        group.StartCoroutine(SinglePlayerWait());
+
+        IEnumerator SinglePlayerWait()
+        {
+            if (PhotonNetwork.CurrentRoom.MaxPlayers == 1)
+                yield return new WaitForSeconds(1f);
+        }
 
         IEnumerator WaitForPlayers()
         {
@@ -122,9 +137,7 @@ public class Manager : PhotonCompatible
         }
 
         if (PhotonNetwork.IsMasterClient)
-        {
             ReadySetup();
-        }
     }
 
     void ReadySetup()
@@ -133,35 +146,31 @@ public class Manager : PhotonCompatible
         storePlayers.Shuffle();
 
         for (int i = 0; i < storePlayers.childCount; i++)
-            DoFunction(() => AddPlayer(storePlayers.transform.GetChild(i).GetComponent<PhotonView>().ViewID, i ));
+        {
+            GameObject nextPlayer = storePlayers.transform.GetChild(i).gameObject;
+            DoFunction(() => AddPlayer(nextPlayer.GetComponent<PhotonView>().ViewID, i, nextPlayer.name.Equals("Computer") ? 1 : 0));
+        }
     }
 
     [PunRPC]
-    void AddPlayer(int PV, int position)
+    void AddPlayer(int PV, int position, int playerType)
     {
         Player nextPlayer = PhotonView.Find(PV).GetComponent<Player>();
         playersInOrder ??= new();
         playersInOrder.Insert(position, nextPlayer);
         instructions.text = "";
-        nextPlayer.AssignInfo(position);
+        nextPlayer.AssignInfo(position, (PlayerType)playerType);
     }
 
     [PunRPC]
     void AddCard(int ID, string cardName)
     {
         GameObject nextObject = PhotonView.Find(ID).gameObject;
-
         nextObject.name = cardName;
         nextObject.transform.SetParent(deck);
-
-        allCards ??= new();
-        nextObject.transform.localPosition = new(250 * allCards.Count, 10000);
-
+        nextObject.transform.localPosition = new(250, 10000);
         Type type = Type.GetType(cardName.Replace(" ", ""));
         nextObject.AddComponent(type);
-
-        Card card = nextObject.GetComponent<Card>();
-        allCards.Add(card);
     }
 
     int waiting = 2;
@@ -201,9 +210,7 @@ public class Manager : PhotonCompatible
     public void Continue()
     {
         if (!PhotonNetwork.IsConnected || PhotonNetwork.IsMasterClient)
-        {
             Invoke(nameof(NextAction), 0.25f);
-        }
     }
 
     void NextAction()
@@ -250,13 +257,15 @@ public class Manager : PhotonCompatible
         void NewResources()
         {
             turnNumber++;
-            Log.instance.DoFunction(() => Log.instance.AddText($"Turn {turnNumber}", 0));
+            Log.instance.DoFunction(() => Log.instance.AddText($"", 0));
+            Log.instance.DoFunction(() => Log.instance.AddText($"Round {turnNumber}", 0));
             foreach (Player player in playersInOrder)
             {
                 player.DoFunction(() => player.FindCardsFromDeck(1, 0), RpcTarget.MasterClient);
                 player.DoFunction(() => player.GainLoseCoin(-1*player.coins, -1));
                 player.DoFunction(() => player.GainLoseCoin(turnNumber, 0));
             }
+            Continue();
         }
 
         void PlayerSteps(int position)

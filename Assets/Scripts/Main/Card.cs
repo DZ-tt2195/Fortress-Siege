@@ -14,8 +14,9 @@ public class Card : PhotonCompatible
     public Button button { get; private set; }
     public Image border { get; private set; }
     public CardLayout layout { get; private set; }
-    public int cardID { get; private set; }
-    public CardData dataFile { get; private set; }
+
+    public string extraText { get; protected set; }
+    public int coinCost { get; protected set; }
 
     #endregion
 
@@ -98,11 +99,6 @@ public class Card : PhotonCompatible
         return Color.white;
     }
 
-    public virtual string TextBox()
-    {
-        return "";
-    }
-
 #endregion
 
 #region Gameplay
@@ -112,7 +108,7 @@ public class Card : PhotonCompatible
         if (!pay)
             return true;
         else
-            return player.coins >= dataFile.cost;
+            return player.coins >= coinCost;
     }
 
     public virtual void OnPlayEffect(Player player, int logged)

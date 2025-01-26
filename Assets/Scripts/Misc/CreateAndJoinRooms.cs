@@ -15,7 +15,6 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
 
     [Foldout("Online", true)]
     [SerializeField] Transform onlineFields;
-    [SerializeField] TMP_InputField create;
     [SerializeField] TMP_InputField join;
     [SerializeField] TMP_InputField username;
 
@@ -66,11 +65,7 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
 
     public void CreateRoom(int playerCount)
     {
-        if (create.text == "")
-        {
-            StartCoroutine(ErrorMessage("You forgot to type in a room code."));
-        }
-        else if (username.text == "")
+        if (username.text == "")
         {
             StartCoroutine(ErrorMessage("You forgot to type in a username."));
         }
@@ -78,7 +73,7 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
         { 
             RoomOptions roomOptions = new RoomOptions();
             roomOptions.MaxPlayers = (byte)playerCount;
-            PhotonNetwork.CreateRoom(create.text.ToUpper(), roomOptions, null);
+            PhotonNetwork.CreateRoom(username.text.ToUpper(), roomOptions, null);
         }
     }
 
@@ -86,7 +81,7 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
     {
         if (join.text == "")
         {
-            StartCoroutine(ErrorMessage("You forgot to type in a room code."));
+            StartCoroutine(ErrorMessage("You forgot to type in the host's name."));
         }
         else if (username.text == "")
         {

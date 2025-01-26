@@ -18,6 +18,7 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
 
     public TroopCard myCard { get; private set; }
     public Player player { get; protected set; }
+    public int currentRow { get; private set; }
 
     int _currentHealth;
     public int currentHealth
@@ -25,12 +26,18 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
         get { return _currentHealth; }
         protected set { _currentHealth = value; try { heartText.text = _currentHealth.ToString(); } catch { } }
     }
-    int _damageStat;
+    int _currentDamage;
+    public int currentDamage
+    {
+        get { return _currentDamage; }
+        protected set { _currentDamage = value; try { damageText.text = _currentDamage.ToString(); } catch { } }
+    }
 
     protected override void Awake()
     {
         base.Awake();
         this.bottomType = this.GetType();
+        currentRow = -1;
         try
         {
             heartText = this.transform.Find("Heart Text").GetComponent<TMP_Text>();
@@ -46,7 +53,7 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
     {
         if (cardID >= 0)
         {
-            myCard = Manager.instance.allCards[cardID].GetComponent<TroopCard>();
+            myCard = PhotonView.Find(cardID).GetComponent<TroopCard>();
             this.name = myCard.name;
             this.image.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
         }
@@ -72,78 +79,23 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
     #endregion
 
 #region Gameplay
-    /*
-    internal void WhoToAttack()
-    {
-        Player otherPlayer = Manager.instance.OtherPlayer(player);
-
-        if (player.playerPosition == 0 && this.myCard.dataFile.range + this.mySlot.column >= 9)
-        {
-            this.whoToAttack = otherPlayer.myBase;
-            Debug.Log($"{this.name} locks onto {otherPlayer.name}");
-            return;
-        }
-        else if (player.playerPosition == 1 && this.mySlot.column - this.myCard.dataFile.range <= 0)
-        {
-            this.whoToAttack = otherPlayer.myBase;
-            Debug.Log($"{this.name} locks onto {otherPlayer.name}");
-            return;
-        }
-
-        List<MapSlot> currentSearch = new() { this.mySlot };
-        for (int i = 0; i<myCard.dataFile.range; i++)
-        {
-            List<MapSlot> newSearch = new();
-            foreach (MapSlot slot in currentSearch)
-                newSearch.AddRange(Manager.instance.EightWayAdjacent(slot));
-            currentSearch = newSearch.Distinct().ToList();
-
-            foreach (MapSlot slot in currentSearch)
-            {
-                if (otherPlayer.HasMyTroop(slot))
-                {
-                    whoToAttack = slot.troopHere;
-                    Debug.Log($"{this.name} locks onto {whoToAttack.name}");
-                    return;
-                }
-            }
-        }
-    }
 
     [PunRPC]
     internal void MoveTroop(int newPosition, int logged)
     {
-        if (mySlot != null)
-            mySlot.troopHere = null;
+        if (currentRow > -1)
+            Manager.instance.allRows[currentRow].playerTroops[player.playerPosition] = null;
 
-        MapSlot newSlot = Manager.instance.allSlots[newPosition];
-        this.mySlot = newSlot;
-        newSlot.troopHere = this;
-        Log.instance.AddText($"{player.name} moves {this.name} to {newSlot.PositionToString()}.", logged);
+        this.currentRow = newPosition;
+        Row row = Manager.instance.allRows[currentRow];
+        row.playerTroops[player.playerPosition] = this;
+        Log.instance.AddText($"{player.name} moves {this.name} to row {newPosition}.", logged);
 
-        this.transform.SetParent(newSlot.transform);
-        this.transform.SetAsFirstSibling();
-        this.transform.localPosition = Vector3.zero;
+        this.transform.SetParent(row.button.transform);
+        this.transform.localPosition = new((player.playerPosition) == 0 ? -575 : 575, 0);
         this.transform.localScale = Vector3.one;
     }
 
-    protected virtual void Died()
-    {
-        Log.instance.AddText($"{player.name}'s {this.name} is destroyed.", 1);
-        this.mySlot.troopHere = null;
-
-        if (player.InControl())
-            myCard.DeathEffect(this);
-
-        Invoke(nameof(DestroyMe), 0.1f);
-    }
-
-    public virtual int CalculateDamage()
-    {
-        Debug.Log((myCard.dataFile.damage + damageStat) * this.currentUnits);
-        return (myCard.dataFile.damage + damageStat) * this.currentUnits;
-    }
-    */
     #endregion
 
 }

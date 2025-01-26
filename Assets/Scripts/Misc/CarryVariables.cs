@@ -7,30 +7,10 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
-using System.IO;
+using System.IO; 
 using System.Linq;
 using UnityEngine.Networking;
 using System;
-
-public enum CardType { Troop, Spell, Null }
-[Serializable]
-public class CardData
-{
-    public string name { get; private set; }
-    public CardType type { get; private set; }
-    public string extraText { get; private set; }
-    public int cost { get; private set; }
-    public string artCredit { get; private set; }
-
-    public CardData(string name, string extraText, CardType type, int cost, string artCredit)
-    {
-        this.name = name;
-        this.extraText = extraText;
-        this.type = type;
-        this.cost = cost;
-        this.artCredit = artCredit;
-    }
-}
 
 public class CarryVariables : MonoBehaviour
 {
@@ -87,7 +67,6 @@ public class CarryVariables : MonoBehaviour
         rightClickBackground.gameObject.SetActive(true);
         rightClickCard.FillInCards(card);
         rightClickCard.cg.alpha = (alpha == 0) ? 0 : 1;
-        rightClickText.text = card.dataFile.artCredit.Replace("/","\n");
     }
 
     #endregion

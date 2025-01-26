@@ -20,20 +20,13 @@ public class ServerAnalytics : MonoBehaviour
 
     void Update()
     {
-        datatext.text =
-            $"Frames/Second: {CalculateFrames()}";
+        datatext.text = $"Frames/Second: {CalculateFrames()}";
 
         if (PhotonNetwork.IsConnected)
-        {
             datatext.text += $"\nServer Ping: {PhotonNetwork.GetPing()}";
-        }
 
         if (PhotonNetwork.InRoom)
-        {
-            datatext.text +=
-                $"\nRoom: {PhotonNetwork.CurrentRoom.Name}" +
-                $"\nHost: {PhotonNetwork.MasterClient.NickName}";
-        }
+            datatext.text += $"\nHost: {PhotonNetwork.MasterClient.NickName}";
     }
 
     int CalculateFrames()
@@ -51,5 +44,4 @@ public class ServerAnalytics : MonoBehaviour
         }
         return (lastupdate > Application.targetFrameRate) ? Application.targetFrameRate : lastupdate;
     }
-
 }
