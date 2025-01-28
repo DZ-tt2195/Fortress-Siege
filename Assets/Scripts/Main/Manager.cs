@@ -143,7 +143,7 @@ public class Manager : PhotonCompatible
     void ReadySetup()
     {
         deck.Shuffle();
-        storePlayers.Shuffle();
+        //storePlayers.Shuffle();
 
         for (int i = 0; i < storePlayers.childCount; i++)
         {
@@ -203,7 +203,7 @@ public class Manager : PhotonCompatible
     [PunRPC]
     public void Instructions(string text)
     {
-        instructions.text = KeywordTooltip.instance.EditText(text);
+        instructions.text = /*KeywordTooltip.instance.EditText*/(text);
     }
 
     [PunRPC]
@@ -262,8 +262,8 @@ public class Manager : PhotonCompatible
             foreach (Player player in playersInOrder)
             {
                 player.DoFunction(() => player.FindCardsFromDeck(1, 0), RpcTarget.MasterClient);
-                player.DoFunction(() => player.GainLoseCoin(-1*player.coins, -1));
-                player.DoFunction(() => player.GainLoseCoin(turnNumber, 0));
+                player.DoFunction(() => player.GainLoseCoin(false, -1*player.coins, -1));
+                player.DoFunction(() => player.GainLoseCoin(false, turnNumber, 0));
             }
             Continue();
         }
@@ -282,18 +282,39 @@ public class Manager : PhotonCompatible
         }
     }
 
-    [PunRPC]
-    public void StoreDamage(int pv, int damage, bool multiTarget)
-    {
-        MovingTroop troop = PhotonView.Find(pv).GetComponent<MovingTroop>();
-        //damageStack.Add(() => troop.DoFunction(() => troop.TakeDamage(damage, multiTarget)));
-    }
-
     #endregion
 
 #region Attacking
 
-#endregion
+    internal void SimulateBattle()
+    {
+        foreach (Row row in allRows)
+        {
+            MovingTroop firstTroop = row.playerTroops[0];
+            MovingTroop secondTroop = row.playerTroops[1];
+
+            if (Alive(firstTroop) && Alive(secondTroop))
+            {
+                firstTroop.DoFunction(() => firstTroop.ChangeHealth(-secondTroop.currentDamage));
+                secondTroop.DoFunction(() => secondTroop.ChangeHealth(-firstTroop.currentDamage));
+            }
+            else if (Alive(firstTroop))
+            {
+                playersInOrder[1].DoFunction(() => playersInOrder[1].myBase.ChangeHealth(-firstTroop.currentDamage));
+            }
+            else if (Alive(secondTroop))
+            {
+                playersInOrder[0].DoFunction(() => playersInOrder[0].myBase.ChangeHealth(-secondTroop.currentDamage));
+            }
+
+            bool Alive(MovingTroop troop)
+            {
+                return troop != null && troop.currentHealth >= 1;
+            }
+        }
+    }
+
+    #endregion
 
 #region Ending
 

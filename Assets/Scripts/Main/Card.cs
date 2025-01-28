@@ -115,13 +115,13 @@ public class Card : PhotonCompatible
     {
         player.PopStack();
     }
-
+    /*
     protected void DealDamage(Player player, MovingTroop defender, int logged, int totalDamage)
     {
         Log.instance.DoFunction(() => Log.instance.AddText($"{player.name}'s {this.name} does {totalDamage} damage to {defender.name}.", logged));
         //Manager.instance.DoFunction(() => Manager.instance.StoreDamage(defender.pv.ViewID, totalDamage, dataFile.multiTarget));
     }
-
+    */
     #endregion
 
 }

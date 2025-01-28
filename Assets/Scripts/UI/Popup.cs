@@ -60,8 +60,8 @@ public class Popup : MonoBehaviour
         layout.cg.alpha = alpha;
 
         nextButton.interactable = true;
-        int buttonNumber = buttonsInCollector.Count;
-        nextButton.onClick.AddListener(() => decidingPlayer.DecisionMade(buttonNumber, card));
+        int buttonNumber = buttonsInCollector.Count+100;
+        nextButton.onClick.AddListener(() => decidingPlayer.DecisionMade(buttonNumber));
         buttonsInCollector.Add(nextButton);
 
         for (int i = 0; i < buttonsInCollector.Count; i++)
@@ -95,11 +95,5 @@ public class Popup : MonoBehaviour
         }
         buttonsInCollector.Clear();
         Resize();
-    }
-
-    internal void WaitForChoice()
-    {
-        if (buttonsInCollector.Count == 0)
-            decidingPlayer.PopStack();
     }
 }

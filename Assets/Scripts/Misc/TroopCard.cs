@@ -31,12 +31,7 @@ public class TroopCard : Card
 
     public override bool CanPlayMe(Player player, bool pay)
     {
-        foreach (Row column in Manager.instance.allRows)
-        {
-            if (column.playerTroops[player.playerPosition] == null)
-                canPlayInColumn.Add(column);
-        }
-
+        canPlayInColumn = player.FilterRows(false);
         if (canPlayInColumn.Count >= 1)
             return base.CanPlayMe(player, pay);
         else
@@ -45,34 +40,46 @@ public class TroopCard : Card
 
     public override void OnPlayEffect(Player player, int logged)
     {
-        player.ChooseRow(canPlayInColumn, $"Where to play {this.name}?", PlayTroop);
+        if (player.myType == PlayerType.Computer)
+        {
+            player.inReaction.Add(PlayTroop);
+            if (player.currentChain.complete)
+                player.DecisionMade(player.currentChain.GetNext());
+            else
+                player.NewChains(0, canPlayInColumn.Count, 1);
+        }
+        else if (player.myType == PlayerType.Human)
+        {
+            player.ChooseRow(canPlayInColumn, $"Where to play {this.name}?", PlayTroop);
+        }
 
         void PlayTroop()
         {
-            CreateTroop(player, player.choice, logged);
+            CreateTroop(player, Manager.instance.allRows.IndexOf(canPlayInColumn[player.choice]), logged);
             base.OnPlayEffect(player, logged);
         }
     }
 
     public MovingTroop CreateTroop(Player player, int startingColumn, int logged)
     {
-        GameObject createdTroop = Manager.instance.MakeObject(CarryVariables.instance.movingTroopPrefab.gameObject);
-        MovingTroop troopComponent = createdTroop.GetComponent<MovingTroop>();
+        MovingTroop troop = player.availableTroops[0];
 
-        DoFunction(() => AddAbility(troopComponent.pv.ViewID, player.playerPosition));
-        troopComponent.DoFunction(() => troopComponent.AssignCardInfo(this.pv.ViewID));
-        troopComponent.DoFunction(() => troopComponent.ChangePlayer(player.playerPosition));
-        troopComponent.DoFunction(() => troopComponent.MoveTroop(startingColumn, logged));
-        return troopComponent;
+        player.RememberStep(this, StepType.Revert, () => RemoveFromAvailability(false, player.playerPosition, troop.pv.ViewID));
+        player.RememberStep(troop, StepType.Revert, () => troop.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
+        player.RememberStep(troop, StepType.Revert, () => troop.MoveTroop(false, -1, startingColumn, logged));
+
+        return troop;
     }
 
     [PunRPC]
-    protected virtual void AddAbility(int PV, int playerPosition)
+    void RemoveFromAvailability(bool undo, int playerPosition, int troopPV)
     {
-    }
-
-    internal virtual void DeathEffect(MovingTroop troop)
-    {
+        Player player = Manager.instance.playersInOrder[playerPosition];
+        MovingTroop troop = PhotonView.Find(troopPV).GetComponent<MovingTroop>();
+        if (undo)
+            player.availableTroops.Add(troop);
+        else
+            player.availableTroops.Remove(troop);
     }
 
     #endregion

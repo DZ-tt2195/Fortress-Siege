@@ -78,6 +78,11 @@ MonoBehaviour:
   - SendName
   - PlayerDone
   - YourTurn
+  - AddTroop
+  - ChangeHealth
+  - TextShared
+  - RemoveFromAvailability
+  - DecisionComplete
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 0

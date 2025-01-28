@@ -1,8 +1,6 @@
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
-using System.Linq;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine.EventSystems;
 
@@ -49,23 +47,19 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
     }
 
     [PunRPC]
-    internal void AssignCardInfo(int cardID)
+    internal void AssignCardInfo(bool undo, int playerPosition, int cardID)
     {
+        this.player = Manager.instance.playersInOrder[playerPosition];
+        this.image.transform.localScale = new(playerPosition == 0 ? 1 : -1, 1, 1);
+        if (border != null)
+            border.color = this.player.playerPosition == 0 ? Color.white : Color.black;
+
         if (cardID >= 0)
         {
             myCard = PhotonView.Find(cardID).GetComponent<TroopCard>();
             this.name = myCard.name;
             this.image.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
         }
-    }
-
-    [PunRPC]
-    internal void ChangePlayer(int playerPosition)
-    {
-        this.player = Manager.instance.playersInOrder[playerPosition];
-        this.image.transform.localScale = new(playerPosition == 0 ? 1 : -1, 1, 1);
-        if (border != null)
-            border.color = this.player.playerPosition == 0 ? Color.white : Color.black;
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -81,21 +75,51 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
 #region Gameplay
 
     [PunRPC]
-    internal void MoveTroop(int newPosition, int logged)
+    internal void MoveTroop(bool undo, int oldPosition, int newPosition, int logged)
     {
-        if (currentRow > -1)
-            Manager.instance.allRows[currentRow].playerTroops[player.playerPosition] = null;
+        if (undo)
+        {
+            if (newPosition > -1)
+                Manager.instance.allRows[currentRow].playerTroops[player.playerPosition] = null;
 
-        this.currentRow = newPosition;
-        Row row = Manager.instance.allRows[currentRow];
-        row.playerTroops[player.playerPosition] = this;
-        Log.instance.AddText($"{player.name} moves {this.name} to row {newPosition}.", logged);
+            this.currentRow = oldPosition;
+        }
+        else
+        {
+            if (oldPosition > -1)
+                Manager.instance.allRows[currentRow].playerTroops[player.playerPosition] = null;
 
-        this.transform.SetParent(row.button.transform);
+            this.currentRow = newPosition;
+            Log.instance.AddText($"{player.name} moves {this.name} to row {newPosition}.", logged);
+
+        }
+        Row spawnPoint = Manager.instance.allRows[currentRow];
+        spawnPoint.playerTroops[player.playerPosition] = this;
+        this.transform.SetParent(spawnPoint.button.transform);
         this.transform.localPosition = new((player.playerPosition) == 0 ? -575 : 575, 0);
         this.transform.localScale = Vector3.one;
     }
 
+    [PunRPC]
+    internal virtual void ChangeHealth(int damage)
+    {
+        currentHealth += damage;
+    }
+
+    [PunRPC]
+    internal virtual void ChangeDamage(int damage)
+    {
+        currentDamage += damage;
+    }
+    /*
+    protected virtual void Died()
+    {
+        Log.instance.AddText($"{player.name}'s {this.name} is destroyed.", 1);
+        Manager.instance.allRows[currentRow].playerTroops[player.playerPosition] = null;
+
+        Invoke(nameof(DestroyMe), 0.1f);
+    }
+    */
     #endregion
 
 }

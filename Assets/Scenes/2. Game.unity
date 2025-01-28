@@ -262,6 +262,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0514cb6d12c8c4316abd06299363ec15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playersInOrder: []
   deck: {fileID: 1884429718}
   discard: {fileID: 1084739530}
   allRows:
@@ -2632,7 +2633,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 100
   m_fontStyle: 0
-  m_HorizontalAlignment: 2
+  m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
