@@ -24,7 +24,7 @@ public class CarryVariables : MonoBehaviour
     public Popup textPopup;
     public Popup cardPopup;
     public SliderChoice sliderPopup;
-    public MovingTroop movingTroopPrefab;
+    public GameObject movingTroopPrefab;
     public PlayerBase playerBasePrefab;
 
     [Foldout("Right click", true)]

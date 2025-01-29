@@ -286,7 +286,7 @@ public class Manager : PhotonCompatible
 
 #region Attacking
 
-    internal void SimulateBattle()
+    internal void SimulateBattle(Player player)
     {
         foreach (Row row in allRows)
         {
@@ -295,16 +295,16 @@ public class Manager : PhotonCompatible
 
             if (Alive(firstTroop) && Alive(secondTroop))
             {
-                firstTroop.DoFunction(() => firstTroop.ChangeHealth(-secondTroop.currentDamage));
-                secondTroop.DoFunction(() => secondTroop.ChangeHealth(-firstTroop.currentDamage));
+                player.RememberStep(firstTroop, StepType.Revert, () => firstTroop.ChangeHealth(false, -secondTroop.currentDamage));
+                player.RememberStep(secondTroop, StepType.Revert, () => secondTroop.ChangeHealth(false, -firstTroop.currentDamage));
             }
             else if (Alive(firstTroop))
             {
-                playersInOrder[1].DoFunction(() => playersInOrder[1].myBase.ChangeHealth(-firstTroop.currentDamage));
+                player.RememberStep(playersInOrder[1], StepType.Revert, () => playersInOrder[1].myBase.ChangeHealth(false, -firstTroop.currentDamage));
             }
             else if (Alive(secondTroop))
             {
-                playersInOrder[0].DoFunction(() => playersInOrder[0].myBase.ChangeHealth(-secondTroop.currentDamage));
+                player.RememberStep(playersInOrder[0], StepType.Revert, () => playersInOrder[0].myBase.ChangeHealth(false, -secondTroop.currentDamage));
             }
 
             bool Alive(MovingTroop troop)

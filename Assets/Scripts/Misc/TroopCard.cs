@@ -1,9 +1,6 @@
 using UnityEngine;
 using Photon.Pun;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine.UI;
 
 public class TroopCard : Card
 {
@@ -40,13 +37,26 @@ public class TroopCard : Card
 
     public override void OnPlayEffect(Player player, int logged)
     {
+        player.RememberStep(this, StepType.UndoPoint, () => ChooseRow(player, logged));
+    }
+
+    void ChooseRow(Player player, int logged)
+    {
         if (player.myType == PlayerType.Computer)
         {
-            player.inReaction.Add(PlayTroop);
-            if (player.currentChain.complete)
-                player.DecisionMade(player.currentChain.GetNext());
-            else
-                player.NewChains(0, canPlayInColumn.Count, 1);
+            try
+            {
+                Debug.Log($"{player.currentChain.tracker}, {player.currentChain.decisions.Count}");
+                int next = player.currentChain.GetNext();
+                Debug.Log($"buffed to {player.currentChain.tracker}");
+                player.inReaction.Add(PlayTroop);
+                player.DecisionMade(next);
+            }
+            catch
+            {
+                Debug.Log("add more chains for rows");
+                player.NewChains(0, canPlayInColumn.Count, 0);
+            }
         }
         else if (player.myType == PlayerType.Human)
         {
@@ -55,24 +65,15 @@ public class TroopCard : Card
 
         void PlayTroop()
         {
-            CreateTroop(player, Manager.instance.allRows.IndexOf(canPlayInColumn[player.choice]), logged);
-            base.OnPlayEffect(player, logged);
+            MovingTroop troop = player.availableTroops[0];
+            player.RememberStep(this, StepType.Revert, () => RemoveFromAvailability(false, player.playerPosition, troop.pv.ViewID));
+            player.RememberStep(troop, StepType.Revert, () => troop.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
+            player.RememberStep(troop, StepType.Revert, () => troop.MoveTroop(false, -1, player.choice, player.SimulatedLog(logged)));
         }
     }
 
-    public MovingTroop CreateTroop(Player player, int startingColumn, int logged)
-    {
-        MovingTroop troop = player.availableTroops[0];
-
-        player.RememberStep(this, StepType.Revert, () => RemoveFromAvailability(false, player.playerPosition, troop.pv.ViewID));
-        player.RememberStep(troop, StepType.Revert, () => troop.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
-        player.RememberStep(troop, StepType.Revert, () => troop.MoveTroop(false, -1, startingColumn, logged));
-
-        return troop;
-    }
-
     [PunRPC]
-    void RemoveFromAvailability(bool undo, int playerPosition, int troopPV)
+    protected void RemoveFromAvailability(bool undo, int playerPosition, int troopPV)
     {
         Player player = Manager.instance.playersInOrder[playerPosition];
         MovingTroop troop = PhotonView.Find(troopPV).GetComponent<MovingTroop>();

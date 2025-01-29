@@ -86,7 +86,6 @@ GameObject:
   - component: {fileID: 1396651931923076358}
   - component: {fileID: 542066353189132251}
   - component: {fileID: 57813705813001167}
-  - component: {fileID: 6030409963793837772}
   m_Layer: 5
   m_Name: Moving Troop
   m_TagString: Untagged
@@ -149,18 +148,6 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &6030409963793837772
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 745653241502013156}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16e5a06a7a1d54c32bfb3ab0cc41f555, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1656642575471293639
 GameObject:
   m_ObjectHideFlags: 0

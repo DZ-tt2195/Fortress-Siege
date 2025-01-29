@@ -80,36 +80,48 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
         if (undo)
         {
             if (newPosition > -1)
-                Manager.instance.allRows[currentRow].playerTroops[player.playerPosition] = null;
-
+                Manager.instance.allRows[newPosition].playerTroops[player.playerPosition] = null;
             this.currentRow = oldPosition;
         }
         else
         {
             if (oldPosition > -1)
-                Manager.instance.allRows[currentRow].playerTroops[player.playerPosition] = null;
-
+                Manager.instance.allRows[oldPosition].playerTroops[player.playerPosition] = null;
             this.currentRow = newPosition;
             Log.instance.AddText($"{player.name} moves {this.name} to row {newPosition}.", logged);
-
         }
-        Row spawnPoint = Manager.instance.allRows[currentRow];
-        spawnPoint.playerTroops[player.playerPosition] = this;
-        this.transform.SetParent(spawnPoint.button.transform);
-        this.transform.localPosition = new((player.playerPosition) == 0 ? -575 : 575, 0);
-        this.transform.localScale = Vector3.one;
+
+        if (currentRow > -1)
+        {
+            Row spawnPoint = Manager.instance.allRows[currentRow];
+            spawnPoint.playerTroops[player.playerPosition] = this;
+
+            this.transform.SetParent(spawnPoint.button.transform);
+            this.transform.localPosition = new((player.playerPosition) == 0 ? -575 : 575, 0);
+            this.transform.localScale = Vector3.one;
+        }
+        else
+        {
+            this.transform.SetParent(null);
+        }
     }
 
     [PunRPC]
-    internal virtual void ChangeHealth(int damage)
+    internal virtual void ChangeHealth(bool undo, int health)
     {
-        currentHealth += damage;
+        if (undo)
+            currentHealth -= health;
+        else
+            currentHealth += health;
     }
 
     [PunRPC]
-    internal virtual void ChangeDamage(int damage)
+    internal virtual void ChangeDamage(bool undo, int damage)
     {
-        currentDamage += damage;
+        if (undo)
+            currentDamage -= damage;
+        else
+            currentDamage += damage;
     }
     /*
     protected virtual void Died()
