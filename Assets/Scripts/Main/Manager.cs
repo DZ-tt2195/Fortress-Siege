@@ -9,12 +9,11 @@ using UnityEngine.SceneManagement;
 using System.Linq;
 using System;
 
-[Serializable]
-public class Row
+[Serializable] public class Row
 {
     public Button button;
-    [HideInInspector] public MovingTroop[] playerTroops;
-    [HideInInspector] public MovingTroop environment = null;
+    [ReadOnly] public MovingTroop[] playerTroops;
+    [ReadOnly] public MovingTroop environment = null;
 }
 
 public class Manager : PhotonCompatible
@@ -288,6 +287,7 @@ public class Manager : PhotonCompatible
 
     internal void SimulateBattle(Player player)
     {
+        string answer = "";
         foreach (Row row in allRows)
         {
             MovingTroop firstTroop = row.playerTroops[0];
@@ -297,14 +297,21 @@ public class Manager : PhotonCompatible
             {
                 player.RememberStep(firstTroop, StepType.Revert, () => firstTroop.ChangeHealth(false, -secondTroop.currentDamage));
                 player.RememberStep(secondTroop, StepType.Revert, () => secondTroop.ChangeHealth(false, -firstTroop.currentDamage));
+                answer += $"{firstTroop.name} fights {secondTroop.name}\n";
             }
             else if (Alive(firstTroop))
             {
                 player.RememberStep(playersInOrder[1], StepType.Revert, () => playersInOrder[1].myBase.ChangeHealth(false, -firstTroop.currentDamage));
+                answer += $"{firstTroop.name} fights {playersInOrder[1].name}\n";
             }
             else if (Alive(secondTroop))
             {
                 player.RememberStep(playersInOrder[0], StepType.Revert, () => playersInOrder[0].myBase.ChangeHealth(false, -secondTroop.currentDamage));
+                answer += $"{firstTroop.name} fights {playersInOrder[0].name}\n";
+            }
+            else
+            {
+                answer += $"no fight\n";
             }
 
             bool Alive(MovingTroop troop)
@@ -312,6 +319,7 @@ public class Manager : PhotonCompatible
                 return troop != null && troop.currentHealth >= 1;
             }
         }
+        Debug.Log(answer);
     }
 
     #endregion

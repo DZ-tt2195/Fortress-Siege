@@ -59,6 +59,8 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
             myCard = PhotonView.Find(cardID).GetComponent<TroopCard>();
             this.name = myCard.name;
             this.image.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
+            player.RememberStep(this, StepType.Revert, () => ChangeHealth(false, myCard.health));
+            player.RememberStep(this, StepType.Revert, () => ChangeDamage(false, myCard.damage));
         }
     }
 

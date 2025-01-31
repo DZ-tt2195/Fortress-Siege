@@ -46,15 +46,13 @@ public class TroopCard : Card
         {
             try
             {
-                Debug.Log($"{player.currentChain.tracker}, {player.currentChain.decisions.Count}");
-                int next = player.currentChain.GetNext();
-                Debug.Log($"buffed to {player.currentChain.tracker}");
+                int next = player.currentChain.decisions[player.chainTracker];
                 player.inReaction.Add(PlayTroop);
                 player.DecisionMade(next);
             }
             catch
             {
-                Debug.Log("add more chains for rows");
+                //Debug.Log("add more chains for rows");
                 player.NewChains(0, canPlayInColumn.Count, 0);
             }
         }
