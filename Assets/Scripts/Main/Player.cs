@@ -375,13 +375,13 @@ public class Player : PhotonCompatible
             if (chainTracker < currentChain.decisions.Count)
             {
                 int next = currentChain.decisions[chainTracker];
-                Debug.Log($"resolved continue turn with choice {next}");
+                //Debug.Log($"resolved continue turn with choice {next}");
                 inReaction.Add(ActionResolution);
                 DecisionMade(next);
             }
             else
             {
-                Debug.Log($"{chainTracker}, {currentChain.decisions.Count}");
+                //Debug.Log($"{chainTracker}, {currentChain.decisions.Count}");
                 NewChains(-1, canPlay.Count, 100);
             }
         }
@@ -413,7 +413,7 @@ public class Player : PhotonCompatible
                     Manager.instance.SimulateBattle(this);
 
                     currentChain.math = PlayerScore(this.playerPosition) - PlayerScore(Manager.instance.OtherPlayer(this).playerPosition);
-                    Debug.Log($"chain ended with score {currentChain.math}. decisions: {currentChain.PrintDecisions()}");
+                    Debug.Log($"CHAIN ENDED with score {currentChain.math}. decisions: {currentChain.PrintDecisions()}");
                     currentChain = null;
 
                     float PlayerScore(int playerPosition)
@@ -592,18 +592,18 @@ public class Player : PhotonCompatible
 
     void FindNewestChain(bool trigger)
     {
+        bool needUndo = false;
+
         if (trigger || currentChain == null)
         {
-            bool changed = false;
             for (int i = chainsToResolve.Count - 1; i >= 0; i--)
             {
                 DecisionChain newChain = chainsToResolve[i];
-
                 if (!newChain.complete)
                 {
                     if (currentChain == null)
                     {
-                        changed = true;
+                        needUndo = true;
                     }
                     else
                     {
@@ -611,7 +611,7 @@ public class Player : PhotonCompatible
                         {
                             if (currentChain.decisions[j] != newChain.decisions[j])
                             {
-                                changed = true;
+                                needUndo = true;
                                 break;
                             }
                         }
@@ -620,22 +620,18 @@ public class Player : PhotonCompatible
                     chainsToResolve.RemoveAt(i);
                     currentChain = newChain;
                     currentStep = newChain.toThisPoint;
-                    Debug.Log($"switched chains. decisions: {currentChain.PrintDecisions()}");
+                    Debug.Log($"switched chains (undo {needUndo}). decisions: {currentChain.PrintDecisions()}");
                     break;
                 }
             }
-
-            if (trigger)
-            {
-                if (changed)
-                    UndoAmount(currentStep);
-                //Debug.Log($"{currentChain.toThisPoint.actionName}, {currentChain.decisions.Count}");
-                currentStep.action.Compile().Invoke();
-            }
         }
-        else
+
+        if (trigger || needUndo)
         {
-            Debug.Log("skip finding new chain");
+            if (needUndo)
+                UndoAmount(currentStep);
+            //Debug.Log($"{currentChain.toThisPoint.actionName}, {currentChain.decisions.Count}");
+            currentStep.action.Compile().Invoke();
         }
     }
 
@@ -651,7 +647,6 @@ public class Player : PhotonCompatible
         for (int i = 0; i < inReaction.Count; i++)
             newActions.Add(inReaction[i]);
 
-        Debug.Log($"delete {inReaction.Count} reactions");
         inReaction.Clear();
         foreach (Action action in newActions)
             action();
@@ -683,19 +678,19 @@ public class Player : PhotonCompatible
         if (undo)
         {
             step.completed = false;
-            Debug.Log($"turned off: {stepNumber}, {step.actionName}");
+            //Debug.Log($"turned off: {stepNumber}, {step.actionName}");
         }
         else
         {
             step.completed = true;
-            Debug.Log($"turned on: {stepNumber}, {step.actionName}");
+            //Debug.Log($"turned on: {stepNumber}, {step.actionName}");
         }
     }
 
     public void DecisionMade(int value)
     {
         choice = value;
-        Debug.Log($"made choice of {value}");
+        //Debug.Log($"made choice of {value}");
         //currentStep = null;
         PopStack();
     }
@@ -733,7 +728,8 @@ public class Player : PhotonCompatible
             card.border.gameObject.SetActive(false);
         }
 
-        bool decrementTracker = false;
+        //bool decrementTracker = false;
+        //Debug.Log($"{currentChain.decisions.Count} vs {chainTracker}");
 
         for (int i = historyStack.Count - 1; i >= 0; i--)
         {
@@ -754,11 +750,19 @@ public class Player : PhotonCompatible
             }
             else if (next.stepType == StepType.UndoPoint)
             {
+                chainTracker--;
+
                 if (next == toThisPoint || i == 0)
                 {
-                    Debug.Log($"continue at {i}, {toThisPoint.actionName}");
+                    Debug.Log($"continue at {i}, reduce tracker to {chainTracker}, {next.actionName}");
                     break;
                 }
+                else
+                {
+                    historyStack.RemoveAt(i);
+                    Debug.Log($"step {i}, reduce tracker to {chainTracker}: {next.actionName}");
+                }
+                /*
                 else if (!decrementTracker)
                 {
                     Debug.Log($"skipped undo at step {i}");
@@ -771,6 +775,7 @@ public class Player : PhotonCompatible
                     Debug.Log($"step {i}, reduce tracker to {chainTracker}: {next.actionName}");
                     historyStack.RemoveAt(i);
                 }
+                */
             }
         }
     }

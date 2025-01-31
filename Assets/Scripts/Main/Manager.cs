@@ -301,12 +301,12 @@ public class Manager : PhotonCompatible
             }
             else if (Alive(firstTroop))
             {
-                player.RememberStep(playersInOrder[1], StepType.Revert, () => playersInOrder[1].myBase.ChangeHealth(false, -firstTroop.currentDamage));
+                player.RememberStep(playersInOrder[1].myBase, StepType.Revert, () => playersInOrder[1].myBase.ChangeHealth(false, -firstTroop.currentDamage));
                 answer += $"{firstTroop.name} fights {playersInOrder[1].name}\n";
             }
             else if (Alive(secondTroop))
             {
-                player.RememberStep(playersInOrder[0], StepType.Revert, () => playersInOrder[0].myBase.ChangeHealth(false, -secondTroop.currentDamage));
+                player.RememberStep(playersInOrder[0].myBase, StepType.Revert, () => playersInOrder[0].myBase.ChangeHealth(false, -secondTroop.currentDamage));
                 answer += $"{firstTroop.name} fights {playersInOrder[0].name}\n";
             }
             else

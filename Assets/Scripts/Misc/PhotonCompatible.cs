@@ -22,7 +22,7 @@ public class PhotonCompatible : MonoBehaviour
     {
         MethodInfo info = FindMethod(methodName);
         if (info == null)
-            Debug.Log($"{this.name} - {methodName} failed");
+            Debug.LogError($"{this.name} - {methodName} failed");
 
         if (info.ReturnType == typeof(IEnumerator))
             StartCoroutine((IEnumerator)info.Invoke(this, parameters));

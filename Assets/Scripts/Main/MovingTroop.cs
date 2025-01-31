@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 public class MovingTroop : PhotonCompatible, IPointerClickHandler
 {
 
-#region Setup
+#region Variables
 
     protected Image image;
     Image border;
@@ -31,6 +31,10 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
         protected set { _currentDamage = value; try { damageText.text = _currentDamage.ToString(); } catch { } }
     }
 
+    #endregion
+
+#region Setup
+
     protected override void Awake()
     {
         base.Awake();
@@ -49,18 +53,23 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
     [PunRPC]
     internal void AssignCardInfo(bool undo, int playerPosition, int cardID)
     {
-        this.player = Manager.instance.playersInOrder[playerPosition];
-        this.image.transform.localScale = new(playerPosition == 0 ? 1 : -1, 1, 1);
-        if (border != null)
-            border.color = this.player.playerPosition == 0 ? Color.white : Color.black;
+        this.currentHealth = 0;
+        this.currentDamage = 0;
 
-        if (cardID >= 0)
+        if (!undo)
         {
-            myCard = PhotonView.Find(cardID).GetComponent<TroopCard>();
-            this.name = myCard.name;
-            this.image.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
-            player.RememberStep(this, StepType.Revert, () => ChangeHealth(false, myCard.health));
-            player.RememberStep(this, StepType.Revert, () => ChangeDamage(false, myCard.damage));
+            //Debug.Log("assigned card info");
+            this.player = Manager.instance.playersInOrder[playerPosition];
+            this.image.transform.localScale = new(playerPosition == 0 ? 1 : -1, 1, 1);
+            if (border != null)
+                border.color = this.player.playerPosition == 0 ? Color.white : Color.black;
+
+            if (cardID >= 0)
+            {
+                myCard = PhotonView.Find(cardID).GetComponent<TroopCard>();
+                this.name = myCard.name;
+                this.image.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
+            }
         }
     }
 
@@ -93,6 +102,7 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
             Log.instance.AddText($"{player.name} moves {this.name} to row {newPosition}.", logged);
         }
 
+        //Debug.Log($"move troop to {currentRow}");
         if (currentRow > -1)
         {
             Row spawnPoint = Manager.instance.allRows[currentRow];
@@ -109,7 +119,7 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
     }
 
     [PunRPC]
-    internal virtual void ChangeHealth(bool undo, int health)
+    internal protected virtual void ChangeHealth(bool undo, int health)
     {
         if (undo)
             currentHealth -= health;
@@ -118,22 +128,14 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
     }
 
     [PunRPC]
-    internal virtual void ChangeDamage(bool undo, int damage)
+    internal protected virtual void ChangeDamage(bool undo, int damage)
     {
         if (undo)
             currentDamage -= damage;
         else
             currentDamage += damage;
     }
-    /*
-    protected virtual void Died()
-    {
-        Log.instance.AddText($"{player.name}'s {this.name} is destroyed.", 1);
-        Manager.instance.allRows[currentRow].playerTroops[player.playerPosition] = null;
 
-        Invoke(nameof(DestroyMe), 0.1f);
-    }
-    */
     #endregion
 
 }

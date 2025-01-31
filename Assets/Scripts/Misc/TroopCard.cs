@@ -44,15 +44,16 @@ public class TroopCard : Card
     {
         if (player.myType == PlayerType.Computer)
         {
-            try
+            if (player.chainTracker < player.currentChain.decisions.Count)
             {
                 int next = player.currentChain.decisions[player.chainTracker];
+                Debug.Log($"resolved choose row with choice {next}");
                 player.inReaction.Add(PlayTroop);
                 player.DecisionMade(next);
             }
-            catch
+            else
             {
-                //Debug.Log("add more chains for rows");
+                Debug.Log($"add rows: {player.chainTracker}, {player.currentChain.decisions.Count}");
                 player.NewChains(0, canPlayInColumn.Count, 0);
             }
         }
@@ -67,6 +68,8 @@ public class TroopCard : Card
             player.RememberStep(this, StepType.Revert, () => RemoveFromAvailability(false, player.playerPosition, troop.pv.ViewID));
             player.RememberStep(troop, StepType.Revert, () => troop.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
             player.RememberStep(troop, StepType.Revert, () => troop.MoveTroop(false, -1, player.choice, player.SimulatedLog(logged)));
+            player.RememberStep(troop, StepType.Revert, () => troop.ChangeHealth(false, health));
+            player.RememberStep(troop, StepType.Revert, () => troop.ChangeDamage(false, damage));
         }
     }
 
