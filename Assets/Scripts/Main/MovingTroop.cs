@@ -99,7 +99,7 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
             if (oldPosition > -1)
                 Manager.instance.allRows[oldPosition].playerTroops[player.playerPosition] = null;
             this.currentRow = newPosition;
-            Log.instance.AddText($"{player.name} moves {this.name} to row {newPosition}.", logged);
+            Log.instance.AddText($"{player.name} moves {this.name} to row {newPosition+1}.", logged);
         }
 
         //Debug.Log($"move troop to {currentRow}");

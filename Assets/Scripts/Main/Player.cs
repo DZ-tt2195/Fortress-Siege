@@ -332,7 +332,7 @@ public class Player : PhotonCompatible
         Manager.instance.DoFunction(() => Manager.instance.Instructions($"Waiting on {this.name}..."), RpcTarget.Others);
         PreserveTextRPC("");
         PreserveTextRPC($"{this.name}'s turn");
-        RememberStep(this, StepType.UndoPoint, () => ContinueTurn());
+        RememberStep(this, StepType.UndoPoint, () => MayPlayCard());
 
         if (myType == PlayerType.Computer)
         {
@@ -340,10 +340,16 @@ public class Player : PhotonCompatible
             chainsToResolve.Add(currentChain);
             StartCoroutine(SimulateGame());
         }
-        PopStack();
+        else
+        {
+            PopStack();
+        }
 
         IEnumerator SimulateGame()
         {
+            yield return new WaitForSeconds(1f);
+            PopStack();
+
             while (chainsToResolve.Count > 0)
             {
                 yield return null;
@@ -360,12 +366,12 @@ public class Player : PhotonCompatible
             Debug.Log(answer);
 
             finishedChains.Clear();
-            RememberStep(this, StepType.UndoPoint, () => ContinueTurn());
+            RememberStep(this, StepType.UndoPoint, () => MayPlayCard());
             PopStack();
         }
     }
 
-    void ContinueTurn()
+    internal void MayPlayCard()
     {
         List<string> actions = new() { $"End Turn" };
         List<Card> canPlay = cardsInHand.Where(card => card.CanPlayMe(this, true)).ToList();
@@ -387,8 +393,8 @@ public class Player : PhotonCompatible
         }
         else
         {
-            ChooseButton(actions, Vector3.zero, "What to play?", ActionResolution);
-            ChooseCardOnScreen(canPlay, $"What to play?", null);
+            ChooseButton(actions, Vector3.zero, (canPlay.Count) == 0 ? "You can't play any cards." : "What to play?", ActionResolution);
+            ChooseCardOnScreen(canPlay, (canPlay.Count) == 0 ? "You can't play any cards." : "What to play?", null);
         }
         void ActionResolution()
         {
@@ -398,8 +404,6 @@ public class Player : PhotonCompatible
                 PreserveTextRPC($"{this.name} plays {toPlay.name}.", SimulatedLog(0));
                 DiscardPlayerCard(toPlay, -1);
                 RememberStep(this, StepType.Revert, () => GainLoseCoin(false, -1 * toPlay.coinCost, SimulatedLog(0)));
-
-                RememberStep(this, StepType.UndoPoint, () => ContinueTurn());
                 toPlay.OnPlayEffect(this, 0);
             }
             catch
@@ -587,52 +591,49 @@ public class Player : PhotonCompatible
             chainsToResolve.Add(new(currentChain?.decisions, remember, currentStep));
         }
         chainsToResolve.Remove(currentChain);
-        FindNewestChain(true);
+
+        FindNewestChain();
+        currentStep.action.Compile().Invoke();
     }
 
-    void FindNewestChain(bool trigger)
+    void FindNewestChain()
     {
+        if (myType == PlayerType.Human)
+            return;
+
         bool needUndo = false;
 
-        if (trigger || currentChain == null)
+        for (int i = chainsToResolve.Count - 1; i >= 0; i--)
         {
-            for (int i = chainsToResolve.Count - 1; i >= 0; i--)
+            DecisionChain newChain = chainsToResolve[i];
+            if (!newChain.complete)
             {
-                DecisionChain newChain = chainsToResolve[i];
-                if (!newChain.complete)
+                if (currentChain == null)
                 {
-                    if (currentChain == null)
+                    needUndo = true;
+                }
+                else
+                {
+                    for (int j = 0; j < currentChain.decisions.Count; j++)
                     {
-                        needUndo = true;
-                    }
-                    else
-                    {
-                        for (int j = 0; j < currentChain.decisions.Count; j++)
+                        if (currentChain.decisions[j] != newChain.decisions[j])
                         {
-                            if (currentChain.decisions[j] != newChain.decisions[j])
-                            {
-                                needUndo = true;
-                                break;
-                            }
+                            needUndo = true;
+                            break;
                         }
                     }
-
-                    chainsToResolve.RemoveAt(i);
-                    currentChain = newChain;
-                    currentStep = newChain.toThisPoint;
-                    Debug.Log($"switched chains (undo {needUndo}). decisions: {currentChain.PrintDecisions()}");
-                    break;
                 }
+
+                chainsToResolve.RemoveAt(i);
+                currentChain = newChain;
+                currentStep = newChain.toThisPoint;
+                Debug.Log($"switched chains (undo {needUndo}), {currentChain.toThisPoint.actionName}. decisions: {currentChain.PrintDecisions()}");
+                break;
             }
         }
 
-        if (trigger || needUndo)
-        {
-            if (needUndo)
-                UndoAmount(currentStep);
-            //Debug.Log($"{currentChain.toThisPoint.actionName}, {currentChain.decisions.Count}");
-            currentStep.action.Compile().Invoke();
-        }
+        if (needUndo)
+            UndoAmount(currentStep);
     }
 
     public void PopStack()
@@ -651,7 +652,8 @@ public class Player : PhotonCompatible
         foreach (Action action in newActions)
             action();
 
-        FindNewestChain(false);
+        if (currentChain == null)
+            FindNewestChain();
 
         for (int i = historyStack.Count - 1; i >= 0; i--)
         {
@@ -664,11 +666,14 @@ public class Player : PhotonCompatible
                 {
                     currentChain.toThisPoint = step;
                     chainTracker++;
+                    Debug.Log($"tracker bumped up to {chainTracker}");
                 }
+                Debug.Log($"run {step.actionName}");
                 step.action.Compile().Invoke();
                 break;
             }
         }
+        //Debug.LogError($"{currentChain.toThisPoint.actionName} -> failed to find new undo point");
     }
 
     [PunRPC]
@@ -678,12 +683,12 @@ public class Player : PhotonCompatible
         if (undo)
         {
             step.completed = false;
-            //Debug.Log($"turned off: {stepNumber}, {step.actionName}");
+            Debug.Log($"turned off: {stepNumber}, {step.actionName}");
         }
         else
         {
             step.completed = true;
-            //Debug.Log($"turned on: {stepNumber}, {step.actionName}");
+            Debug.Log($"turned on: {stepNumber}, {step.actionName}");
         }
     }
 
@@ -728,9 +733,6 @@ public class Player : PhotonCompatible
             card.border.gameObject.SetActive(false);
         }
 
-        //bool decrementTracker = false;
-        //Debug.Log($"{currentChain.decisions.Count} vs {chainTracker}");
-
         for (int i = historyStack.Count - 1; i >= 0; i--)
         {
             NextStep next = historyStack[i];
@@ -760,22 +762,8 @@ public class Player : PhotonCompatible
                 else
                 {
                     historyStack.RemoveAt(i);
-                    Debug.Log($"step {i}, reduce tracker to {chainTracker}: {next.actionName}");
+                    Debug.Log($"delete step {i}, reduce tracker to {chainTracker}: {next.actionName}");
                 }
-                /*
-                else if (!decrementTracker)
-                {
-                    Debug.Log($"skipped undo at step {i}");
-                    decrementTracker = true;
-                    historyStack.RemoveAt(i);
-                }
-                else
-                {
-                    chainTracker--;
-                    Debug.Log($"step {i}, reduce tracker to {chainTracker}: {next.actionName}");
-                    historyStack.RemoveAt(i);
-                }
-                */
             }
         }
     }

@@ -65,11 +65,14 @@ public class TroopCard : Card
         void PlayTroop()
         {
             MovingTroop troop = player.availableTroops[0];
+
             player.RememberStep(this, StepType.Revert, () => RemoveFromAvailability(false, player.playerPosition, troop.pv.ViewID));
             player.RememberStep(troop, StepType.Revert, () => troop.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
-            player.RememberStep(troop, StepType.Revert, () => troop.MoveTroop(false, -1, player.choice, player.SimulatedLog(logged)));
+            player.RememberStep(troop, StepType.Revert, () => troop.MoveTroop(false, -1, player.choice, player.SimulatedLog(logged+1)));
             player.RememberStep(troop, StepType.Revert, () => troop.ChangeHealth(false, health));
             player.RememberStep(troop, StepType.Revert, () => troop.ChangeDamage(false, damage));
+
+            player.RememberStep(player, StepType.UndoPoint, () => player.MayPlayCard());
         }
     }
 
