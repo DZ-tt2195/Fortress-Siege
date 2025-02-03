@@ -28,6 +28,12 @@ public enum StepType { UndoPoint, Revert, None }
 
     internal void ChangeType(StepType stepType)
     {
+        if (this.stepType == StepType.UndoPoint && stepType != StepType.UndoPoint)
+        {
+            Log.instance.undoToThis = null;
+            //Debug.Log("undopoint canceled");
+        }
+
         this.stepType = stepType;
         completed = stepType != StepType.UndoPoint;
     }
@@ -443,6 +449,7 @@ public class Player : PhotonCompatible
                 else
                 {
                     PreserveTextRPC($"{this.name} ends their turn.");
+                    ShareSteps();
                     Manager.instance.DoFunction(() => Manager.instance.Continue());
                 }
             }
@@ -598,9 +605,6 @@ public class Player : PhotonCompatible
 
     void FindNewestChain()
     {
-        if (myType == PlayerType.Human)
-            return;
-
         bool needUndo = false;
 
         for (int i = chainsToResolve.Count - 1; i >= 0; i--)
@@ -652,7 +656,7 @@ public class Player : PhotonCompatible
         foreach (Action action in newActions)
             action();
 
-        if (currentChain == null)
+        if (currentChain == null && myType == PlayerType.Computer)
             FindNewestChain();
 
         for (int i = historyStack.Count - 1; i >= 0; i--)
@@ -668,7 +672,9 @@ public class Player : PhotonCompatible
                     chainTracker++;
                     Debug.Log($"tracker bumped up to {chainTracker}");
                 }
-                Debug.Log($"run {step.actionName}");
+                //Debug.Log($"run {step.actionName}");
+                if (myType == PlayerType.Human)
+                    Log.instance.undoToThis = step;
                 step.action.Compile().Invoke();
                 break;
             }
@@ -711,12 +717,41 @@ public class Player : PhotonCompatible
 
         //Debug.Log($"step {currentStep}: {action}");
         if (type != StepType.UndoPoint)
+            newStep.action.Compile().Invoke();
+    }
+
+    void ShareSteps()
+    {
+        if (InControl() && PhotonNetwork.IsConnected && PhotonNetwork.CurrentRoom.MaxPlayers >= 2)
         {
-            if (myType == PlayerType.Computer && currentChain != null && currentChain.complete)
-                newStep.action.Compile().Invoke();
-            else
-                newStep.source.DoFunction(newStep.action, RpcTarget.All);
+            foreach (NextStep step in historyStack)
+            {
+                if (step.stepType == StepType.Revert)
+                {
+                    (string instruction, object[] parameters) = step.source.TranslateFunction(step.action);
+                    try { DoFunction(() => StepForOthers(step.source.pv.ViewID, instruction, parameters), RpcTarget.Others); } catch { }
+                }
+            }
         }
+        if (InControl())
+        {
+            DoFunction(() => ResetHistory());
+        }
+    }
+
+    [PunRPC]
+    void StepForOthers(int PV, string instruction, object[] parameters)
+    {
+        PhotonCompatible source = PhotonView.Find(PV).GetComponent<PhotonCompatible>();
+        source.StringParameters(instruction, parameters);
+    }
+
+    [PunRPC]
+    void ResetHistory()
+    {
+        historyStack.Clear();
+        Log.instance.undosInLog.Clear();
+        Log.instance.DisplayUndoBar(false);
     }
 
     internal void UndoAmount(NextStep toThisPoint)

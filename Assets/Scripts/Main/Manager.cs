@@ -8,6 +8,7 @@ using Photon.Pun;
 using UnityEngine.SceneManagement;
 using System.Linq;
 using System;
+using System.Linq.Expressions;
 
 [Serializable] public class Row
 {
@@ -277,6 +278,7 @@ public class Manager : PhotonCompatible
         {
             Log.instance.DoFunction(() => Log.instance.AddText("", 0));
             Log.instance.DoFunction(() => Log.instance.AddText("Attack phase.", 0));
+            SimulateBattle(null);
             Continue();
         }
     }
@@ -295,18 +297,18 @@ public class Manager : PhotonCompatible
 
             if (Alive(firstTroop) && Alive(secondTroop))
             {
-                player.RememberStep(firstTroop, StepType.Revert, () => firstTroop.ChangeHealth(false, -secondTroop.currentDamage));
-                player.RememberStep(secondTroop, StepType.Revert, () => secondTroop.ChangeHealth(false, -firstTroop.currentDamage));
+                Fight(firstTroop, () => firstTroop.ChangeHealth(false, -secondTroop.currentDamage));
+                Fight(secondTroop, () => secondTroop.ChangeHealth(false, -firstTroop.currentDamage));
                 answer += $"{firstTroop.name} fights {secondTroop.name}\n";
             }
             else if (Alive(firstTroop))
             {
-                player.RememberStep(playersInOrder[1].myBase, StepType.Revert, () => playersInOrder[1].myBase.ChangeHealth(false, -firstTroop.currentDamage));
+                Fight(playersInOrder[1].myBase, () => playersInOrder[1].myBase.ChangeHealth(false, -firstTroop.currentDamage));
                 answer += $"{firstTroop.name} fights {playersInOrder[1].name}\n";
             }
             else if (Alive(secondTroop))
             {
-                player.RememberStep(playersInOrder[0].myBase, StepType.Revert, () => playersInOrder[0].myBase.ChangeHealth(false, -secondTroop.currentDamage));
+                Fight(playersInOrder[0].myBase, () => playersInOrder[0].myBase.ChangeHealth(false, -secondTroop.currentDamage));
                 answer += $"{firstTroop.name} fights {playersInOrder[0].name}\n";
             }
             else
@@ -314,12 +316,22 @@ public class Manager : PhotonCompatible
                 answer += $"no fight\n";
             }
 
+            void Fight(PhotonCompatible takeDamage, Expression<Action> action)
+            {
+                if (player == null)
+                    takeDamage.DoFunction(action, RpcTarget.All);
+                else
+                    player.RememberStep(takeDamage, StepType.Revert, action);
+            }
+
             bool Alive(MovingTroop troop)
             {
                 return troop != null && troop.currentHealth >= 1;
             }
         }
-        Debug.Log(answer);
+
+        if (player != null)
+            Debug.Log(answer);
     }
 
     #endregion
@@ -399,6 +411,16 @@ public class Manager : PhotonCompatible
     public Player OtherPlayer(int position)
     {
         return (position == 0) ? playersInOrder[1] : playersInOrder[0];
+    }
+
+    public Player FindThisPlayer()
+    {
+        foreach (Player player in playersInOrder)
+        {
+            if (player.InControl())
+                return player;
+        }
+        return null;
     }
 
     public void AddAbility(TriggeredAbility ability)

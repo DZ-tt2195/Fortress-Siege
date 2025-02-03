@@ -1,14 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 using UnityEngine.UI;
 using MyBox;
-using System.Text.RegularExpressions;
 using Photon.Pun;
-using System.Reflection;
-using System;
-using Photon.Realtime;
 
 public class Log : PhotonCompatible
 {
@@ -21,9 +15,15 @@ public class Log : PhotonCompatible
         Scrollbar scroll;
         [SerializeField] RectTransform RT;
         GridLayoutGroup gridGroup;
-        [SerializeField] TMP_Text textBoxClone;
+        [SerializeField] LogText textBoxClone;
         Vector2 startingSize;
         Vector2 startingPosition;
+
+    [Foldout("Undos", true)]
+        public List<LogText> undosInLog = new();
+        public NextStep undoToThis;
+        [SerializeField] Button undoButton;
+        bool currentUndoState = false;
 
     protected override void Awake()
     {
@@ -36,6 +36,7 @@ public class Log : PhotonCompatible
 
         startingSize = RT.sizeDelta;
         startingPosition = RT.transform.localPosition;
+        undoButton.onClick.AddListener(() => DisplayUndoBar(!currentUndoState));
     }
 
     #endregion
@@ -64,15 +65,27 @@ public class Log : PhotonCompatible
         if (indent < 0)
             return;
 
-        TMP_Text newText = Instantiate(textBoxClone, RT.transform);
+        LogText newText = Instantiate(textBoxClone, RT.transform);
         newText.name = $"Log {RT.transform.childCount}";
-        newText.text = "";
-        for (int i = 0; i < indent; i++)
-            newText.text += "     ";
-        newText.text += string.IsNullOrEmpty(logText) ? "" : char.ToUpper(logText[0]) + logText[1..];
-
-        //newText.text = KeywordTooltip.instance.EditText(newText.text);
         ChangeScrolling();
+
+        newText.textBox.text = "";
+        for (int i = 0; i < indent; i++)
+            newText.textBox.text += "     ";
+
+        newText.textBox.text += string.IsNullOrEmpty(logText) ? "" : char.ToUpper(logText[0]) + logText[1..];
+        newText.textBox.text = KeywordTooltip.instance.EditText(newText.textBox.text);
+
+        if (undoToThis != null)
+        {
+            if (undoToThis.action != null)
+            {
+                newText.step = undoToThis;
+                //Debug.Log($"{logText} - {undoToThis.action}");
+                undosInLog.Insert(0, newText);
+            }
+            undoToThis = null;
+        }
     }
 
     void ChangeScrolling()
@@ -95,7 +108,7 @@ public class Log : PhotonCompatible
             scroll.value = 0;
         }
     }
-
+    /*
     private void Update()
     {
         if (Application.isEditor && Input.GetKeyDown(KeyCode.Space))
@@ -119,6 +132,43 @@ public class Log : PhotonCompatible
             AddText($"");
             AddText($"the game crashed :(");
         }
+    }
+    */
+    #endregion
+
+#region Undos
+
+    public void DisplayUndoBar(bool flash)
+    {
+        currentUndoState = flash;
+        for (int i = 0; i < undosInLog.Count; i++)
+        {
+            LogText next = undosInLog[i];
+            next.button.onClick.RemoveAllListeners();
+            next.button.interactable = flash;
+            next.undoBar.gameObject.SetActive(false);
+
+            if (flash)
+            {
+                next.undoBar.gameObject.SetActive(flash);
+                NextStep toThis = next.step;
+                next.button.onClick.AddListener(() =>
+                InvokeUndo(toThis, next.transform.GetSiblingIndex()));
+            }
+        }
+    }
+
+    void InvokeUndo(NextStep toThisPoint, int deleteLines)
+    {
+        for (int i = RT.transform.childCount; i > deleteLines; i--)
+            Destroy(RT.transform.GetChild(i - 1).gameObject);
+        ChangeScrolling();
+
+        Player player = Manager.instance.FindThisPlayer();
+        //Debug.Log($"{player.historyStack.IndexOf(toThisPoint)} - {toThisPoint.action}");
+        undoToThis = null;
+        DisplayUndoBar(false);
+        player.UndoAmount(toThisPoint);
     }
 
     #endregion
