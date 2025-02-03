@@ -47,13 +47,13 @@ public class TroopCard : Card
             if (player.chainTracker < player.currentChain.decisions.Count)
             {
                 int next = player.currentChain.decisions[player.chainTracker];
-                Debug.Log($"resolved choose row with choice {next}");
+                //Debug.Log($"resolved choose row with choice {next}");
                 player.inReaction.Add(PlayTroop);
                 player.DecisionMade(next);
             }
             else
             {
-                Debug.Log($"add rows: {player.chainTracker}, {player.currentChain.decisions.Count}");
+                //Debug.Log($"add rows: {player.chainTracker}, {player.currentChain.decisions.Count}");
                 player.NewChains(0, canPlayInColumn.Count, 0);
             }
         }
@@ -69,8 +69,8 @@ public class TroopCard : Card
             player.RememberStep(this, StepType.Revert, () => RemoveFromAvailability(false, player.playerPosition, troop.pv.ViewID));
             player.RememberStep(troop, StepType.Revert, () => troop.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
             player.RememberStep(troop, StepType.Revert, () => troop.MoveTroop(false, -1, player.choice, player.SimulatedLog(logged+1)));
-            player.RememberStep(troop, StepType.Revert, () => troop.ChangeHealth(false, health));
-            player.RememberStep(troop, StepType.Revert, () => troop.ChangeDamage(false, damage));
+            player.RememberStep(troop, StepType.Revert, () => troop.ChangeHealth(false, health, -1));
+            player.RememberStep(troop, StepType.Revert, () => troop.ChangeDamage(false, damage, -1));
 
             player.RememberStep(player, StepType.UndoPoint, () => player.MayPlayCard());
         }

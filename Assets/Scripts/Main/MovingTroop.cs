@@ -119,21 +119,37 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
     }
 
     [PunRPC]
-    internal protected virtual void ChangeHealth(bool undo, int health)
+    internal protected virtual void ChangeHealth(bool undo, int healthChange, int logged)
     {
         if (undo)
-            currentHealth -= health;
+        {
+            currentHealth -= healthChange;
+        }
         else
-            currentHealth += health;
+        {
+            currentHealth += healthChange;
+            if (healthChange > 0)
+                Log.instance.AddText($"{player.name}'s {this.name} gains {healthChange} health.", logged);
+            else if (healthChange < 0)
+                Log.instance.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(healthChange)} health.", logged);
+        }
     }
 
     [PunRPC]
-    internal protected virtual void ChangeDamage(bool undo, int damage)
+    internal protected virtual void ChangeDamage(bool undo, int damageChange, int logged)
     {
         if (undo)
-            currentDamage -= damage;
+        {
+            currentDamage -= damageChange;
+        }
         else
-            currentDamage += damage;
+        {
+            currentDamage += damageChange;
+            if (damageChange > 0)
+                Log.instance.AddText($"{player.name}'s {this.name} gains {damageChange} power.", logged);
+            else if (damageChange < 0)
+                Log.instance.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(damageChange)} power.", logged);
+        }
     }
 
     #endregion

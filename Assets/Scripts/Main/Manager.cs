@@ -143,7 +143,7 @@ public class Manager : PhotonCompatible
     void ReadySetup()
     {
         deck.Shuffle();
-        //storePlayers.Shuffle();
+        storePlayers.Shuffle();
 
         for (int i = 0; i < storePlayers.childCount; i++)
         {
@@ -261,7 +261,7 @@ public class Manager : PhotonCompatible
             Log.instance.DoFunction(() => Log.instance.AddText($"Round {turnNumber}", 0));
             foreach (Player player in playersInOrder)
             {
-                player.DoFunction(() => player.FindCardsFromDeck(1, 0), RpcTarget.MasterClient);
+                player.DrawCardRPC(null, 1, 0);
                 player.DoFunction(() => player.GainLoseCoin(false, -1*player.coins, -1));
                 player.DoFunction(() => player.GainLoseCoin(false, turnNumber, 0));
             }
@@ -297,19 +297,19 @@ public class Manager : PhotonCompatible
 
             if (Alive(firstTroop) && Alive(secondTroop))
             {
-                Fight(firstTroop, () => firstTroop.ChangeHealth(false, -secondTroop.currentDamage));
-                Fight(secondTroop, () => secondTroop.ChangeHealth(false, -firstTroop.currentDamage));
+                Fight(firstTroop, () => firstTroop.ChangeHealth(false, -secondTroop.currentDamage, player == null ? 1 : -1));
+                Fight(secondTroop, () => secondTroop.ChangeHealth(false, -firstTroop.currentDamage, player == null ? 1 : -1));
                 answer += $"{firstTroop.name} fights {secondTroop.name}\n";
             }
             else if (Alive(firstTroop))
             {
-                Fight(playersInOrder[1].myBase, () => playersInOrder[1].myBase.ChangeHealth(false, -firstTroop.currentDamage));
+                Fight(playersInOrder[1].myBase, () => playersInOrder[1].myBase.ChangeHealth(false, -firstTroop.currentDamage, player == null ? 1 : -1));
                 answer += $"{firstTroop.name} fights {playersInOrder[1].name}\n";
             }
             else if (Alive(secondTroop))
             {
-                Fight(playersInOrder[0].myBase, () => playersInOrder[0].myBase.ChangeHealth(false, -secondTroop.currentDamage));
-                answer += $"{firstTroop.name} fights {playersInOrder[0].name}\n";
+                Fight(playersInOrder[0].myBase, () => playersInOrder[0].myBase.ChangeHealth(false, -secondTroop.currentDamage, player == null ? 1 : -1));
+                answer += $"{secondTroop.name} fights {playersInOrder[0].name}\n";
             }
             else
             {
@@ -330,7 +330,7 @@ public class Manager : PhotonCompatible
             }
         }
 
-        if (player != null)
+        if (player == null)
             Debug.Log(answer);
     }
 
