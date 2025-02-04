@@ -257,14 +257,16 @@ public class Manager : PhotonCompatible
         void NewResources()
         {
             turnNumber++;
-            Log.instance.DoFunction(() => Log.instance.AddText($"", 0));
-            Log.instance.DoFunction(() => Log.instance.AddText($"Round {turnNumber}", 0));
+            Log.instance.DoFunction(() => Log.instance.AddText("", 0));
+            Log.instance.DoFunction(() => Log.instance.AddText($"Start of round {turnNumber}", 0));
+
             foreach (Player player in playersInOrder)
             {
-                player.DrawCardRPC(null, 1, 0);
-                player.DoFunction(() => player.GainLoseCoin(false, -1*player.coins, -1));
-                player.DoFunction(() => player.GainLoseCoin(false, turnNumber, 0));
+                player.DrawCardRPC(null, 1, 1);
+                player.DoFunction(() => player.GainLoseCoin(false, -1 * player.coins, -1));
+                player.DoFunction(() => player.GainLoseCoin(false, turnNumber, 1));
             }
+
             Continue();
         }
 
@@ -276,9 +278,8 @@ public class Manager : PhotonCompatible
 
         void TroopsAttack()
         {
-            Log.instance.DoFunction(() => Log.instance.AddText("", 0));
-            Log.instance.DoFunction(() => Log.instance.AddText("Attack phase.", 0));
-            SimulateBattle(null);
+            SimulateBattle();
+            Log.instance.ShareSteps();
             Continue();
         }
     }
@@ -287,9 +288,11 @@ public class Manager : PhotonCompatible
 
 #region Attacking
 
-    internal void SimulateBattle(Player player)
+    internal void SimulateBattle()
     {
-        string answer = "";
+        Log.instance.PreserveTextRPC("", 0);
+        Log.instance.PreserveTextRPC("Attack phase", 0);
+
         foreach (Row row in allRows)
         {
             MovingTroop firstTroop = row.playerTroops[0];
@@ -297,31 +300,19 @@ public class Manager : PhotonCompatible
 
             if (Alive(firstTroop) && Alive(secondTroop))
             {
-                Fight(firstTroop, () => firstTroop.ChangeHealth(false, -secondTroop.currentDamage, player == null ? 1 : -1));
-                Fight(secondTroop, () => secondTroop.ChangeHealth(false, -firstTroop.currentDamage, player == null ? 1 : -1));
-                answer += $"{firstTroop.name} fights {secondTroop.name}\n";
+                Log.instance.DoFunction(() => Log.instance.AddText($"{playersInOrder[0].name}'s {firstTroop.name} fights {playersInOrder[1].name}'s {secondTroop.name}.", 0));
+                firstTroop.ChangeHealthRPC(-secondTroop.currentDamage, 1);
+                secondTroop.ChangeHealthRPC(-firstTroop.currentDamage, 1);
             }
             else if (Alive(firstTroop))
             {
-                Fight(playersInOrder[1].myBase, () => playersInOrder[1].myBase.ChangeHealth(false, -firstTroop.currentDamage, player == null ? 1 : -1));
-                answer += $"{firstTroop.name} fights {playersInOrder[1].name}\n";
+                Log.instance.DoFunction(() => Log.instance.AddText($"{playersInOrder[0].name}'s {firstTroop.name} attacks {playersInOrder[1].name}.", 0));
+                playersInOrder[1].myBase.ChangeHealthRPC(-firstTroop.currentDamage, 1);
             }
             else if (Alive(secondTroop))
             {
-                Fight(playersInOrder[0].myBase, () => playersInOrder[0].myBase.ChangeHealth(false, -secondTroop.currentDamage, player == null ? 1 : -1));
-                answer += $"{secondTroop.name} fights {playersInOrder[0].name}\n";
-            }
-            else
-            {
-                answer += $"no fight\n";
-            }
-
-            void Fight(PhotonCompatible takeDamage, Expression<Action> action)
-            {
-                if (player == null)
-                    takeDamage.DoFunction(action, RpcTarget.All);
-                else
-                    player.RememberStep(takeDamage, StepType.Revert, action);
+                Log.instance.DoFunction(() => Log.instance.AddText($"{playersInOrder[1].name}'s {secondTroop.name} attacks {playersInOrder[0].name}.", 0));
+                playersInOrder[0].myBase.ChangeHealthRPC(-secondTroop.currentDamage, 1);
             }
 
             bool Alive(MovingTroop troop)
@@ -329,9 +320,6 @@ public class Manager : PhotonCompatible
                 return troop != null && troop.currentHealth >= 1;
             }
         }
-
-        if (player == null)
-            Debug.Log(answer);
     }
 
     #endregion

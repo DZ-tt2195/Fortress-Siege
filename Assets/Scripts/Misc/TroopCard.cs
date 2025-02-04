@@ -37,7 +37,7 @@ public class TroopCard : Card
 
     public override void OnPlayEffect(Player player, int logged)
     {
-        player.RememberStep(this, StepType.UndoPoint, () => ChooseRow(player, logged));
+        Log.instance.RememberStep(this, StepType.UndoPoint, () => ChooseRow(player, logged));
     }
 
     void ChooseRow(Player player, int logged)
@@ -65,14 +65,10 @@ public class TroopCard : Card
         void PlayTroop()
         {
             MovingTroop troop = player.availableTroops[0];
-
-            player.RememberStep(this, StepType.Revert, () => RemoveFromAvailability(false, player.playerPosition, troop.pv.ViewID));
-            player.RememberStep(troop, StepType.Revert, () => troop.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
-            player.RememberStep(troop, StepType.Revert, () => troop.MoveTroop(false, -1, player.choice, player.SimulatedLog(logged+1)));
-            player.RememberStep(troop, StepType.Revert, () => troop.ChangeHealth(false, health, -1));
-            player.RememberStep(troop, StepType.Revert, () => troop.ChangeDamage(false, damage, -1));
-
-            player.RememberStep(player, StepType.UndoPoint, () => player.MayPlayCard());
+            Log.instance.RememberStep(this, StepType.Revert, () => RemoveFromAvailability(false, player.playerPosition, troop.pv.ViewID));
+            Log.instance.RememberStep(troop, StepType.Revert, () => troop.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
+            Log.instance.RememberStep(troop, StepType.Revert, () => troop.MoveTroop(false, -1, player.choice, logged+1));
+            Log.instance.RememberStep(player, StepType.UndoPoint, () => player.MayPlayCard());
         }
     }
 

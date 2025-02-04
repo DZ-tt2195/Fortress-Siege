@@ -53,9 +53,6 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
     [PunRPC]
     internal void AssignCardInfo(bool undo, int playerPosition, int cardID)
     {
-        this.currentHealth = 0;
-        this.currentDamage = 0;
-
         if (!undo)
         {
             //Debug.Log("assigned card info");
@@ -69,6 +66,8 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
                 myCard = PhotonView.Find(cardID).GetComponent<TroopCard>();
                 this.name = myCard.name;
                 this.image.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
+                this.currentHealth = myCard.health;
+                this.currentHealth = myCard.damage;
             }
         }
     }
@@ -102,7 +101,6 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
             Log.instance.AddText($"{player.name} moves {this.name} to row {newPosition+1}.", logged);
         }
 
-        //Debug.Log($"move troop to {currentRow}");
         if (currentRow > -1)
         {
             Row spawnPoint = Manager.instance.allRows[currentRow];
@@ -118,8 +116,18 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
         }
     }
 
+    public void ChangeHealthRPC(int healthChange, int logged)
+    {
+        Log.instance.RememberStep(this, StepType.Revert, () => ChangeHealth(false, healthChange, logged));
+        if (currentHealth <= 0)
+        {
+            Log.instance.PreserveTextRPC($"{player.name}'s {this.name} is destroyed.", logged);
+            Log.instance.RememberStep(this, StepType.Revert, () => MoveTroop(false, currentRow, -1, -1));
+        }
+    }
+
     [PunRPC]
-    internal protected virtual void ChangeHealth(bool undo, int healthChange, int logged)
+    void ChangeHealth(bool undo, int healthChange, int logged)
     {
         if (undo)
         {
@@ -136,7 +144,7 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
     }
 
     [PunRPC]
-    internal protected virtual void ChangeDamage(bool undo, int damageChange, int logged)
+    internal void ChangeDamage(bool undo, int damageChange, int logged)
     {
         if (undo)
         {

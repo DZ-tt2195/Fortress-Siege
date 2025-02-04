@@ -3,6 +3,39 @@ using UnityEngine;
 using UnityEngine.UI;
 using MyBox;
 using Photon.Pun;
+using System.Linq.Expressions;
+using System;
+using System.Linq;
+
+[Serializable]
+public class NextStep
+{
+    public StepType stepType { get; private set; }
+    [TextArea(5, 5)] public string actionName { get; private set; }
+    public PhotonCompatible source { get; private set; }
+    public Expression<Action> action { get; private set; }
+    public bool completed = false;
+
+    internal NextStep(PhotonCompatible source, StepType stepType, Expression<Action> action)
+    {
+        this.source = source;
+        this.action = action;
+        this.actionName = $"{action.ToString().Replace("() => ", "")}";
+        ChangeType(stepType);
+    }
+
+    internal void ChangeType(StepType stepType)
+    {
+        if (this.stepType == StepType.UndoPoint && stepType != StepType.UndoPoint)
+        {
+            Log.instance.undoToThis = null;
+            //Debug.Log("undopoint canceled");
+        }
+
+        this.stepType = stepType;
+        completed = stepType != StepType.UndoPoint;
+    }
+}
 
 public class Log : PhotonCompatible
 {
@@ -24,6 +57,8 @@ public class Log : PhotonCompatible
         public NextStep undoToThis;
         [SerializeField] Button undoButton;
         bool currentUndoState = false;
+        public List<NextStep> historyStack = new();
+        public int currentDecisionInStack = -1;
 
     protected override void Awake()
     {
@@ -108,13 +143,29 @@ public class Log : PhotonCompatible
             scroll.value = 0;
         }
     }
-    /*
+
     private void Update()
     {
+        undosInLog.RemoveAll(item => item == null);
+        undoButton.gameObject.SetActive(undosInLog.Count > 0);
+
         if (Application.isEditor && Input.GetKeyDown(KeyCode.Space))
             AddText($"test {RT.transform.childCount}");
     }
 
+    public void PreserveTextRPC(string text, int logged = 0)
+    {
+        RememberStep(this, StepType.Revert, () => TextShared(false, text, logged));
+    }
+
+    [PunRPC]
+    void TextShared(bool undo, string text, int logged)
+    {
+        if (!undo)
+            Log.instance.AddText(text, logged);
+    }
+
+    /*
     void OnEnable()
     {
         Application.logMessageReceived += DebugMessages;
@@ -152,23 +203,129 @@ public class Log : PhotonCompatible
             {
                 next.undoBar.gameObject.SetActive(flash);
                 NextStep toThis = next.step;
-                next.button.onClick.AddListener(() =>
-                InvokeUndo(toThis, next.transform.GetSiblingIndex()));
+                next.button.onClick.AddListener(() => InvokeUndo(toThis));
             }
         }
     }
 
-    void InvokeUndo(NextStep toThisPoint, int deleteLines)
+    public void InvokeUndo(NextStep toThisPoint)
     {
-        for (int i = RT.transform.childCount; i > deleteLines; i--)
+        LogText targetText = undosInLog.Find(line => line.step == toThisPoint);
+
+        for (int i = RT.transform.childCount; i > targetText.transform.GetSiblingIndex(); i--)
             Destroy(RT.transform.GetChild(i - 1).gameObject);
         ChangeScrolling();
 
         Player player = Manager.instance.FindThisPlayer();
-        //Debug.Log($"{player.historyStack.IndexOf(toThisPoint)} - {toThisPoint.action}");
         undoToThis = null;
         DisplayUndoBar(false);
-        player.UndoAmount(toThisPoint);
+
+        Popup[] allPopups = FindObjectsByType<Popup>(FindObjectsSortMode.None);
+        foreach (Popup popup in allPopups)
+            Destroy(popup.gameObject);
+
+        Card[] allCards = FindObjectsByType<Card>(FindObjectsSortMode.None);
+        foreach (Card card in allCards)
+        {
+            card.button.interactable = false;
+            card.button.onClick.RemoveAllListeners();
+            card.border.gameObject.SetActive(false);
+        }
+
+        for (int i = historyStack.Count - 1; i >= 0; i--)
+        {
+            NextStep next = historyStack[i];
+
+            if (next.stepType == StepType.Revert)
+            {
+                //Debug.Log($"undo step {i}: {next.actionName}");
+                (string instruction, object[] parameters) = next.source.TranslateFunction(next.action);
+
+                object[] newParameters = new object[parameters.Length];
+                newParameters[0] = true;
+                for (int j = 1; j < parameters.Length; j++)
+                    newParameters[j] = parameters[j];
+
+                next.source.StringParameters(instruction, newParameters);
+                historyStack.RemoveAt(i);
+            }
+            else if (next.stepType == StepType.UndoPoint)
+            {
+                player.chainTracker--;
+
+                if (next == toThisPoint || i == 0)
+                {
+                    //Debug.Log($"continue at {i}, reduce tracker to {chainTracker}, {next.actionName}");
+                    break;
+                }
+                else
+                {
+                    historyStack.RemoveAt(i);
+                    //Debug.Log($"delete step {i}, reduce tracker to {chainTracker}: {next.actionName}");
+                }
+            }
+        }
+    }
+
+    #endregion
+
+#region Steps
+
+    public void RememberStep(PhotonCompatible source, StepType type, Expression<Action> action)
+    {
+        NextStep newStep = new(source, type, action);
+        historyStack.Add(newStep);
+
+        //Debug.Log($"step {currentStep}: {action}");
+        if (type != StepType.UndoPoint)
+            newStep.action.Compile().Invoke();
+    }
+
+    public void ShareSteps()
+    {
+        if (PhotonNetwork.IsConnected && PhotonNetwork.CurrentRoom.MaxPlayers >= 2)
+        {
+            foreach (NextStep step in historyStack)
+            {
+                if (step.stepType == StepType.Revert)
+                {
+                    (string instruction, object[] parameters) = step.source.TranslateFunction(step.action);
+                    try { DoFunction(() => StepForOthers(step.source.pv.ViewID, instruction, parameters), RpcTarget.Others); } catch { }
+                }
+            }
+        }
+        DoFunction(() => ResetHistory());
+    }
+
+    [PunRPC]
+    void StepForOthers(int PV, string instruction, object[] parameters)
+    {
+        PhotonCompatible source = PhotonView.Find(PV).GetComponent<PhotonCompatible>();
+        source.StringParameters(instruction, parameters);
+    }
+
+    [PunRPC]
+    void ResetHistory()
+    {
+        historyStack.Clear();
+        undosInLog.Clear();
+        DisplayUndoBar(false);
+    }
+
+    [PunRPC]
+    public void DecisionComplete(bool undo, int stepNumber)
+    {
+        NextStep step = historyStack[stepNumber];
+        if (undo)
+        {
+            step.completed = false;
+            //Debug.Log($"turned off: {stepNumber}, {step.actionName}");
+        }
+        else
+        {
+            step.completed = true;
+            //Debug.Log($"turned on: {stepNumber}, {step.actionName}");
+        }
     }
 
     #endregion
