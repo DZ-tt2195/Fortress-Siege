@@ -27,7 +27,7 @@ public class Card : PhotonCompatible
         border = this.transform.Find("Border").GetComponent<Image>();
         button = GetComponent<Button>();
         layout = GetComponent<CardLayout>();
-        this.transform.localScale = Vector3.Lerp(Vector3.one, Manager.instance.canvas.transform.localScale, 0.5f);
+        this.transform.localScale = Vector3.Lerp(Vector3.one, Manager.inst.canvas.transform.localScale, 0.5f);
     }
     
     #endregion
@@ -84,7 +84,7 @@ public class Card : PhotonCompatible
 
     private void FixedUpdate()
     {
-        try { this.border.SetAlpha(Manager.instance.opacity); } catch { }
+        try { this.border.SetAlpha(Manager.inst.opacity); } catch { }
     }
 
     #endregion

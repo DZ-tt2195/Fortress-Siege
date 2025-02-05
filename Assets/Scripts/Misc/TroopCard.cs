@@ -37,7 +37,7 @@ public class TroopCard : Card
 
     public override void OnPlayEffect(Player player, int logged)
     {
-        Log.instance.RememberStep(this, StepType.UndoPoint, () => ChooseRow(player, logged));
+        Log.inst.RememberStep(this, StepType.UndoPoint, () => ChooseRow(player, logged));
     }
 
     void ChooseRow(Player player, int logged)
@@ -65,17 +65,19 @@ public class TroopCard : Card
         void PlayTroop()
         {
             MovingTroop troop = player.availableTroops[0];
-            Log.instance.RememberStep(this, StepType.Revert, () => RemoveFromAvailability(false, player.playerPosition, troop.pv.ViewID));
-            Log.instance.RememberStep(troop, StepType.Revert, () => troop.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
-            Log.instance.RememberStep(troop, StepType.Revert, () => troop.MoveTroop(false, -1, player.choice, logged+1));
-            Log.instance.RememberStep(player, StepType.UndoPoint, () => player.MayPlayCard());
+            Log.inst.RememberStep(this, StepType.Revert, () => RemoveFromAvailability(false, player.playerPosition, troop.pv.ViewID));
+            Log.inst.RememberStep(troop, StepType.Revert, () => troop.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
+
+            int rememberChoice = player.choice;
+            Log.inst.RememberStep(troop, StepType.Revert, () => troop.MoveTroop(false, -1, rememberChoice, logged+1));
+            Log.inst.RememberStep(player, StepType.UndoPoint, () => player.MayPlayCard());
         }
     }
 
     [PunRPC]
     protected void RemoveFromAvailability(bool undo, int playerPosition, int troopPV)
     {
-        Player player = Manager.instance.playersInOrder[playerPosition];
+        Player player = Manager.inst.playersInOrder[playerPosition];
         MovingTroop troop = PhotonView.Find(troopPV).GetComponent<MovingTroop>();
         if (undo)
             player.availableTroops.Add(troop);

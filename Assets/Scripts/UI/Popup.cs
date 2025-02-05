@@ -29,7 +29,7 @@ public class Popup : MonoBehaviour
     {
         decidingPlayer = player;
         this.textbox.text = (header);
-        this.transform.SetParent(Manager.instance.canvas.transform);
+        this.transform.SetParent(Manager.inst.canvas.transform);
         this.transform.localPosition = position;
         this.transform.localScale = new Vector3(1, 1, 1);
     }

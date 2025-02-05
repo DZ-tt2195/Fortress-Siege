@@ -9,8 +9,6 @@ using MyBox;
 using System;
 using System.Linq.Expressions;
 
-public enum StepType { UndoPoint, Revert, None }
-
 [Serializable] public class DecisionChain
 {
     public bool complete = false;
@@ -91,7 +89,7 @@ public class Player : PhotonCompatible
     {
         if (PhotonNetwork.IsConnected && pv.AmOwner)
         {
-            if (PhotonNetwork.CurrentRoom.MaxPlayers == 1 && Manager.instance.storePlayers.childCount == 0)
+            if (PhotonNetwork.CurrentRoom.MaxPlayers == 1 && Manager.inst.storePlayers.childCount == 0)
                 DoFunction(() => SendName("Computer"), RpcTarget.AllBuffered);
             else
                 DoFunction(() => SendName(PlayerPrefs.GetString("Online Username")), RpcTarget.AllBuffered);
@@ -103,31 +101,31 @@ public class Player : PhotonCompatible
     {
         pv.Owner.NickName = username;
         this.name = username;
-        this.transform.SetParent(Manager.instance.storePlayers);
+        this.transform.SetParent(Manager.inst.storePlayers);
     }
 
     internal void AssignInfo(int position, PlayerType type)
     {
         this.playerPosition = position;
         this.myType = type;
-        Manager.instance.storePlayers.transform.localScale = Manager.instance.canvas.transform.localScale;
+        Manager.inst.storePlayers.transform.localScale = Manager.inst.canvas.transform.localScale;
         this.transform.localPosition = Vector3.zero;
         if (PhotonNetwork.IsConnected)
             realTimePlayer = PhotonNetwork.PlayerList[pv.OwnerActorNr - 1];
 
         for (int i = 0; i < 5; i++)
         {
-            GameObject nextTroop = Manager.instance.MakeObject(CarryVariables.instance.movingTroopPrefab.gameObject);
+            GameObject nextTroop = Manager.inst.MakeObject(CarryVariables.inst.movingTroopPrefab.gameObject);
             DoFunction(() => AddTroop(nextTroop.GetComponent<PhotonView>().ViewID));
         }
 
         if (InControl())
         {
-            GameObject obj = Manager.instance.MakeObject(CarryVariables.instance.playerBasePrefab.gameObject);
+            GameObject obj = Manager.inst.MakeObject(CarryVariables.inst.playerBasePrefab.gameObject);
             DoFunction(() => GetBase(obj.GetComponent<PhotonView>().ViewID), RpcTarget.All);
             if (this.myType == PlayerType.Human)
             {
-                resignButton.onClick.AddListener(() => Manager.instance.DoFunction(() => Manager.instance.DisplayEnding(this.playerPosition), RpcTarget.All));
+                resignButton.onClick.AddListener(() => Manager.inst.DoFunction(() => Manager.inst.DisplayEnding(this.playerPosition), RpcTarget.All));
                 Invoke(nameof(MoveScreen), 0.2f);
                 pv.Owner.NickName = this.name;
             }
@@ -138,7 +136,7 @@ public class Player : PhotonCompatible
                 if (this.myType == PlayerType.Computer)
                     yield return new WaitForSeconds(0.2f);
                 DrawCardRPC(null, 4, -1);
-                Manager.instance.DoFunction(() => Manager.instance.PlayerDone());
+                Manager.inst.DoFunction(() => Manager.inst.PlayerDone());
             }
         }
     }
@@ -172,7 +170,7 @@ public class Player : PhotonCompatible
     {
         for (int i = 0; i < cardsToDraw; i++)
         {
-            Card card = Manager.instance.deck.GetChild(0).GetComponent<Card>();
+            Card card = Manager.inst.deck.GetChild(0).GetComponent<Card>();
             card.transform.SetParent(null);
             DoFunction(() => PutInHandRPC(card.pv.ViewID, logged), source);
         }
@@ -181,7 +179,7 @@ public class Player : PhotonCompatible
     [PunRPC]
     void PutInHandRPC(int card, int logged)
     {
-        Log.instance.RememberStep(this, StepType.Revert, () => AddToHand(false, card, logged));
+        Log.inst.RememberStep(this, StepType.Revert, () => AddToHand(false, card, logged));
     }
 
     [PunRPC]
@@ -196,10 +194,10 @@ public class Player : PhotonCompatible
             Card card = PhotonView.Find(PV).GetComponent<Card>();
             PutCardInHand(card);
 
-            if (InControl())
-                Log.instance.AddText($"{this.name} draws {card.name}.", logged);
+            if (InControl() && myType == PlayerType.Human)
+                Log.inst.AddText($"{this.name} draws {card.name}.", logged);
             else
-                Log.instance.AddText($"{this.name} draws 1 Card.", logged);
+                Log.inst.AddText($"{this.name} draws 1 Card.", logged);
         }
         SortHand();
     }
@@ -209,7 +207,7 @@ public class Player : PhotonCompatible
     {
         Card card = PhotonView.Find(PV).GetComponent<Card>();
         cardsInHand.Remove(card);
-        card.transform.SetParent(Manager.instance.deck);
+        card.transform.SetParent(Manager.inst.deck);
         card.transform.SetAsFirstSibling();
         StartCoroutine(card.MoveCard(new(0, -10000), 0.25f, Vector3.one));
     }
@@ -259,7 +257,7 @@ public class Player : PhotonCompatible
 
     public void DiscardPlayerCard(Card card, int logged)
     {
-        Log.instance.RememberStep(this, StepType.Revert, () => DiscardFromHand(false, card.pv.ViewID, logged));
+        Log.inst.RememberStep(this, StepType.Revert, () => DiscardFromHand(false, card.pv.ViewID, logged));
     }
 
     [PunRPC]
@@ -274,8 +272,8 @@ public class Player : PhotonCompatible
         else
         {
             cardsInHand.Remove(card);
-            card.transform.SetParent(Manager.instance.discard);
-            Log.instance.AddText($"{this.name} discards {card.name}.", logged);
+            card.transform.SetParent(Manager.inst.discard);
+            Log.inst.AddText($"{this.name} discards {card.name}.", logged);
             StartCoroutine(card.MoveCard(new(0, -10000), 0.25f, Vector3.one));
         }
         SortHand();
@@ -292,9 +290,9 @@ public class Player : PhotonCompatible
         {
             coins += amount;
             if (amount >= 0)
-                Log.instance.AddText($"{this.name} gains ${amount}.", logged);
+                Log.inst.AddText($"{this.name} gains ${amount}.", logged);
             else
-                Log.instance.AddText($"{this.name} loses ${Mathf.Abs(amount)}.", logged);
+                Log.inst.AddText($"{this.name} loses ${Mathf.Abs(amount)}.", logged);
         }
         if (myBase != null)
             myBase.UpdateText();
@@ -307,21 +305,23 @@ public class Player : PhotonCompatible
     [PunRPC]
     public void YourTurn()
     {
-        Log.instance.historyStack.Clear();
-        Log.instance.currentDecisionInStack = -1;
+        Log.inst.historyStack.Clear();
+        Log.inst.currentDecisionInStack = -1;
 
         chainsToResolve.Clear();
         finishedChains.Clear();
         chainTracker = -1;
 
-        Manager.instance.DoFunction(() => Manager.instance.Instructions($"Waiting on {this.name}..."));
-        Log.instance.DoFunction(() => Log.instance.AddText("", 0));
-        Log.instance.DoFunction(() => Log.instance.AddText($"{this.name}'s turn", 0));
-        Log.instance.RememberStep(this, StepType.UndoPoint, () => MayPlayCard());
+        Manager.inst.DoFunction(() => Manager.inst.Instructions($"Waiting on {this.name}..."));
+        Manager.inst.DoFunction(() => Manager.inst.SetCurrentPlayer(this.playerPosition));
+
+        Log.inst.DoFunction(() => Log.inst.AddText("", 0));
+        Log.inst.DoFunction(() => Log.inst.AddText($"{this.name}'s turn", 0));
+        Log.inst.RememberStep(this, StepType.UndoPoint, () => MayPlayCard());
 
         if (myType == PlayerType.Computer)
         {
-            currentChain = new(Log.instance.historyStack[0]);
+            currentChain = new(Log.inst.historyStack[0]);
             chainsToResolve.Add(currentChain);
             StartCoroutine(SimulateGame());
         }
@@ -351,7 +351,7 @@ public class Player : PhotonCompatible
             Debug.Log(answer);
 
             finishedChains.Clear();
-            Log.instance.RememberStep(this, StepType.UndoPoint, () => MayPlayCard());
+            Log.inst.RememberStep(this, StepType.UndoPoint, () => MayPlayCard());
             PopStack();
         }
     }
@@ -381,14 +381,15 @@ public class Player : PhotonCompatible
             ChooseButton(actions, Vector3.zero, (canPlay.Count) == 0 ? "Can't play cards." : "What to play?", ActionResolution);
             ChooseCardOnScreen(canPlay, (canPlay.Count) == 0 ? "You can't play any cards." : "What to play?", null);
         }
+
         void ActionResolution()
         {
             try
             {
                 Card toPlay = canPlay[choice - 100];
-                Log.instance.PreserveTextRPC($"{this.name} plays {toPlay.name}.", 0);
+                Log.inst.PreserveTextRPC($"{this.name} plays {toPlay.name}.", 0);
                 DiscardPlayerCard(toPlay, -1);
-                Log.instance.RememberStep(this, StepType.Revert, () => GainLoseCoin(false, -1 * toPlay.coinCost, 0));
+                Log.inst.RememberStep(this, StepType.Revert, () => GainLoseCoin(false, -1 * toPlay.coinCost, 0));
                 toPlay.OnPlayEffect(this, 0);
             }
             catch
@@ -399,19 +400,19 @@ public class Player : PhotonCompatible
                     chainsToResolve.Remove(currentChain);
                     finishedChains.Add(currentChain);
 
-                    Manager.instance.SimulateBattle();
-                    currentChain.math = PlayerScore(this.playerPosition) - PlayerScore(Manager.instance.OtherPlayer(this).playerPosition);
+                    Manager.inst.SimulateBattle();
+                    currentChain.math = PlayerScore(this.playerPosition) - PlayerScore(Manager.inst.OtherPlayer(this).playerPosition);
                     Debug.Log($"CHAIN ENDED with score {currentChain.math}. decisions: {currentChain.PrintDecisions()}");
                     currentChain = null;
 
                     float PlayerScore(int playerPosition)
                     {
-                        Player player = Manager.instance.playersInOrder[playerPosition];
+                        Player player = Manager.inst.playersInOrder[playerPosition];
                         int answer = player.myBase.currentHealth + player.cardsInHand.Count * 2;
                         if (playerPosition == this.playerPosition)
                             answer -= coins*2;
 
-                        foreach (Row row in Manager.instance.allRows)
+                        foreach (Row row in Manager.inst.allRows)
                         {
                             MovingTroop troop = row.playerTroops[playerPosition];
                             if (troop != null && troop.currentHealth >= 1)
@@ -426,9 +427,10 @@ public class Player : PhotonCompatible
                 }
                 else
                 {
-                    Log.instance.PreserveTextRPC($"{this.name} ends their turn.");
-                    Log.instance.ShareSteps();
-                    Manager.instance.DoFunction(() => Manager.instance.Continue());
+                    Log.inst.PreserveTextRPC($"{this.name} ends their turn.");
+                    Log.inst.ShareSteps();
+                    Manager.inst.DoFunction(() => Manager.inst.Instructions($""));
+                    Manager.inst.DoFunction(() => Manager.inst.Continue());
                 }
             }
         }
@@ -440,7 +442,7 @@ public class Player : PhotonCompatible
 
     public void ChooseButton(List<string> possibleChoices, Vector2 position, string changeInstructions, Action action)
     {
-        Popup popup = Instantiate(CarryVariables.instance.textPopup);
+        Popup popup = Instantiate(CarryVariables.inst.textPopup);
         popup.StatsSetup(this, changeInstructions, position);
 
         for (int i = 0; i < possibleChoices.Count; i++)
@@ -450,7 +452,7 @@ public class Player : PhotonCompatible
         if (action != null)
         {
             inReaction.Add(action);
-            Manager.instance.Instructions(changeInstructions);
+            Manager.inst.Instructions(changeInstructions);
         }
     }
 
@@ -461,7 +463,7 @@ public class Player : PhotonCompatible
         if (action != null)
         {
             inReaction.Add(action);
-            Manager.instance.Instructions(changeInstructions);
+            Manager.inst.Instructions(changeInstructions);
         }
 
         if (listOfCards.Count == 0 && action != null)
@@ -511,7 +513,7 @@ public class Player : PhotonCompatible
         if (action != null)
         {
             inReaction.Add(action);
-            Manager.instance.Instructions(changeInstructions);
+            Manager.inst.Instructions(changeInstructions);
         }
 
         if (listOfRows.Count == 0 && action != null)
@@ -554,12 +556,12 @@ public class Player : PhotonCompatible
 
     public void ChooseSlider(int min, int max, string changeInstructions, Action action)
     {
-        SliderChoice slider = Instantiate(CarryVariables.instance.sliderPopup);
+        SliderChoice slider = Instantiate(CarryVariables.inst.sliderPopup);
         slider.StatsSetup(this, "Choose a number.", min, max, new(0, -1000));
 
         inReaction.Add(() => Destroy(slider.gameObject));
         inReaction.Add(action);
-        Manager.instance.Instructions(changeInstructions);
+        Manager.inst.Instructions(changeInstructions);
     }
 
     #endregion
@@ -615,15 +617,18 @@ public class Player : PhotonCompatible
         }
 
         if (needUndo)
-            Log.instance.InvokeUndo(currentStep);
+        {
+            //Debug.Log($"AI UNDO to {currentStep.actionName}");
+            Log.inst.InvokeUndo(currentStep);
+        }
     }
 
     public void PopStack()
     {
-        if (Log.instance.currentDecisionInStack >= 0)
+        if (Log.inst.currentDecisionInStack >= 0)
         {
-            int number = Log.instance.currentDecisionInStack;
-            Log.instance.RememberStep(this, StepType.Revert, () => Log.instance.DecisionComplete(false, number));
+            int number = Log.inst.currentDecisionInStack;
+            Log.inst.RememberStep(Log.inst, StepType.Revert, () => Log.inst.DecisionComplete(false, number));
         }
 
         List<Action> newActions = new();
@@ -637,22 +642,22 @@ public class Player : PhotonCompatible
         if (currentChain == null && myType == PlayerType.Computer)
             FindNewestChain();
 
-        for (int i = Log.instance.historyStack.Count - 1; i >= 0; i--)
+        for (int i = Log.inst.historyStack.Count - 1; i >= 0; i--)
         {
-            NextStep step = Log.instance.historyStack[i];
+            NextStep step = Log.inst.historyStack[i];
             if (step.stepType == StepType.UndoPoint && !step.completed)
             {
                 currentStep = step;
-                Log.instance.currentDecisionInStack = i;
+                Log.inst.currentDecisionInStack = i;
                 if (currentChain != null)
                 {
                     currentChain.toThisPoint = step;
                     chainTracker++;
                     //Debug.Log($"tracker bumped up to {chainTracker}");
                 }
-                //Debug.Log($"run {step.actionName}");
-                if (myType == PlayerType.Human)
-                    Log.instance.undoToThis = step;
+
+                Debug.Log($"now do: {step.actionName}");
+                Log.inst.undoToThis = step;
                 step.action.Compile().Invoke();
                 break;
             }
@@ -680,7 +685,7 @@ public class Player : PhotonCompatible
 
     void MoveScreen()
     {
-        foreach (Transform transform in Manager.instance.storePlayers)
+        foreach (Transform transform in Manager.inst.storePlayers)
             transform.localPosition = new(0, -10000);
         this.transform.localPosition = Vector3.zero;
     }
@@ -688,7 +693,7 @@ public class Player : PhotonCompatible
     public List<Row> FilterRows(bool hasTroop)
     {
         List<Row> answer = new();
-        foreach (Row row in Manager.instance.allRows)
+        foreach (Row row in Manager.inst.allRows)
         {
             MovingTroop troop = row.playerTroops[this.playerPosition];
             if (hasTroop && troop != null && troop.currentHealth >= 1)

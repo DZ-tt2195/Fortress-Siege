@@ -22,17 +22,17 @@ public class Manager : PhotonCompatible
 
 #region Variables
 
-    public static Manager instance;
+    public static Manager inst;
 
     [Foldout("Players", true)]
     public List<Player> playersInOrder;
     public Transform storePlayers { get; private set; }
+    public Player currentPlayer { get; private set; }
 
     [Foldout("Gameplay", true)]
     int turnNumber = 0;
     List<Action> actionStack = new();
     int currentStep = -1;
-    List<Action> damageStack = new();
     List<TriggeredAbility> allAbilities = new();
 
     [Foldout("Cards", true)]
@@ -58,7 +58,7 @@ public class Manager : PhotonCompatible
     protected override void Awake()
     {
         base.Awake();
-        instance = this;
+        inst = this;
         bottomType = this.GetType();
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         storePlayers = GameObject.Find("Store Players").transform;
@@ -85,8 +85,8 @@ public class Manager : PhotonCompatible
     private void Start()
     {
         if (PhotonNetwork.CurrentRoom.MaxPlayers == 1)
-            MakeObject(CarryVariables.instance.playerPrefab.gameObject);
-        MakeObject(CarryVariables.instance.playerPrefab.gameObject);
+            MakeObject(CarryVariables.inst.playerPrefab.gameObject);
+        MakeObject(CarryVariables.inst.playerPrefab.gameObject);
 
         foreach (Row row in allRows)
             row.playerTroops = new MovingTroop[2];
@@ -95,10 +95,10 @@ public class Manager : PhotonCompatible
         {
             while (deck.childCount < 20)
             {
-                for (int i = 0; i < CarryVariables.instance.cardScripts.Count; i++)
+                for (int i = 0; i < CarryVariables.inst.cardScripts.Count; i++)
                 {
-                    GameObject next = MakeObject(CarryVariables.instance.cardPrefab.gameObject);
-                    DoFunction(() => AddCard(next.GetComponent<PhotonView>().ViewID, CarryVariables.instance.cardScripts[i]), RpcTarget.AllBuffered);
+                    GameObject next = MakeObject(CarryVariables.inst.cardPrefab.gameObject);
+                    DoFunction(() => AddCard(next.GetComponent<PhotonView>().ViewID, CarryVariables.inst.cardScripts[i]), RpcTarget.AllBuffered);
                 }
             }
         }
@@ -180,7 +180,7 @@ public class Manager : PhotonCompatible
         waiting--;
         if (waiting == 0)
         {
-            Log.instance.DoFunction(() => Log.instance.AddText($"{playersInOrder[0].name} vs {playersInOrder[1].name}", 0 ));
+            Log.inst.DoFunction(() => Log.inst.AddText($"{playersInOrder[0].name} vs {playersInOrder[1].name}", 0 ));
             Continue();
         }
     }
@@ -217,10 +217,6 @@ public class Manager : PhotonCompatible
     {
         if (currentStep < actionStack.Count - 1)
         {
-            foreach (Action action in damageStack)
-                action();
-            damageStack.Clear();
-
             currentStep++;
 
             bool keepPlaying = true;
@@ -257,16 +253,18 @@ public class Manager : PhotonCompatible
         void NewResources()
         {
             turnNumber++;
-            Log.instance.DoFunction(() => Log.instance.AddText("", 0));
-            Log.instance.DoFunction(() => Log.instance.AddText($"Start of round {turnNumber}", 0));
+            Log.inst.PreserveTextRPC("", 0);
+            Log.inst.PreserveTextRPC($"Start of round {turnNumber}", 0);
+            Player host = FindThisPlayer();
 
             foreach (Player player in playersInOrder)
             {
-                player.DrawCardRPC(null, 1, 1);
-                player.DoFunction(() => player.GainLoseCoin(false, -1 * player.coins, -1));
-                player.DoFunction(() => player.GainLoseCoin(false, turnNumber, 1));
+                player.DrawCardRPC(host.realTimePlayer, 1, 1);
+                Log.inst.RememberStep(player, StepType.Revert, () => player.GainLoseCoin(false, -1 * player.coins, -1));
+                Log.inst.RememberStep(player, StepType.Revert, () => player.GainLoseCoin(false, turnNumber, 1));
             }
 
+            Log.inst.ShareSteps();
             Continue();
         }
 
@@ -278,8 +276,10 @@ public class Manager : PhotonCompatible
 
         void TroopsAttack()
         {
+            Log.inst.PreserveTextRPC("", 0);
+            Log.inst.PreserveTextRPC("Attack phase", 0);
             SimulateBattle();
-            Log.instance.ShareSteps();
+            Log.inst.ShareSteps();
             Continue();
         }
     }
@@ -290,8 +290,7 @@ public class Manager : PhotonCompatible
 
     internal void SimulateBattle()
     {
-        Log.instance.PreserveTextRPC("", 0);
-        Log.instance.PreserveTextRPC("Attack phase", 0);
+        //Debug.Log("simulate battle");
 
         foreach (Row row in allRows)
         {
@@ -300,18 +299,18 @@ public class Manager : PhotonCompatible
 
             if (Alive(firstTroop) && Alive(secondTroop))
             {
-                Log.instance.DoFunction(() => Log.instance.AddText($"{playersInOrder[0].name}'s {firstTroop.name} fights {playersInOrder[1].name}'s {secondTroop.name}.", 0));
+                Log.inst.PreserveTextRPC($"{playersInOrder[0].name}'s {firstTroop.name} fights {playersInOrder[1].name}'s {secondTroop.name}.", 0);
                 firstTroop.ChangeHealthRPC(-secondTroop.currentDamage, 1);
                 secondTroop.ChangeHealthRPC(-firstTroop.currentDamage, 1);
             }
             else if (Alive(firstTroop))
             {
-                Log.instance.DoFunction(() => Log.instance.AddText($"{playersInOrder[0].name}'s {firstTroop.name} attacks {playersInOrder[1].name}.", 0));
+                Log.inst.PreserveTextRPC($"{playersInOrder[0].name}'s {firstTroop.name} attacks {playersInOrder[1].name}.", 0);
                 playersInOrder[1].myBase.ChangeHealthRPC(-firstTroop.currentDamage, 1);
             }
             else if (Alive(secondTroop))
             {
-                Log.instance.DoFunction(() => Log.instance.AddText($"{playersInOrder[1].name}'s {secondTroop.name} attacks {playersInOrder[0].name}.", 0));
+                Log.inst.PreserveTextRPC($"{playersInOrder[1].name}'s {secondTroop.name} attacks {playersInOrder[0].name}.", 0);
                 playersInOrder[0].myBase.ChangeHealthRPC(-secondTroop.currentDamage, 1);
             }
 
@@ -337,15 +336,15 @@ public class Manager : PhotonCompatible
         List<Player> playerLifeInOrder = playersInOrder.OrderByDescending(player => player.myBase.currentHealth).ToList();
         int nextPlacement = 1;
 
-        Log.instance.AddText("");
-        Log.instance.AddText("The game has ended.");
+        Log.inst.AddText("");
+        Log.inst.AddText("The game has ended.");
         Instructions("The game has ended.");
 
         Player resignPlayer = null;
         if (resignPosition >= 0)
         {
             resignPlayer = playersInOrder[resignPosition];
-            Log.instance.AddText($"{resignPlayer.name} has resigned.");
+            Log.inst.AddText($"{resignPlayer.name} has resigned.");
         }
 
         for (int i = 0; i < playerLifeInOrder.Count; i++)
@@ -436,6 +435,12 @@ public class Manager : PhotonCompatible
             if (ability.CheckAbility(condition, array))
                 ability.ResolveAbility(logged, array);
         }
+    }
+
+    [PunRPC]
+    internal void SetCurrentPlayer(int playerPosition)
+    {
+        currentPlayer = playersInOrder[playerPosition];
     }
 
     #endregion

@@ -17,7 +17,8 @@ public class CarryVariables : MonoBehaviour
 
 #region Setup
 
-    public static CarryVariables instance;
+    public static CarryVariables inst;
+
     [Foldout("Prefabs", true)]
     public Player playerPrefab;
     public CardLayout cardPrefab;
@@ -39,9 +40,9 @@ public class CarryVariables : MonoBehaviour
 
     private void Awake()
     {
-        if (instance == null)
+        if (inst == null)
         {
-            instance = this;
+            inst = this;
             Application.targetFrameRate = 60;
             GetScripts();
             DontDestroyOnLoad(this.gameObject);

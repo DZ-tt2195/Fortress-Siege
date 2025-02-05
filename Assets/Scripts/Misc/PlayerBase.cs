@@ -27,11 +27,19 @@ public class PlayerBase : MovingTroop
         this.name = player.name;
         this.currentHealth = health;
 
-        this.transform.SetParent(Manager.instance.canvas.transform);
+        this.transform.SetParent(Manager.inst.canvas.transform);
         this.image.color = (player.playerPosition == 0) ? Color.white : Color.black;
         myText.color = (player.playerPosition == 0) ? Color.black : Color.white;
         this.transform.localPosition = new(player.playerPosition == 0 ? -1100 : 470, 225);
 
         UpdateText();
+    }
+
+    protected override void LogHealth(int healthChange, int logged)
+    {
+        if (healthChange > 0)
+            Log.inst.AddText($"{player.name} gains {healthChange} health.", logged);
+        else if (healthChange < 0)
+            Log.inst.AddText($"{player.name} loses {Mathf.Abs(healthChange)} health.", logged);
     }
 }

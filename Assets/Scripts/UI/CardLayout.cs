@@ -38,7 +38,7 @@ public class CardLayout : MonoBehaviour, IPointerClickHandler
     {
         if (eventData.button == PointerEventData.InputButton.Right)
         {
-            CarryVariables.instance.RightClickDisplay(this.myCard, cg.alpha);
+            CarryVariables.inst.RightClickDisplay(this.myCard, cg.alpha);
         }
     }
 

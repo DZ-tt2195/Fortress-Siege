@@ -29,9 +29,9 @@ public class SliderChoice : MonoBehaviour
     {
         decidingPlayer = player;
         this.textbox.text = header;
-        this.transform.SetParent(Manager.instance.canvas.transform);
+        this.transform.SetParent(Manager.inst.canvas.transform);
         this.transform.localPosition = position;
-        this.transform.localScale = Vector3.Lerp(Vector3.one, Manager.instance.canvas.transform.localScale, 0.5f);
+        this.transform.localScale = Vector3.Lerp(Vector3.one, Manager.inst.canvas.transform.localScale, 0.5f);
 
         minimumText.text = min.ToString();
    	    slider.minValue = min;

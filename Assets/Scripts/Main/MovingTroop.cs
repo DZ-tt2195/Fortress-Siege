@@ -56,7 +56,7 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
         if (!undo)
         {
             //Debug.Log("assigned card info");
-            this.player = Manager.instance.playersInOrder[playerPosition];
+            this.player = Manager.inst.playersInOrder[playerPosition];
             this.image.transform.localScale = new(playerPosition == 0 ? 1 : -1, 1, 1);
             if (border != null)
                 border.color = this.player.playerPosition == 0 ? Color.white : Color.black;
@@ -67,7 +67,7 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
                 this.name = myCard.name;
                 this.image.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
                 this.currentHealth = myCard.health;
-                this.currentHealth = myCard.damage;
+                this.currentDamage = myCard.damage;
             }
         }
     }
@@ -76,7 +76,7 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
     {
         if (eventData.button == PointerEventData.InputButton.Right && myCard != null)
         {
-            CarryVariables.instance.RightClickDisplay(this.myCard, 1);
+            CarryVariables.inst.RightClickDisplay(this.myCard, 1);
         }
     }
 
@@ -90,20 +90,22 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
         if (undo)
         {
             if (newPosition > -1)
-                Manager.instance.allRows[newPosition].playerTroops[player.playerPosition] = null;
+                Manager.inst.allRows[newPosition].playerTroops[player.playerPosition] = null;
+
             this.currentRow = oldPosition;
         }
         else
         {
             if (oldPosition > -1)
-                Manager.instance.allRows[oldPosition].playerTroops[player.playerPosition] = null;
+                Manager.inst.allRows[oldPosition].playerTroops[player.playerPosition] = null;
+
             this.currentRow = newPosition;
-            Log.instance.AddText($"{player.name} moves {this.name} to row {newPosition+1}.", logged);
+            Log.inst.AddText($"{player.name} moves {this.name} to row {newPosition+1}.", logged);
         }
 
         if (currentRow > -1)
         {
-            Row spawnPoint = Manager.instance.allRows[currentRow];
+            Row spawnPoint = Manager.inst.allRows[currentRow];
             spawnPoint.playerTroops[player.playerPosition] = this;
 
             this.transform.SetParent(spawnPoint.button.transform);
@@ -118,11 +120,11 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
 
     public void ChangeHealthRPC(int healthChange, int logged)
     {
-        Log.instance.RememberStep(this, StepType.Revert, () => ChangeHealth(false, healthChange, logged));
+        Log.inst.RememberStep(this, StepType.Revert, () => ChangeHealth(false, healthChange, logged));
         if (currentHealth <= 0)
         {
-            Log.instance.PreserveTextRPC($"{player.name}'s {this.name} is destroyed.", logged);
-            Log.instance.RememberStep(this, StepType.Revert, () => MoveTroop(false, currentRow, -1, -1));
+            Log.inst.PreserveTextRPC($"{player.name}'s {this.name} is destroyed.", logged);
+            Log.inst.RememberStep(this, StepType.Revert, () => MoveTroop(false, currentRow, -1, -1));
         }
     }
 
@@ -136,11 +138,16 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
         else
         {
             currentHealth += healthChange;
-            if (healthChange > 0)
-                Log.instance.AddText($"{player.name}'s {this.name} gains {healthChange} health.", logged);
-            else if (healthChange < 0)
-                Log.instance.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(healthChange)} health.", logged);
+            LogHealth(healthChange, logged);
         }
+    }
+
+    protected virtual void LogHealth(int healthChange, int logged)
+    {
+        if (healthChange > 0)
+            Log.inst.AddText($"{player.name}'s {this.name} gains {healthChange} health.", logged);
+        else if (healthChange < 0)
+            Log.inst.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(healthChange)} health.", logged);
     }
 
     [PunRPC]
@@ -154,9 +161,9 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
         {
             currentDamage += damageChange;
             if (damageChange > 0)
-                Log.instance.AddText($"{player.name}'s {this.name} gains {damageChange} power.", logged);
+                Log.inst.AddText($"{player.name}'s {this.name} gains {damageChange} power.", logged);
             else if (damageChange < 0)
-                Log.instance.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(damageChange)} power.", logged);
+                Log.inst.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(damageChange)} power.", logged);
         }
     }
 

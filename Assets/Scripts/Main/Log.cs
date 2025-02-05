@@ -6,6 +6,9 @@ using Photon.Pun;
 using System.Linq.Expressions;
 using System;
 using System.Linq;
+using UnityEngine.Rendering;
+
+public enum StepType { None, UndoPoint, Revert }
 
 [Serializable]
 public class NextStep
@@ -28,8 +31,8 @@ public class NextStep
     {
         if (this.stepType == StepType.UndoPoint && stepType != StepType.UndoPoint)
         {
-            Log.instance.undoToThis = null;
-            //Debug.Log("undopoint canceled");
+            Log.inst.undoToThis = null;
+            Debug.Log("undopoint canceled");
         }
 
         this.stepType = stepType;
@@ -42,7 +45,7 @@ public class Log : PhotonCompatible
 
 #region Variables
 
-    public static Log instance;
+    public static Log inst;
 
     [Foldout("Log", true)]
         Scrollbar scroll;
@@ -53,7 +56,7 @@ public class Log : PhotonCompatible
         Vector2 startingPosition;
 
     [Foldout("Undos", true)]
-        public List<LogText> undosInLog = new();
+        List<LogText> undosInLog = new();
         public NextStep undoToThis;
         [SerializeField] Button undoButton;
         bool currentUndoState = false;
@@ -65,7 +68,7 @@ public class Log : PhotonCompatible
         base.Awake();
         this.bottomType = this.GetType();
 
-        instance = this;
+        inst = this;
         gridGroup = RT.GetComponent<GridLayoutGroup>();
         scroll = this.transform.GetChild(1).GetComponent<Scrollbar>();
 
@@ -116,7 +119,7 @@ public class Log : PhotonCompatible
             if (undoToThis.action != null)
             {
                 newText.step = undoToThis;
-                //Debug.Log($"{logText} - {undoToThis.action}");
+                //Debug.Log($"NEW UNDO IN LOG: {logText} - {undoToThis.action}");
                 undosInLog.Insert(0, newText);
             }
             undoToThis = null;
@@ -162,7 +165,7 @@ public class Log : PhotonCompatible
     void TextShared(bool undo, string text, int logged)
     {
         if (!undo)
-            Log.instance.AddText(text, logged);
+            Log.inst.AddText(text, logged);
     }
 
     /*
@@ -212,12 +215,20 @@ public class Log : PhotonCompatible
     {
         LogText targetText = undosInLog.Find(line => line.step == toThisPoint);
 
+        int counter = 0;
         for (int i = RT.transform.childCount; i > targetText.transform.GetSiblingIndex(); i--)
+        {
             Destroy(RT.transform.GetChild(i - 1).gameObject);
+            counter++;
+        }
+        //Debug.Log($"deleted {counter} lines");
         ChangeScrolling();
 
-        Player player = Manager.instance.FindThisPlayer();
-        undoToThis = null;
+        if (undoToThis != null)
+        {
+            undoToThis = null;
+            Debug.Log("undo point cancelled");
+        }
         DisplayUndoBar(false);
 
         Popup[] allPopups = FindObjectsByType<Popup>(FindObjectsSortMode.None);
@@ -238,7 +249,7 @@ public class Log : PhotonCompatible
 
             if (next.stepType == StepType.Revert)
             {
-                //Debug.Log($"undo step {i}: {next.actionName}");
+                Debug.Log($"undo step {i}: {next.actionName}");
                 (string instruction, object[] parameters) = next.source.TranslateFunction(next.action);
 
                 object[] newParameters = new object[parameters.Length];
@@ -251,17 +262,21 @@ public class Log : PhotonCompatible
             }
             else if (next.stepType == StepType.UndoPoint)
             {
-                player.chainTracker--;
+                Manager.inst.currentPlayer.chainTracker--;
 
                 if (next == toThisPoint || i == 0)
                 {
-                    //Debug.Log($"continue at {i}, reduce tracker to {chainTracker}, {next.actionName}");
+                    if (Manager.inst.currentPlayer.myType == PlayerType.Human)
+                    {
+                        currentDecisionInStack = -1;
+                        Manager.inst.currentPlayer.inReaction.Clear();
+                        Manager.inst.currentPlayer.PopStack();
+                    }
                     break;
                 }
                 else
                 {
                     historyStack.RemoveAt(i);
-                    //Debug.Log($"delete step {i}, reduce tracker to {chainTracker}: {next.actionName}");
                 }
             }
         }

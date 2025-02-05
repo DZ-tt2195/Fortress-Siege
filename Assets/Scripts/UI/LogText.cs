@@ -14,6 +14,6 @@ public class LogText : MonoBehaviour
 
     private void FixedUpdate()
     {
-        undoBar.SetAlpha(Manager.instance.opacity);
+        undoBar.SetAlpha(Manager.inst.opacity);
     }
 }
