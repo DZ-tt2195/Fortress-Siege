@@ -249,7 +249,7 @@ public class Log : PhotonCompatible
 
             if (next.stepType == StepType.Revert)
             {
-                Debug.Log($"undo step {i}: {next.actionName}");
+                //Debug.Log($"undo step {i}: {next.actionName}");
                 (string instruction, object[] parameters) = next.source.TranslateFunction(next.action);
 
                 object[] newParameters = new object[parameters.Length];

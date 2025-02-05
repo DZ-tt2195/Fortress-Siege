@@ -112,4 +112,23 @@ public class Card : PhotonCompatible
 
     #endregion
 
+#region Abilities
+
+    public virtual void CardPlayed()
+    {
+
+    }
+
+    public virtual void CardDestroyed()
+    {
+
+    }
+
+    public virtual void CardAttacked()
+    {
+
+    }
+
+#endregion
+
 }

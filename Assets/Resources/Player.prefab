@@ -153,6 +153,7 @@ MonoBehaviour:
   playerPosition: 0
   cardsInHand: []
   availableTroops: []
+  availableEnviros: []
   resourceText: {fileID: 1694358012973467107}
   chainTracker: 0
 --- !u!1 &1262142806565398546

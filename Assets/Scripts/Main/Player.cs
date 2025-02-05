@@ -55,6 +55,7 @@ public class Player : PhotonCompatible
     public PlayerBase myBase { get; private set; }
     public List<Card> cardsInHand = new();
     public List<MovingTroop> availableTroops = new();
+    public List<Environment> availableEnviros = new();
 
     [Foldout("UI", true)]
     [SerializeField] TMP_Text resourceText;
@@ -115,8 +116,10 @@ public class Player : PhotonCompatible
 
         for (int i = 0; i < 5; i++)
         {
-            GameObject nextTroop = Manager.inst.MakeObject(CarryVariables.inst.movingTroopPrefab.gameObject);
+            GameObject nextTroop = Manager.inst.MakeObject(CarryVariables.inst.movingTroopPrefab);
             DoFunction(() => AddTroop(nextTroop.GetComponent<PhotonView>().ViewID));
+            GameObject nextEnviro = Manager.inst.MakeObject(CarryVariables.inst.environmentPrefab);
+            DoFunction(() => AddEnviro(nextEnviro.GetComponent<PhotonView>().ViewID));
         }
 
         if (InControl())
@@ -154,6 +157,14 @@ public class Player : PhotonCompatible
         GameObject obj = PhotonView.Find(PV).gameObject;
         obj.AddComponent(Type.GetType("MovingTroop"));
         availableTroops.Add(obj.GetComponent<MovingTroop>());
+    }
+
+    [PunRPC]
+    void AddEnviro(int PV)
+    {
+        GameObject obj = PhotonView.Find(PV).gameObject;
+        obj.AddComponent(Type.GetType("Environment"));
+        availableEnviros.Add(obj.GetComponent<Environment>());
     }
 
     #endregion
@@ -653,10 +664,9 @@ public class Player : PhotonCompatible
                 {
                     currentChain.toThisPoint = step;
                     chainTracker++;
-                    //Debug.Log($"tracker bumped up to {chainTracker}");
                 }
 
-                Debug.Log($"now do: {step.actionName}");
+                //Debug.Log($"now do: {step.actionName}");
                 Log.inst.undoToThis = step;
                 step.action.Compile().Invoke();
                 break;

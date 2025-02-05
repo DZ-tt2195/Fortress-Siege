@@ -10,5 +10,6 @@ public class BasicTroop : TroopCard
         this.damage = 2;
         this.health = 2;
         this.extraText = "";
+        Math();
     }
 }

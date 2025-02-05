@@ -92,6 +92,8 @@ MonoBehaviour:
   - PutInHandRPC
   - ShareResources
   - SetCurrentPlayer
+  - MoveEnviro
+  - AddEnviro
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 0

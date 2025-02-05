@@ -105,6 +105,7 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
 
         if (currentRow > -1)
         {
+            player.availableTroops.Remove(this);
             Row spawnPoint = Manager.inst.allRows[currentRow];
             spawnPoint.playerTroops[player.playerPosition] = this;
 
@@ -114,6 +115,7 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
         }
         else
         {
+            player.availableTroops.Add(this);
             this.transform.SetParent(null);
         }
     }

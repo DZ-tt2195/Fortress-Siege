@@ -14,7 +14,7 @@ using System.Linq.Expressions;
 {
     public Button button;
     [ReadOnly] public MovingTroop[] playerTroops;
-    [ReadOnly] public MovingTroop environment = null;
+    [ReadOnly] public Environment environment = null;
 }
 
 public class Manager : PhotonCompatible
@@ -33,7 +33,6 @@ public class Manager : PhotonCompatible
     int turnNumber = 0;
     List<Action> actionStack = new();
     int currentStep = -1;
-    List<TriggeredAbility> allAbilities = new();
 
     [Foldout("Cards", true)]
     public Transform deck;
@@ -410,37 +409,25 @@ public class Manager : PhotonCompatible
         return null;
     }
 
-    public void AddAbility(TriggeredAbility ability)
-    {
-        allAbilities.Add(ability);
-    }
-
-    public int CalculateFromAbility(string condition, object[] array, int baseNumber)
-    {
-        int newNumber = baseNumber;
-        this.allAbilities.RemoveAll(ability => ability.source == null);
-        foreach (TriggeredAbility ability in this.allAbilities)
-        {
-            if (ability.CheckAbility(condition, array))
-                newNumber += (int)ability.ResolveAbility(-1, array);
-        }
-        return newNumber;
-    }
-
-    public void ResolveAbilities(string condition, object[] array, int logged)
-    {
-        this.allAbilities.RemoveAll(ability => ability.source == null);
-        foreach (TriggeredAbility ability in this.allAbilities)
-        {
-            if (ability.CheckAbility(condition, array))
-                ability.ResolveAbility(logged, array);
-        }
-    }
-
     [PunRPC]
     internal void SetCurrentPlayer(int playerPosition)
     {
         currentPlayer = playersInOrder[playerPosition];
+    }
+
+    public List<Card> GatherAbilities()
+    {
+        List<Card> listOfCards = new();
+        foreach (Row row in allRows)
+        {
+            if (row.environment != null)
+                listOfCards.Add(row.environment.myCard);
+            if (row.playerTroops[0] != null)
+                listOfCards.Add(row.playerTroops[0].myCard);
+            if (row.playerTroops[1] != null)
+                listOfCards.Add(row.playerTroops[1].myCard);
+        }
+        return listOfCards;
     }
 
     #endregion

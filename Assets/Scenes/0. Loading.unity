@@ -913,6 +913,7 @@ MonoBehaviour:
   cardPopup: {fileID: 3183939439193871304, guid: 293c9a8a887c64616a8e499c379c4cd7, type: 3}
   sliderPopup: {fileID: 7815619922120165151, guid: 0ebd54c98e7064e6c9bda8ae56b32fd1, type: 3}
   movingTroopPrefab: {fileID: 745653241502013156, guid: 09a71253c132c4f6bb03d615ec24c6a1, type: 3}
+  environmentPrefab: {fileID: 745653241502013156, guid: bf5069e2fb0844f9eac3fe4c0abb0af5, type: 3}
   playerBasePrefab: {fileID: 3581495114378940035, guid: e80962f7ab54b4896878404af6dcd0a4, type: 3}
   rightClickBackground: {fileID: 1195550165}
   rightClickCard: {fileID: 486479094}
