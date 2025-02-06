@@ -130,6 +130,11 @@ public class Card : PhotonCompatible
     {
     }
 
+    public virtual int CoinEffect(Player player, int logged)
+    {
+        return 0;
+    }
+
 #endregion
 
 }

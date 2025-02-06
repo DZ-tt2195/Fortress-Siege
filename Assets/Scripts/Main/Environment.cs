@@ -71,6 +71,21 @@ public class Environment : Entity
             if (!undo)
                 Log.inst.AddText($"{player.name}'s {this.name} has been replaced.", logged);
         }
+
+        Recalculate(oldPosition);
+        Recalculate(newPosition);
+
+        void Recalculate(int row)
+        {
+            if (row > -1)
+            {
+                foreach (MovingTroop troop in Manager.inst.allRows[row].playerTroops)
+                {
+                    if (troop != null)
+                        troop.RecalculateStats(logged);
+                }
+            }
+        }
     }
 
     #endregion

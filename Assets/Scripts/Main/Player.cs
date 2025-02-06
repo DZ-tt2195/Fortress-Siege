@@ -419,18 +419,21 @@ public class Player : PhotonCompatible
                     float PlayerScore(int playerPosition)
                     {
                         Player player = Manager.inst.playersInOrder[playerPosition];
-                        int answer = player.myBase.currentHealth + player.cardsInHand.Count * 2;
+                        int answer = player.myBase.myHealth + player.cardsInHand.Count * 2;
+                        foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
+                            answer += card.CoinEffect(player, -1);
+
                         if (playerPosition == this.playerPosition)
                             answer -= coins*2;
 
                         foreach (Row row in Manager.inst.allRows)
                         {
                             MovingTroop troop = row.playerTroops[playerPosition];
-                            if (troop != null && troop.currentHealth >= 1)
-                                answer += troop.currentDamage + troop.currentHealth;
+                            if (troop != null && troop.calcHealth >= 1)
+                                answer += troop.calcPower + troop.calcHealth;
                         }
 
-                        if (player.myBase.currentHealth <= 0)
+                        if (player.myBase.myHealth <= 0)
                             return -Mathf.Infinity;
                         else
                             return answer;
@@ -706,7 +709,7 @@ public class Player : PhotonCompatible
         foreach (Row row in Manager.inst.allRows)
         {
             MovingTroop troop = row.playerTroops[this.playerPosition];
-            if (hasTroop && troop != null && troop.currentHealth >= 1)
+            if (hasTroop && troop != null && troop.calcHealth >= 1)
                 answer.Add(row);
             else if (!hasTroop)
                 answer.Add(row);

@@ -76,6 +76,11 @@ public class EnviroCard : Card
         }
     }
 
+    public virtual (int, int) EnviroStats(Environment enviro, MovingTroop troop)
+    {
+        return (0, 0);
+    }
+
     #endregion
 
 }

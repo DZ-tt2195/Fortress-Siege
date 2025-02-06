@@ -7,7 +7,7 @@ public class BasicTroop : TroopCard
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 1;
-        this.damage = 2;
+        this.power = 2;
         this.health = 2;
         this.extraText = "";
         Math();

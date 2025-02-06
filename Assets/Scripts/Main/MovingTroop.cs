@@ -5,34 +5,23 @@ using TMPro;
 public class MovingTroop : Entity
 {
 
-#region Variables
+#region Setup
 
-    TMP_Text damageText;
+    TMP_Text powerText;
     TMP_Text heartText;
 
-    int _currentHealth;
-    public int currentHealth
-    {
-        get { return _currentHealth; }
-        protected set { _currentHealth = value; try { heartText.text = _currentHealth.ToString(); } catch { } }
-    }
-    int _currentDamage;
-    public int currentDamage
-    {
-        get { return _currentDamage; }
-        protected set { _currentDamage = value; try { damageText.text = _currentDamage.ToString(); } catch { } }
-    }
+    int myHealth;
+    int myPower;
 
-    #endregion
-
-#region Setup
+    public int calcHealth { get; private set; }
+    public int calcPower { get; private set; }
 
     protected override void Awake()
     {
         base.Awake();
         this.bottomType = this.GetType();
         heartText = this.transform.Find("Heart Text").GetComponent<TMP_Text>();
-        damageText = this.transform.Find("Damage Text").GetComponent<TMP_Text>();
+        powerText = this.transform.Find("Power Text").GetComponent<TMP_Text>();
     }
 
     [PunRPC]
@@ -52,8 +41,8 @@ public class MovingTroop : Entity
                 this.image.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
 
                 TroopCard intoTroop = (TroopCard)myCard;
-                this.currentHealth = intoTroop.health;
-                this.currentDamage = intoTroop.damage;
+                this.myHealth = intoTroop.health;
+                this.myPower = intoTroop.power;
             }
         }
     }
@@ -90,6 +79,7 @@ public class MovingTroop : Entity
             this.transform.SetParent(spawnPoint.button.transform);
             this.transform.localPosition = new((player.playerPosition) == 0 ? -575 : 575, 0);
             this.transform.localScale = Vector3.one;
+            RecalculateStats(logged);
         }
         else
         {
@@ -98,52 +88,74 @@ public class MovingTroop : Entity
         }
     }
 
-    public void ChangeHealthRPC(int healthChange, int logged)
+    public void ChangeStatsRPC(int power, int health, int logged)
     {
-        Log.inst.RememberStep(this, StepType.Revert, () => ChangeHealth(false, healthChange, logged));
-        if (currentHealth <= 0)
+        Log.inst.RememberStep(this, StepType.Revert, () => ChangeStats(false, power, health, logged));
+    }
+
+    [PunRPC]
+    void ChangeStats(bool undo, int power, int health, int logged)
+    {
+        if (undo)
+        {
+            myPower -= power;
+            myHealth -= health;
+        }
+        else
+        {
+            myPower += power;
+            if (power > 0)
+                Log.inst.AddText($"{player.name}'s {this.name} gains {power} power.", logged);
+            else if (power < 0)
+                Log.inst.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(power)} power.", logged);
+
+            myHealth += health;
+            if (health > 0)
+                Log.inst.AddText($"{player.name}'s {this.name} gains {health} health.", logged);
+            else if (health < 0)
+                Log.inst.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(health)} health.", logged);
+        }
+        RecalculateStats(logged);
+    }
+
+    public void RecalculateStats(int logged)
+    {
+        calcPower = myPower;
+        calcHealth = myHealth;
+        Environment enviro = Manager.inst.allRows[currentRow].environment;
+
+        if (enviro != null)
+        {
+            EnviroCard card = (EnviroCard)enviro.myCard;
+            (int power, int health) = card.EnviroStats(enviro, this);
+            calcPower += power;
+            calcHealth += health;
+        }
+
+        powerText.text = calcPower.ToString();
+        heartText.text = calcHealth.ToString();
+        /*
+        if (calcHealth <= 0)
         {
             Log.inst.PreserveTextRPC($"{player.name}'s {this.name} is destroyed.", logged);
             Log.inst.RememberStep(this, StepType.Revert, () => MoveTroop(false, currentRow, -1, -1));
-        }
+        }*/
     }
 
-    [PunRPC]
-    void ChangeHealth(bool undo, int healthChange, int logged)
+    public void Attack(int logged)
     {
-        if (undo)
+        Player opposingPlayer = Manager.inst.OtherPlayer(this.player);
+        MovingTroop opposingTroop = Manager.inst.FindOpposingTroop(this.player, this.currentRow);
+
+        if (opposingTroop != null)
         {
-            currentHealth -= healthChange;
+            Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} attacks {opposingPlayer.name}'s {opposingTroop.name}.", logged);
+            opposingTroop.ChangeStatsRPC(0, -this.calcPower, logged+1);
         }
         else
         {
-            currentHealth += healthChange;
-            LogHealth(healthChange, logged);
-        }
-    }
-
-    protected virtual void LogHealth(int healthChange, int logged)
-    {
-        if (healthChange > 0)
-            Log.inst.AddText($"{player.name}'s {this.name} gains {healthChange} health.", logged);
-        else if (healthChange < 0)
-            Log.inst.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(healthChange)} health.", logged);
-    }
-
-    [PunRPC]
-    internal void ChangeDamage(bool undo, int damageChange, int logged)
-    {
-        if (undo)
-        {
-            currentDamage -= damageChange;
-        }
-        else
-        {
-            currentDamage += damageChange;
-            if (damageChange > 0)
-                Log.inst.AddText($"{player.name}'s {this.name} gains {damageChange} power.", logged);
-            else if (damageChange < 0)
-                Log.inst.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(damageChange)} power.", logged);
+            Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} attacks {opposingPlayer.name}.", logged);
+            opposingPlayer.myBase.ChangeHealthRPC(-this.calcPower, logged+1);
         }
     }
 

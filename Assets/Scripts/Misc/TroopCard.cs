@@ -7,7 +7,7 @@ public class TroopCard : Card
 
 #region Setup
 
-    public int damage { get; protected set; }
+    public int power { get; protected set; }
     public int health { get; protected set; }
     protected int abilityValue;
     List<Row> canPlayInColumn = new();
@@ -20,7 +20,7 @@ public class TroopCard : Card
 
     protected float Math()
     {
-        float math = (-2 - this.coinCost*2) + (health + damage + abilityValue);
+        float math = (-2 - this.coinCost*2) + (health + power + abilityValue);
         if (Mathf.Abs(math) >= 1f)
             Debug.Log($"{this.name}'s math: {math}");
         return math;

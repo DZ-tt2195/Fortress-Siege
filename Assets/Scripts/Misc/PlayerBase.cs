@@ -2,10 +2,12 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Photon.Pun;
 
-public class PlayerBase : MovingTroop
+public class PlayerBase : Entity
 {
     TMP_Text myText;
+    public int myHealth { get; private set; }
 
     protected override void Awake()
     {
@@ -25,7 +27,7 @@ public class PlayerBase : MovingTroop
     {
         this.player = player;
         this.name = player.name;
-        this.currentHealth = health;
+        this.myHealth = health;
 
         this.transform.SetParent(Manager.inst.canvas.transform);
         this.image.color = (player.playerPosition == 0) ? Color.white : Color.black;
@@ -35,11 +37,25 @@ public class PlayerBase : MovingTroop
         UpdateText();
     }
 
-    protected override void LogHealth(int healthChange, int logged)
+    public void ChangeHealthRPC(int health, int logged)
     {
-        if (healthChange > 0)
-            Log.inst.AddText($"{player.name} gains {healthChange} health.", logged);
-        else if (healthChange < 0)
-            Log.inst.AddText($"{player.name} loses {Mathf.Abs(healthChange)} health.", logged);
+        Log.inst.RememberStep(this, StepType.Revert, () => ChangeHealth(false, health, logged));
+    }
+
+    [PunRPC]
+    void ChangeHealth(bool undo, int health, int logged)
+    {
+        if (undo)
+        {
+            myHealth -= health;
+        }
+        else
+        {
+            myHealth += health;
+            if (health > 0)
+                Log.inst.AddText($"{player.name} gains {health} health.", logged);
+            else if (health < 0)
+                Log.inst.AddText($"{player.name} loses {Mathf.Abs(health)} health.", logged);
+        }
     }
 }

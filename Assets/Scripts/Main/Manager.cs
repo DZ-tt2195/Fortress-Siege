@@ -220,7 +220,7 @@ public class Manager : PhotonCompatible
             bool keepPlaying = true;
             foreach (Player player in playersInOrder)
             {
-                if (player.myBase.currentHealth <= 0)
+                if (player.myBase.myHealth <= 0)
                     keepPlaying = false;
             }
 
@@ -259,7 +259,11 @@ public class Manager : PhotonCompatible
             {
                 player.DrawCardRPC(host.realTimePlayer, 1, 1);
                 Log.inst.RememberStep(player, StepType.Revert, () => player.GainLoseCoin(false, -1 * player.coins, -1));
-                Log.inst.RememberStep(player, StepType.Revert, () => player.GainLoseCoin(false, turnNumber, 1));
+
+                int playerCoins = turnNumber;
+                foreach ((Card card, Entity entity) in GatherAbilities())
+                    playerCoins += card.CoinEffect(player, 0);
+                Log.inst.RememberStep(player, StepType.Revert, () => player.GainLoseCoin(false, playerCoins, 1));
             }
 
             Log.inst.ShareSteps();
@@ -298,24 +302,21 @@ public class Manager : PhotonCompatible
 
             if (Alive(firstTroop) && Alive(secondTroop))
             {
-                Log.inst.PreserveTextRPC($"{playersInOrder[0].name}'s {firstTroop.name} fights {playersInOrder[1].name}'s {secondTroop.name}.", 0);
-                firstTroop.ChangeHealthRPC(-secondTroop.currentDamage, 1);
-                secondTroop.ChangeHealthRPC(-firstTroop.currentDamage, 1);
+                firstTroop.Attack(0);
+                secondTroop.Attack(0);
             }
             else if (Alive(firstTroop))
             {
-                Log.inst.PreserveTextRPC($"{playersInOrder[0].name}'s {firstTroop.name} attacks {playersInOrder[1].name}.", 0);
-                playersInOrder[1].myBase.ChangeHealthRPC(-firstTroop.currentDamage, 1);
+                firstTroop.Attack(0);
             }
             else if (Alive(secondTroop))
             {
-                Log.inst.PreserveTextRPC($"{playersInOrder[1].name}'s {secondTroop.name} attacks {playersInOrder[0].name}.", 0);
-                playersInOrder[0].myBase.ChangeHealthRPC(-secondTroop.currentDamage, 1);
+                secondTroop.Attack(0);
             }
 
             bool Alive(MovingTroop troop)
             {
-                return troop != null && troop.currentHealth >= 1;
+                return troop != null && troop.calcHealth >= 1;
             }
         }
     }
@@ -332,7 +333,7 @@ public class Manager : PhotonCompatible
         foreach (Popup popup in allPopups)
             Destroy(popup.gameObject);
 
-        List<Player> playerLifeInOrder = playersInOrder.OrderByDescending(player => player.myBase.currentHealth).ToList();
+        List<Player> playerLifeInOrder = playersInOrder.OrderByDescending(player => player.myBase.myHealth).ToList();
         int nextPlacement = 1;
 
         Log.inst.AddText("");
@@ -352,7 +353,7 @@ public class Manager : PhotonCompatible
             if (player != resignPlayer)
             {
                 EndstatePlayer(player, false);
-                if (i == 0 || playerLifeInOrder[i - 1].myBase.currentHealth != player.myBase.currentHealth)
+                if (i == 0 || playerLifeInOrder[i - 1].myBase.myHealth != player.myBase.myHealth)
                     nextPlacement++;
             }
         }
@@ -367,7 +368,7 @@ public class Manager : PhotonCompatible
 
     void EndstatePlayer(Player player, bool resigned)
     {
-        scoreText.text += $"\n\n{player.name} - {player.myBase.currentHealth} Health {(resigned ? $"[Resigned]" : "")}";
+        scoreText.text += $"\n\n{player.name} - {player.myBase.myHealth} Health {(resigned ? $"[Resigned]" : "")}";
         scoreText.text += "\n";
     }
 

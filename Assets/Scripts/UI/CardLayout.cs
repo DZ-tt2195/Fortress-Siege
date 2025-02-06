@@ -58,7 +58,7 @@ public class CardLayout : MonoBehaviour, IPointerClickHandler
         {
             damageImage.gameObject.SetActive(true);
             damageText.gameObject.SetActive(true);
-            damageText.text = convertedCard.damage.ToString();
+            damageText.text = convertedCard.power.ToString();
 
             heartImage.gameObject.SetActive(true);
             heartText.gameObject.SetActive(true);

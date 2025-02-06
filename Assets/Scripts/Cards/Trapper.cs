@@ -16,6 +16,6 @@ public class Trapper : EnviroCard
     {
         MovingTroop opposingTroop = Manager.inst.FindOpposingTroop(entity.player, entity.currentRow);
         if (opposingTroop != null)
-            Log.inst.RememberStep(opposingTroop, StepType.Revert, () => opposingTroop.ChangeHealthRPC(-1, logged));
+            Log.inst.RememberStep(opposingTroop, StepType.Revert, () => opposingTroop.ChangeStatsRPC(0, -1, logged));
     }
 }
