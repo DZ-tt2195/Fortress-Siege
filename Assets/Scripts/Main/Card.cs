@@ -116,17 +116,18 @@ public class Card : PhotonCompatible
 
     public virtual void CardPlayed()
     {
-
     }
 
     public virtual void CardDestroyed()
     {
-
     }
 
     public virtual void CardAttacked()
     {
+    }
 
+    public virtual void StartOfCombat(Entity entity, int logged)
+    {
     }
 
 #endregion

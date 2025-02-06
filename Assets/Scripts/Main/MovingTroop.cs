@@ -1,22 +1,14 @@
 using UnityEngine;
 using Photon.Pun;
-using UnityEngine.UI;
 using TMPro;
-using UnityEngine.EventSystems;
 
-public class MovingTroop : PhotonCompatible, IPointerClickHandler
+public class MovingTroop : Entity
 {
 
 #region Variables
 
-    protected Image image;
-    Image border;
     TMP_Text damageText;
     TMP_Text heartText;
-
-    public TroopCard myCard { get; private set; }
-    public Player player { get; protected set; }
-    public int currentRow { get; private set; }
 
     int _currentHealth;
     public int currentHealth
@@ -39,15 +31,8 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
     {
         base.Awake();
         this.bottomType = this.GetType();
-        currentRow = -1;
-        try
-        {
-            heartText = this.transform.Find("Heart Text").GetComponent<TMP_Text>();
-            image = this.transform.Find("Art Box").GetComponent<Image>();
-            damageText = this.transform.Find("Damage Text").GetComponent<TMP_Text>();
-            border = this.transform.Find("border").GetComponent<Image>();
-        }
-        catch { }
+        heartText = this.transform.Find("Heart Text").GetComponent<TMP_Text>();
+        damageText = this.transform.Find("Damage Text").GetComponent<TMP_Text>();
     }
 
     [PunRPC]
@@ -55,7 +40,6 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
     {
         if (!undo)
         {
-            //Debug.Log("assigned card info");
             this.player = Manager.inst.playersInOrder[playerPosition];
             this.image.transform.localScale = new(playerPosition == 0 ? 1 : -1, 1, 1);
             if (border != null)
@@ -66,17 +50,11 @@ public class MovingTroop : PhotonCompatible, IPointerClickHandler
                 myCard = PhotonView.Find(cardID).GetComponent<TroopCard>();
                 this.name = myCard.name;
                 this.image.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
-                this.currentHealth = myCard.health;
-                this.currentDamage = myCard.damage;
-            }
-        }
-    }
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if (eventData.button == PointerEventData.InputButton.Right && myCard != null)
-        {
-            CarryVariables.inst.RightClickDisplay(this.myCard, 1);
+                TroopCard intoTroop = (TroopCard)myCard;
+                this.currentHealth = intoTroop.health;
+                this.currentDamage = intoTroop.damage;
+            }
         }
     }
 

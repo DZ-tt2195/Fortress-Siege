@@ -1,32 +1,15 @@
 using UnityEngine;
 using Photon.Pun;
-using UnityEngine.UI;
-using TMPro;
-using UnityEngine.EventSystems;
 
-public class Environment : PhotonCompatible, IPointerClickHandler
+public class Environment : Entity
 {
 
 #region Setup
-
-    protected Image image;
-    Image border;
-
-    public EnviroCard myCard { get; private set; }
-    public Player player { get; protected set; }
-    public int currentRow { get; private set; }
 
     protected override void Awake()
     {
         base.Awake();
         this.bottomType = this.GetType();
-        currentRow = -1;
-        try
-        {
-            image = this.transform.Find("Art Box").GetComponent<Image>();
-            border = this.transform.Find("border").GetComponent<Image>();
-        }
-        catch { }
     }
 
     [PunRPC]
@@ -34,7 +17,6 @@ public class Environment : PhotonCompatible, IPointerClickHandler
     {
         if (!undo)
         {
-            //Debug.Log("assigned card info");
             this.player = Manager.inst.playersInOrder[playerPosition];
             this.image.transform.localScale = new(playerPosition == 0 ? 1 : -1, 1, 1);
             if (border != null)
@@ -46,14 +28,6 @@ public class Environment : PhotonCompatible, IPointerClickHandler
                 this.name = myCard.name;
                 this.image.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
             }
-        }
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if (eventData.button == PointerEventData.InputButton.Right && myCard != null)
-        {
-            CarryVariables.inst.RightClickDisplay(this.myCard, 1);
         }
     }
 

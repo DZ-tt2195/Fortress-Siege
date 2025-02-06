@@ -8,7 +8,6 @@ using Photon.Pun;
 using UnityEngine.SceneManagement;
 using System.Linq;
 using System;
-using System.Linq.Expressions;
 
 [Serializable] public class Row
 {
@@ -289,7 +288,8 @@ public class Manager : PhotonCompatible
 
     internal void SimulateBattle()
     {
-        //Debug.Log("simulate battle");
+        foreach ((Card card, Entity entity) in GatherAbilities())
+            card.StartOfCombat(entity, 1);
 
         foreach (Row row in allRows)
         {
@@ -415,19 +415,27 @@ public class Manager : PhotonCompatible
         currentPlayer = playersInOrder[playerPosition];
     }
 
-    public List<Card> GatherAbilities()
+    public List<(Card, Entity)> GatherAbilities()
     {
-        List<Card> listOfCards = new();
+        List<(Card, Entity)> listOfCards = new();
         foreach (Row row in allRows)
         {
             if (row.environment != null)
-                listOfCards.Add(row.environment.myCard);
+                listOfCards.Add((row.environment.myCard, row.environment));
             if (row.playerTroops[0] != null)
-                listOfCards.Add(row.playerTroops[0].myCard);
+                listOfCards.Add((row.playerTroops[0].myCard, row.playerTroops[0]));
             if (row.playerTroops[1] != null)
-                listOfCards.Add(row.playerTroops[1].myCard);
+                listOfCards.Add((row.playerTroops[1].myCard, row.playerTroops[1]));
         }
         return listOfCards;
+    }
+
+    public MovingTroop FindOpposingTroop(Player player, int row)
+    {
+        if (player.playerPosition == 0)
+            return allRows[row].playerTroops[1];
+        else
+            return allRows[row].playerTroops[0];
     }
 
     #endregion
