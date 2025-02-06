@@ -79,7 +79,7 @@ public class MovingTroop : Entity
             this.transform.SetParent(spawnPoint.button.transform);
             this.transform.localPosition = new((player.playerPosition) == 0 ? -575 : 575, 0);
             this.transform.localScale = Vector3.one;
-            RecalculateStats(logged);
+            RecalculateStats();
         }
         else
         {
@@ -115,10 +115,10 @@ public class MovingTroop : Entity
             else if (health < 0)
                 Log.inst.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(health)} health.", logged);
         }
-        RecalculateStats(logged);
+        RecalculateStats();
     }
 
-    public void RecalculateStats(int logged)
+    public void RecalculateStats()
     {
         calcPower = myPower;
         calcHealth = myHealth;
@@ -134,12 +134,6 @@ public class MovingTroop : Entity
 
         powerText.text = calcPower.ToString();
         heartText.text = calcHealth.ToString();
-        /*
-        if (calcHealth <= 0)
-        {
-            Log.inst.PreserveTextRPC($"{player.name}'s {this.name} is destroyed.", logged);
-            Log.inst.RememberStep(this, StepType.Revert, () => MoveTroop(false, currentRow, -1, -1));
-        }*/
     }
 
     public void Attack(int logged)

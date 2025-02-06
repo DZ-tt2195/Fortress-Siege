@@ -216,18 +216,7 @@ public class Manager : PhotonCompatible
         if (currentStep < actionStack.Count - 1)
         {
             currentStep++;
-
-            bool keepPlaying = true;
-            foreach (Player player in playersInOrder)
-            {
-                if (player.myBase.myHealth <= 0)
-                    keepPlaying = false;
-            }
-
-            if (keepPlaying)
-                actionStack[currentStep]();
-            else
-                DoFunction(() => DisplayEnding(-1), RpcTarget.All);
+            actionStack[currentStep]();
         }
         else
         {
@@ -242,11 +231,13 @@ public class Manager : PhotonCompatible
         PlayerSteps(0);
         PlayerSteps(1);
         AddStep(TroopsAttack);
+        AddStep(CheckDeadPlayers);
 
         AddStep(NewResources);
         PlayerSteps(1);
         PlayerSteps(0);
         AddStep(TroopsAttack);
+        AddStep(CheckDeadPlayers);
 
         void NewResources()
         {
@@ -262,7 +253,7 @@ public class Manager : PhotonCompatible
 
                 int playerCoins = turnNumber;
                 foreach ((Card card, Entity entity) in GatherAbilities())
-                    playerCoins += card.CoinEffect(player, 0);
+                    playerCoins += card.CoinEffect(player, entity, 0);
                 Log.inst.RememberStep(player, StepType.Revert, () => player.GainLoseCoin(false, playerCoins, 1));
             }
 
@@ -283,6 +274,21 @@ public class Manager : PhotonCompatible
             SimulateBattle();
             Log.inst.ShareSteps();
             Continue();
+        }
+
+        void CheckDeadPlayers()
+        {
+            bool keepPlaying = true;
+            foreach (Player player in playersInOrder)
+            {
+                if (player.myBase.myHealth <= 0)
+                    keepPlaying = false;
+            }
+
+            if (keepPlaying)
+                Continue();
+            else
+                DoFunction(() => DisplayEnding(-1), RpcTarget.All);
         }
     }
 
@@ -319,6 +325,7 @@ public class Manager : PhotonCompatible
                 return troop != null && troop.calcHealth >= 1;
             }
         }
+        CleanUp();
     }
 
     #endregion
@@ -437,6 +444,19 @@ public class Manager : PhotonCompatible
             return allRows[row].playerTroops[1];
         else
             return allRows[row].playerTroops[0];
+    }
+
+    public void CleanUp()
+    {
+        foreach (Row row in allRows)
+        {
+            foreach (MovingTroop troop in row.playerTroops)
+            {
+                troop.RecalculateStats();
+                if (troop.calcHealth <= 0)
+                    Log.inst.RememberStep(troop, StepType.Revert, () => troop.MoveTroop(false, troop.currentRow, -1, -1));
+            }
+        }
     }
 
     #endregion

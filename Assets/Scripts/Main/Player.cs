@@ -7,7 +7,6 @@ using UnityEngine.UI;
 using System.Linq;
 using MyBox;
 using System;
-using System.Linq.Expressions;
 
 [Serializable] public class DecisionChain
 {
@@ -369,6 +368,7 @@ public class Player : PhotonCompatible
 
     internal void MayPlayCard()
     {
+        Manager.inst.CleanUp();
         List<string> actions = new() { $"End Turn" };
         List<Card> canPlay = cardsInHand.Where(card => card.CanPlayMe(this, true)).ToList();
 
@@ -420,8 +420,9 @@ public class Player : PhotonCompatible
                     {
                         Player player = Manager.inst.playersInOrder[playerPosition];
                         int answer = player.myBase.myHealth + player.cardsInHand.Count * 2;
+
                         foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
-                            answer += card.CoinEffect(player, -1);
+                            answer += card.CoinEffect(player, entity, -1);
 
                         if (playerPosition == this.playerPosition)
                             answer -= coins*2;

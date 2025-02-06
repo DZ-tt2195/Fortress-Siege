@@ -82,7 +82,7 @@ public class Environment : Entity
                 foreach (MovingTroop troop in Manager.inst.allRows[row].playerTroops)
                 {
                     if (troop != null)
-                        troop.RecalculateStats(logged);
+                        troop.RecalculateStats();
                 }
             }
         }
