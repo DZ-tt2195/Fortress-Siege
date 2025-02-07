@@ -77,7 +77,7 @@ public class TroopCard : Card
             Log.inst.RememberStep(troop, StepType.Revert, () => troop.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
 
             int rememberChoice = player.choice;
-            Log.inst.RememberStep(troop, StepType.Revert, () => troop.MoveTroop(false, -1, rememberChoice, logged+1));
+            troop.MoveTroopRPC(rememberChoice, logged + 1);
             Log.inst.RememberStep(player, StepType.UndoPoint, () => player.MayPlayCard());
         }
     }

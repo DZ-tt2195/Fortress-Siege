@@ -51,8 +51,13 @@ public class MovingTroop : Entity
 
 #region Gameplay
 
+    public void MoveTroopRPC(int newPosition, int logged)
+    {
+        Log.inst.RememberStep(this, StepType.Revert, () => MoveTroop(false, this.currentRow, newPosition, logged));
+    }
+
     [PunRPC]
-    internal void MoveTroop(bool undo, int oldPosition, int newPosition, int logged)
+    void MoveTroop(bool undo, int oldPosition, int newPosition, int logged)
     {
         if (undo)
         {
@@ -120,16 +125,16 @@ public class MovingTroop : Entity
 
     public void RecalculateStats()
     {
-        calcPower = myPower;
-        calcHealth = myHealth;
-        Environment enviro = Manager.inst.allRows[currentRow].environment;
+        (int troopPower, int troopHealth) = myCard.PassiveStats(this);
+        calcPower = myPower + troopPower;
+        calcHealth = myHealth + troopHealth;
 
+        Environment enviro = Manager.inst.allRows[currentRow].environment;
         if (enviro != null)
         {
-            EnviroCard card = (EnviroCard)enviro.myCard;
-            (int power, int health) = card.EnviroStats(enviro, this);
-            calcPower += power;
-            calcHealth += health;
+            (int enviroPower, int enviroHealth) = enviro.myCard.PassiveStats(this, enviro);
+            calcPower += enviroPower;
+            calcHealth += enviroHealth;
         }
 
         powerText.text = calcPower.ToString();
@@ -145,11 +150,15 @@ public class MovingTroop : Entity
         {
             Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} attacks {opposingPlayer.name}'s {opposingTroop.name}.", logged);
             opposingTroop.ChangeStatsRPC(0, -this.calcPower, logged+1);
+            foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
+                card.CardAttacked(this, opposingTroop, logged);
         }
         else
         {
             Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} attacks {opposingPlayer.name}.", logged);
             opposingPlayer.myBase.ChangeHealthRPC(-this.calcPower, logged+1);
+            foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
+                card.CardAttacked(this, opposingPlayer.myBase, logged);
         }
     }
 

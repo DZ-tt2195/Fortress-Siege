@@ -12,7 +12,7 @@ public class HealthZone : EnviroCard
         Math();
     }
 
-    public override (int, int) EnviroStats(Environment enviro, MovingTroop troop)
+    public override (int, int) PassiveStats(MovingTroop troop, Environment enviro = null)
     {
         if (enviro.currentRow == troop.currentRow && enviro.player == troop.player)
             return (0, 3);

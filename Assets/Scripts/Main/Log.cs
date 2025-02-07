@@ -266,6 +266,7 @@ public class Log : PhotonCompatible
 
                 if (next == toThisPoint || i == 0)
                 {
+                    Manager.inst.CleanUp();
                     if (Manager.inst.currentPlayer.myType == PlayerType.Human)
                     {
                         currentDecisionInStack = -1;
@@ -322,6 +323,7 @@ public class Log : PhotonCompatible
     [PunRPC]
     void ResetHistory()
     {
+        Manager.inst.CleanUp();
         historyStack.Clear();
         undosInLog.Clear();
         DisplayUndoBar(false);

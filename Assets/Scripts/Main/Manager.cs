@@ -300,6 +300,7 @@ public class Manager : PhotonCompatible
     {
         foreach ((Card card, Entity entity) in GatherAbilities())
             card.StartOfCombat(entity, 1);
+        CleanUp();
 
         foreach (Row row in allRows)
         {
@@ -454,7 +455,7 @@ public class Manager : PhotonCompatible
             {
                 troop.RecalculateStats();
                 if (troop.calcHealth <= 0)
-                    Log.inst.RememberStep(troop, StepType.Revert, () => troop.MoveTroop(false, troop.currentRow, -1, -1));
+                    troop.MoveTroopRPC(-1, -1);
             }
         }
     }

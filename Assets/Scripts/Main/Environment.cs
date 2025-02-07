@@ -35,8 +35,13 @@ public class Environment : Entity
 
 #region Gameplay
 
+    public void MoveEnviroRPC(int newPosition, int logged)
+    {
+        Log.inst.RememberStep(this, StepType.Revert, () => MoveEnviro(false, this.currentRow, newPosition, logged));
+    }
+
     [PunRPC]
-    internal void MoveEnviro(bool undo, int oldPosition, int newPosition, int logged)
+    void MoveEnviro(bool undo, int oldPosition, int newPosition, int logged)
     {
         if (undo)
         {
@@ -68,8 +73,6 @@ public class Environment : Entity
         {
             player.availableEnviros.Add(this);
             this.transform.SetParent(null);
-            if (!undo)
-                Log.inst.AddText($"{player.name}'s {this.name} has been replaced.", logged);
         }
 
         Recalculate(oldPosition);

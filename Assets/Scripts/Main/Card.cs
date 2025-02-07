@@ -122,7 +122,7 @@ public class Card : PhotonCompatible
     {
     }
 
-    public virtual void CardAttacked()
+    public virtual void CardAttacked(MovingTroop attacker, Entity defender, int logged)
     {
     }
 
@@ -133,6 +133,11 @@ public class Card : PhotonCompatible
     public virtual int CoinEffect(Player player, Entity entity, int logged)
     {
         return 0;
+    }
+
+    public virtual (int, int) PassiveStats(MovingTroop troop, Environment enviro = null)
+    {
+        return (0, 0);
     }
 
 #endregion

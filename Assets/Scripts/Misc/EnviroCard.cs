@@ -66,19 +66,17 @@ public class EnviroCard : Card
 
             Environment existingEnviro = Manager.inst.allRows[rememberChoice].environment;
             if (existingEnviro != null)
-                Log.inst.RememberStep(existingEnviro, StepType.Revert, () => existingEnviro.MoveEnviro(false, rememberChoice, -1, logged + 1));
+            {
+                Log.inst.PreserveTextRPC($"{existingEnviro.player.name}'s {existingEnviro.name} has been replaced.", logged+1);
+                existingEnviro.MoveEnviroRPC(-1, logged + 1);
+            }
 
             Environment enviro = player.availableEnviros[0];
             Log.inst.RememberStep(enviro, StepType.Revert, () => enviro.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
 
-            Log.inst.RememberStep(enviro, StepType.Revert, () => enviro.MoveEnviro(false, -1, rememberChoice, logged + 1));
+            existingEnviro.MoveEnviroRPC(rememberChoice, logged + 1);
             Log.inst.RememberStep(player, StepType.UndoPoint, () => player.MayPlayCard());
         }
-    }
-
-    public virtual (int, int) EnviroStats(Environment enviro, MovingTroop troop)
-    {
-        return (0, 0);
     }
 
     #endregion
