@@ -114,15 +114,11 @@ public class Card : PhotonCompatible
 
 #region Abilities
 
-    public virtual void CardPlayed()
+    public virtual void OtherCardPlayed(Player player, Entity thisEntity, Entity playedEntity, int logged)
     {
     }
 
-    public virtual void CardDestroyed()
-    {
-    }
-
-    public virtual void CardAttacked(MovingTroop attacker, Entity defender, int logged)
+    public virtual void CardAttacked(Entity entity, MovingTroop attacker, Entity defender, int logged)
     {
     }
 

@@ -111,15 +111,15 @@ public class MovingTroop : Entity
         {
             myPower += power;
             if (power > 0)
-                Log.inst.AddText($"{player.name}'s {this.name} gains {power} power.", logged);
+                Log.inst.AddText($"{player.name}'s {this.name} gets +{power} Power.", logged);
             else if (power < 0)
-                Log.inst.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(power)} power.", logged);
+                Log.inst.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(power)} Power.", logged);
 
             myHealth += health;
             if (health > 0)
-                Log.inst.AddText($"{player.name}'s {this.name} gains {health} health.", logged);
+                Log.inst.AddText($"{player.name}'s {this.name} gets +{health} Health.", logged);
             else if (health < 0)
-                Log.inst.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(health)} health.", logged);
+                Log.inst.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(health)} Health.", logged);
         }
         RecalculateStats();
     }
@@ -148,7 +148,7 @@ public class MovingTroop : Entity
 
     public void Attack(int logged)
     {
-        Player opposingPlayer = Manager.inst.OtherPlayer(this.player);
+        Player opposingPlayer = Manager.inst.OpposingPlayer(this.player);
         MovingTroop opposingTroop = Manager.inst.FindOpposingTroop(this.player, this.currentRow);
 
         if (calcPower == 0)
@@ -159,13 +159,15 @@ public class MovingTroop : Entity
         {
             Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} attacks {opposingPlayer.name}'s {opposingTroop.name}.", logged);
             opposingTroop.ChangeStatsRPC(0, -this.calcPower, logged + 1);
-            myCard.CardAttacked(this, opposingTroop, logged + 1);
+            foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
+                card.CardAttacked(entity, this, opposingTroop, logged+1);
         }
         else
         {
             Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} attacks {opposingPlayer.name}.", logged);
             opposingPlayer.myBase.ChangeHealthRPC(-this.calcPower, logged + 1);
-            myCard.CardAttacked(this, opposingPlayer.myBase, logged + 1);
+            foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
+                card.CardAttacked(entity, this, opposingPlayer.myBase, logged+1);
         }
     }
 

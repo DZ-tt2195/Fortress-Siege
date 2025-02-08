@@ -71,9 +71,12 @@ public class EnviroCard : Card
                 existingEnviro.MoveEnviroRPC(-1, logged + 1);
             }
 
-            Environment enviro = player.availableEnviros[0];
-            Log.inst.RememberStep(enviro, StepType.Revert, () => enviro.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
-            enviro.MoveEnviroRPC(rememberChoice, logged + 1);
+            Environment newEnviro = player.availableEnviros[0];
+            Log.inst.RememberStep(newEnviro, StepType.Revert, () => newEnviro.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
+            newEnviro.MoveEnviroRPC(rememberChoice, logged + 1);
+
+            foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
+                card.OtherCardPlayed(player, entity, newEnviro, logged + 1);
 
             Log.inst.RememberStep(player, StepType.UndoPoint, () => player.MayPlayCard());
         }

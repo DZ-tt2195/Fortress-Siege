@@ -110,14 +110,11 @@ public class Player : PhotonCompatible
             newList.AddRange(CarryVariables.inst.cardScripts);
             List<string> shuffledCards = newList.Shuffle();
 
-            for (int j = 0; j < 2; j++)
+            for (int i = 0; i < shuffledCards.Count; i++)
             {
-                for (int i = 0; i < shuffledCards.Count; i++)
-                {
-                    int nextPosition = i;
-                    GameObject next = Manager.inst.MakeObject(CarryVariables.inst.cardPrefab.gameObject);
-                    DoFunction(() => AddCard(i, next.GetComponent<PhotonView>().ViewID, shuffledCards[i]), RpcTarget.AllBuffered);
-                }
+                int nextPosition = i;
+                GameObject next = Manager.inst.MakeObject(CarryVariables.inst.cardPrefab.gameObject);
+                DoFunction(() => AddCard(i, next.GetComponent<PhotonView>().ViewID, shuffledCards[i]), RpcTarget.AllBuffered);
             }
         }
     }
@@ -415,19 +412,18 @@ public class Player : PhotonCompatible
                     finishedChains.Add(currentChain);
 
                     Manager.inst.SimulateBattle();
-                    currentChain.math = PlayerScore(this.playerPosition) - PlayerScore(Manager.inst.OtherPlayer(this).playerPosition);
+                    currentChain.math = PlayerScore(this) - PlayerScore(Manager.inst.OpposingPlayer(this));
                     Debug.Log($"CHAIN ENDED with score {currentChain.math}. decisions: {currentChain.PrintDecisions()}");
                     currentChain = null;
 
-                    float PlayerScore(int playerPosition)
+                    float PlayerScore(Player player)
                     {
-                        Player player = Manager.inst.playersInOrder[playerPosition];
                         int answer = player.myBase.myHealth + player.cardsInHand.Count * 2;
 
                         foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
                             answer += card.CoinEffect(player, entity, -1);
 
-                        if (playerPosition == this.playerPosition)
+                        if (player == this)
                             answer -= coins*2;
 
                         foreach (Row row in Manager.inst.allRows)

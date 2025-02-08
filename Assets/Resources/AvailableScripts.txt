@@ -1,7 +1,11 @@
 {
   [
+    "Battlefield",
+    "DirectDamage",
+    "GrowShroom",
     "HealthBuff",
     "KiteFlyer",
+    "LikesEnviro",
     "Sunflower",
     "Trapper"
   ]

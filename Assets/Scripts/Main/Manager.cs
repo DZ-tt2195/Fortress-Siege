@@ -243,7 +243,7 @@ public class Manager : PhotonCompatible
         void TroopsAttack()
         {
             Log.inst.PreserveTextRPC("", 0);
-            Log.inst.PreserveTextRPC("Attack phase", 0);
+            Log.inst.PreserveTextRPC("Combat phase.", 0);
             SimulateBattle();
             Log.inst.ShareSteps();
             Continue();
@@ -371,12 +371,12 @@ public class Manager : PhotonCompatible
 
 #region Misc
 
-    public Player OtherPlayer(Player player)
+    public Player OpposingPlayer(Player player)
     {
-        return OtherPlayer(player.playerPosition);
+        return OpposingPlayer(player.playerPosition);
     }
 
-    public Player OtherPlayer(int position)
+    public Player OpposingPlayer(int position)
     {
         return (position == 0) ? playersInOrder[1] : playersInOrder[0];
     }

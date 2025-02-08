@@ -78,6 +78,10 @@ public class TroopCard : Card
 
             int rememberChoice = player.choice;
             troop.MoveTroopRPC(rememberChoice, logged + 1);
+
+            foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
+                card.OtherCardPlayed(player, entity, troop, logged+1);
+
             Log.inst.RememberStep(player, StepType.UndoPoint, () => player.MayPlayCard());
         }
     }

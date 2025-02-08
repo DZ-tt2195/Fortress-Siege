@@ -14,9 +14,9 @@ public class KiteFlyer : TroopCard
         Math();
     }
 
-    public override void CardAttacked(MovingTroop attacker, Entity defender, int logged)
+    public override void CardAttacked(Entity entity, MovingTroop attacker, Entity defender, int logged)
     {
-        if (attacker.myCard == this)
+        if (entity == attacker)
             attacker.player.DrawCardRPC(1, logged);
     }
 }

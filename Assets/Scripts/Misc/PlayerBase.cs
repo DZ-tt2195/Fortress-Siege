@@ -53,9 +53,9 @@ public class PlayerBase : Entity
         {
             myHealth += health;
             if (health > 0)
-                Log.inst.AddText($"{player.name} gains {health} health.", logged);
+                Log.inst.AddText($"{player.name} gets +{health} Health.", logged);
             else if (health < 0)
-                Log.inst.AddText($"{player.name} loses {Mathf.Abs(health)} health.", logged);
+                Log.inst.AddText($"{player.name} loses {Mathf.Abs(health)} Health.", logged);
         }
     }
 }
