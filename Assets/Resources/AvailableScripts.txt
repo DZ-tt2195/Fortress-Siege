@@ -1,6 +1,6 @@
 {
   [
-    "HealthZone",
+    "HealthBuff",
     "KiteFlyer",
     "Sunflower",
     "Trapper"

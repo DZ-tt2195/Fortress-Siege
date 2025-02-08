@@ -227,7 +227,7 @@ public class Log : PhotonCompatible
         if (undoToThis != null)
         {
             undoToThis = null;
-            Debug.Log("undo point cancelled");
+            //Debug.Log("undo point cancelled");
         }
         DisplayUndoBar(false);
 

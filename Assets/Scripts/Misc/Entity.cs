@@ -9,7 +9,7 @@ public class Entity : PhotonCompatible, IPointerClickHandler
 
     public Player player { get; protected set; }
     public int currentRow { get; protected set; }
-    public Card myCard;
+    public Card myCard { get; protected set; }
 
     protected override void Awake()
     {

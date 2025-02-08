@@ -37,7 +37,8 @@ public class Environment : Entity
 
     public void MoveEnviroRPC(int newPosition, int logged)
     {
-        Log.inst.RememberStep(this, StepType.Revert, () => MoveEnviro(false, this.currentRow, newPosition, logged));
+        int oldRow = this.currentRow;
+        Log.inst.RememberStep(this, StepType.Revert, () => MoveEnviro(false, oldRow, newPosition, logged));
     }
 
     [PunRPC]

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class HealthZone : EnviroCard
+public class HealthBuff : EnviroCard
 {
     protected override void Awake()
     {

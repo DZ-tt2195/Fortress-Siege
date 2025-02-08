@@ -162,7 +162,7 @@ public class Player : PhotonCompatible
                 pv.Owner.NickName = this.name;
             }
 
-            DrawCardRPC(4, -1);
+            //DrawCardRPC(4, -1);
             Manager.inst.DoFunction(() => Manager.inst.PlayerDone());
         }
     }

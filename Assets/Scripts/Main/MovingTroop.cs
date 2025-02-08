@@ -53,7 +53,8 @@ public class MovingTroop : Entity
 
     public void MoveTroopRPC(int newPosition, int logged)
     {
-        Log.inst.RememberStep(this, StepType.Revert, () => MoveTroop(false, this.currentRow, newPosition, logged));
+        int oldRow = this.currentRow;
+        Log.inst.RememberStep(this, StepType.Revert, () => MoveTroop(false, oldRow, newPosition, logged));
     }
 
     [PunRPC]
@@ -141,24 +142,30 @@ public class MovingTroop : Entity
         heartText.text = calcHealth.ToString();
     }
 
+    #endregion
+
+#region Attacking
+
     public void Attack(int logged)
     {
         Player opposingPlayer = Manager.inst.OtherPlayer(this.player);
         MovingTroop opposingTroop = Manager.inst.FindOpposingTroop(this.player, this.currentRow);
 
-        if (opposingTroop != null)
+        if (calcPower == 0)
+        {
+            Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} has 0 Power.", logged);
+        }
+        else if (opposingTroop != null)
         {
             Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} attacks {opposingPlayer.name}'s {opposingTroop.name}.", logged);
-            opposingTroop.ChangeStatsRPC(0, -this.calcPower, logged+1);
-            foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
-                card.CardAttacked(this, opposingTroop, logged);
+            opposingTroop.ChangeStatsRPC(0, -this.calcPower, logged + 1);
+            myCard.CardAttacked(this, opposingTroop, logged + 1);
         }
         else
         {
             Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} attacks {opposingPlayer.name}.", logged);
-            opposingPlayer.myBase.ChangeHealthRPC(-this.calcPower, logged+1);
-            foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
-                card.CardAttacked(this, opposingPlayer.myBase, logged);
+            opposingPlayer.myBase.ChangeHealthRPC(-this.calcPower, logged + 1);
+            myCard.CardAttacked(this, opposingPlayer.myBase, logged + 1);
         }
     }
 

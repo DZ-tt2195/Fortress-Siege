@@ -73,8 +73,8 @@ public class EnviroCard : Card
 
             Environment enviro = player.availableEnviros[0];
             Log.inst.RememberStep(enviro, StepType.Revert, () => enviro.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
+            enviro.MoveEnviroRPC(rememberChoice, logged + 1);
 
-            existingEnviro.MoveEnviroRPC(rememberChoice, logged + 1);
             Log.inst.RememberStep(player, StepType.UndoPoint, () => player.MayPlayCard());
         }
     }
