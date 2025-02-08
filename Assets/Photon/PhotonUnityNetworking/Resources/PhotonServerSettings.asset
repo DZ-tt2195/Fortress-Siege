@@ -95,6 +95,7 @@ MonoBehaviour:
   - MoveEnviro
   - AddEnviro
   - ChangeStats
+  - DrawFromDeck
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 0

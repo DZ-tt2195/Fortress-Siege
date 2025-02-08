@@ -32,10 +32,6 @@ public class Manager : PhotonCompatible
     int turnNumber = 0;
     List<Action> actionStack = new();
     int currentStep = -1;
-
-    [Foldout("Cards", true)]
-    public Transform deck;
-    public Transform discard;
     public List<Row> allRows = new();
 
     [Foldout("UI and Animation", true)]
@@ -89,17 +85,6 @@ public class Manager : PhotonCompatible
         foreach (Row row in allRows)
             row.playerTroops = new MovingTroop[2];
 
-        if (PhotonNetwork.IsMasterClient)
-        {
-            while (deck.childCount < 20)
-            {
-                for (int i = 0; i < CarryVariables.inst.cardScripts.Count; i++)
-                {
-                    GameObject next = MakeObject(CarryVariables.inst.cardPrefab.gameObject);
-                    DoFunction(() => AddCard(next.GetComponent<PhotonView>().ViewID, CarryVariables.inst.cardScripts[i]), RpcTarget.AllBuffered);
-                }
-            }
-        }
         StartCoroutine(Setup());
     }
 
@@ -140,7 +125,6 @@ public class Manager : PhotonCompatible
 
     void ReadySetup()
     {
-        deck.Shuffle();
         storePlayers.Shuffle();
 
         for (int i = 0; i < storePlayers.childCount; i++)
@@ -158,17 +142,6 @@ public class Manager : PhotonCompatible
         playersInOrder.Insert(position, nextPlayer);
         instructions.text = "";
         nextPlayer.AssignInfo(position, (PlayerType)playerType);
-    }
-
-    [PunRPC]
-    void AddCard(int ID, string cardName)
-    {
-        GameObject nextObject = PhotonView.Find(ID).gameObject;
-        nextObject.name = cardName;
-        nextObject.transform.SetParent(deck);
-        nextObject.transform.localPosition = new(250, 10000);
-        Type type = Type.GetType(cardName.Replace(" ", ""));
-        nextObject.AddComponent(type);
     }
 
     int waiting = 2;
@@ -248,7 +221,7 @@ public class Manager : PhotonCompatible
 
             foreach (Player player in playersInOrder)
             {
-                player.DrawCardRPC(host.realTimePlayer, 1, 1);
+                player.DrawCardRPC(1, 1);
                 Log.inst.RememberStep(player, StepType.Revert, () => player.GainLoseCoin(false, -1 * player.coins, -1));
 
                 int playerCoins = turnNumber;
@@ -453,9 +426,12 @@ public class Manager : PhotonCompatible
         {
             foreach (MovingTroop troop in row.playerTroops)
             {
-                troop.RecalculateStats();
-                if (troop.calcHealth <= 0)
-                    troop.MoveTroopRPC(-1, -1);
+                if (troop != null)
+                {
+                    troop.RecalculateStats();
+                    if (troop.calcHealth <= 0)
+                        troop.MoveTroopRPC(-1, -1);
+                }
             }
         }
     }

@@ -52,9 +52,13 @@ public class Player : PhotonCompatible
     public Photon.Realtime.Player realTimePlayer { get; private set; }
     public int coins { get; private set; }
     public PlayerBase myBase { get; private set; }
-    public List<Card> cardsInHand = new();
     public List<MovingTroop> availableTroops = new();
     public List<Environment> availableEnviros = new();
+
+    [Foldout("Cards", true)]
+    public List<Card> cardsInHand = new();
+    [SerializeField] Transform deck;
+    [SerializeField] Transform discard;
 
     [Foldout("UI", true)]
     [SerializeField] TMP_Text resourceText;
@@ -93,7 +97,41 @@ public class Player : PhotonCompatible
                 DoFunction(() => SendName("Computer"), RpcTarget.AllBuffered);
             else
                 DoFunction(() => SendName(PlayerPrefs.GetString("Online Username")), RpcTarget.AllBuffered);
+
+            for (int i = 0; i < 5; i++)
+            {
+                GameObject nextTroop = Manager.inst.MakeObject(CarryVariables.inst.movingTroopPrefab);
+                DoFunction(() => AddTroop(nextTroop.GetComponent<PhotonView>().ViewID));
+                GameObject nextEnviro = Manager.inst.MakeObject(CarryVariables.inst.environmentPrefab);
+                DoFunction(() => AddEnviro(nextEnviro.GetComponent<PhotonView>().ViewID));
+            }
+
+            List<string> newList = new();
+            newList.AddRange(CarryVariables.inst.cardScripts);
+            List<string> shuffledCards = newList.Shuffle();
+
+            for (int j = 0; j < 2; j++)
+            {
+                for (int i = 0; i < shuffledCards.Count; i++)
+                {
+                    int nextPosition = i;
+                    GameObject next = Manager.inst.MakeObject(CarryVariables.inst.cardPrefab.gameObject);
+                    DoFunction(() => AddCard(i, next.GetComponent<PhotonView>().ViewID, shuffledCards[i]), RpcTarget.AllBuffered);
+                }
+            }
         }
+    }
+
+    [PunRPC]
+    void AddCard(int position, int ID, string cardName)
+    {
+        GameObject nextObject = PhotonView.Find(ID).gameObject;
+        nextObject.name = cardName;
+        nextObject.transform.SetParent(deck);
+        nextObject.transform.SetSiblingIndex(position);
+        nextObject.transform.localPosition = new(0, -10000);
+        Type type = Type.GetType(cardName.Replace(" ", ""));
+        nextObject.AddComponent(type);
     }
 
     [PunRPC]
@@ -113,14 +151,6 @@ public class Player : PhotonCompatible
         if (PhotonNetwork.IsConnected)
             realTimePlayer = PhotonNetwork.PlayerList[pv.OwnerActorNr - 1];
 
-        for (int i = 0; i < 5; i++)
-        {
-            GameObject nextTroop = Manager.inst.MakeObject(CarryVariables.inst.movingTroopPrefab);
-            DoFunction(() => AddTroop(nextTroop.GetComponent<PhotonView>().ViewID));
-            GameObject nextEnviro = Manager.inst.MakeObject(CarryVariables.inst.environmentPrefab);
-            DoFunction(() => AddEnviro(nextEnviro.GetComponent<PhotonView>().ViewID));
-        }
-
         if (InControl())
         {
             GameObject obj = Manager.inst.MakeObject(CarryVariables.inst.playerBasePrefab.gameObject);
@@ -131,15 +161,9 @@ public class Player : PhotonCompatible
                 Invoke(nameof(MoveScreen), 0.2f);
                 pv.Owner.NickName = this.name;
             }
-            StartCoroutine(DelayDraw());
 
-            IEnumerator DelayDraw()
-            {
-                if (this.myType == PlayerType.Computer)
-                    yield return new WaitForSeconds(0.2f);
-                DrawCardRPC(null, 4, -1);
-                Manager.inst.DoFunction(() => Manager.inst.PlayerDone());
-            }
+            DrawCardRPC(4, -1);
+            Manager.inst.DoFunction(() => Manager.inst.PlayerDone());
         }
     }
 
@@ -170,40 +194,30 @@ public class Player : PhotonCompatible
 
 #region Draw Card
 
-    public void DrawCardRPC(Photon.Realtime.Player source, int cardAmount, int logged)
+    public void DrawCardRPC(int cardAmount, int logged)
     {
-        DoFunction(() => FindCardsFromDeck(source, cardAmount, logged), RpcTarget.MasterClient);
-    }
-
-    [PunRPC]
-    void FindCardsFromDeck(Photon.Realtime.Player source, int cardsToDraw, int logged)
-    {
-        for (int i = 0; i < cardsToDraw; i++)
+        for (int i = 0; i < cardAmount; i++)
         {
-            Card card = Manager.inst.deck.GetChild(0).GetComponent<Card>();
-            card.transform.SetParent(null);
-            DoFunction(() => PutInHandRPC(card.pv.ViewID, logged), source);
+            Card card = deck.GetChild(0).GetComponent<Card>();
+            Log.inst.RememberStep(this, StepType.Revert, () => DrawFromDeck(false, card.pv.ViewID, logged));
         }
     }
 
     [PunRPC]
-    void PutInHandRPC(int card, int logged)
+    void DrawFromDeck(bool undo, int PV, int logged)
     {
-        Log.inst.RememberStep(this, StepType.Revert, () => AddToHand(false, card, logged));
-    }
+        Card card = PhotonView.Find(PV).GetComponent<Card>();
 
-    [PunRPC]
-    void AddToHand(bool undo, int PV, int logged)
-    {
         if (undo)
         {
-            DoFunction(() => ReturnPlayerCardToDeck(PV), RpcTarget.MasterClient);
+            cardsInHand.Remove(card);
+            card.transform.SetParent(deck.transform);
+            card.transform.SetAsFirstSibling();
+            StartCoroutine(card.MoveCard(new(0, -10000), 0.25f, Vector3.one));
         }
         else
         {
-            Card card = PhotonView.Find(PV).GetComponent<Card>();
             PutCardInHand(card);
-
             if (InControl() && myType == PlayerType.Human)
                 Log.inst.AddText($"{this.name} draws {card.name}.", logged);
             else
@@ -212,23 +226,12 @@ public class Player : PhotonCompatible
         SortHand();
     }
 
-    [PunRPC]
-    void ReturnPlayerCardToDeck(int PV)
-    {
-        Card card = PhotonView.Find(PV).GetComponent<Card>();
-        cardsInHand.Remove(card);
-        card.transform.SetParent(Manager.inst.deck);
-        card.transform.SetAsFirstSibling();
-        StartCoroutine(card.MoveCard(new(0, -10000), 0.25f, Vector3.one));
-    }
-
     void PutCardInHand(Card card)
     {
         cardsInHand.Add(card);
         card.transform.localPosition = new Vector2(0, -1100);
         card.layout.FillInCards(card);
         card.layout.cg.alpha = 0;
-        SortHand();
     }
 
     public void SortHand()
@@ -282,7 +285,7 @@ public class Player : PhotonCompatible
         else
         {
             cardsInHand.Remove(card);
-            card.transform.SetParent(Manager.inst.discard);
+            card.transform.SetParent(discard);
             Log.inst.AddText($"{this.name} discards {card.name}.", logged);
             StartCoroutine(card.MoveCard(new(0, -10000), 0.25f, Vector3.one));
         }
