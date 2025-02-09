@@ -223,7 +223,7 @@ public class Player : PhotonCompatible
         SortHand();
     }
 
-    void PutCardInHand(Card card)
+    public void PutCardInHand(Card card)
     {
         cardsInHand.Add(card);
         card.transform.localPosition = new Vector2(0, -1100);

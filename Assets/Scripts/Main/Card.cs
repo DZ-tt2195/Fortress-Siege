@@ -110,6 +110,13 @@ public class Card : PhotonCompatible
         player.PopStack();
     }
 
+    public virtual void DonePlaying(Player player, Entity createdEntity, int logged)
+    {
+        foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
+            card.OtherCardPlayed(player, entity, createdEntity, logged);
+        Log.inst.RememberStep(player, StepType.UndoPoint, () => player.MayPlayCard());
+    }
+
     #endregion
 
 #region Abilities

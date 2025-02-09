@@ -6,6 +6,7 @@
     "HealthBuff",
     "KiteFlyer",
     "LikesEnviro",
+    "Pumpkin",
     "Sunflower",
     "Trapper"
   ]

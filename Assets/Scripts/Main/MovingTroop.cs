@@ -15,6 +15,7 @@ public class MovingTroop : Entity
 
     public int calcHealth { get; private set; }
     public int calcPower { get; private set; }
+    public bool stunned { get; private set; }
 
     protected override void Awake()
     {
@@ -151,7 +152,11 @@ public class MovingTroop : Entity
         Player opposingPlayer = Manager.inst.OpposingPlayer(this.player);
         MovingTroop opposingTroop = Manager.inst.FindOpposingTroop(this.player, this.currentRow);
 
-        if (calcPower == 0)
+        if (stunned)
+        {
+            this.StunStatusRPC(false, logged);
+        }
+        else if (calcPower == 0)
         {
             Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} has 0 Power.", logged);
         }
@@ -168,6 +173,28 @@ public class MovingTroop : Entity
             opposingPlayer.myBase.ChangeHealthRPC(-this.calcPower, logged + 1);
             foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
                 card.CardAttacked(entity, this, opposingPlayer.myBase, logged+1);
+        }
+    }
+
+    public void StunStatusRPC(bool stunned, int logged)
+    {
+        Log.inst.RememberStep(this, StepType.Revert, () => StunStatus(false, stunned, logged));
+    }
+
+    [PunRPC]
+    void StunStatus(bool undo, bool newStatus, int logged)
+    {
+        if (undo)
+        {
+            stunned = !newStatus;
+        }
+        else
+        {
+            stunned = newStatus;
+            if (newStatus)
+                Log.inst.AddText($"{player.name}'s {this.name} is Stunned.", logged);
+            else
+                Log.inst.AddText($"{player.name}'s {this.name} is no longer Stunned.", logged);
         }
     }
 

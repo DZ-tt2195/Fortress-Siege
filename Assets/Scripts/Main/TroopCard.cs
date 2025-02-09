@@ -1,14 +1,16 @@
-using System;
-using System.Collections.Generic;
-using Photon.Pun;
 using UnityEngine;
+using Photon.Pun;
+using System.Collections.Generic;
 
-public class EnviroCard : Card
+public class TroopCard : Card
 {
 
 #region Setup
 
+    public int power { get; protected set; }
+    public int health { get; protected set; }
     protected int abilityValue;
+    List<Row> canPlayInColumn = new();
 
     protected override void Awake()
     {
@@ -18,7 +20,7 @@ public class EnviroCard : Card
 
     protected float Math()
     {
-        float math = (-2 - this.coinCost * 2) + ((6f/2) + abilityValue);
+        float math = (-2 - this.coinCost*2) + (health + power + abilityValue);
         if (Mathf.Abs(math) >= 1f)
             Debug.Log($"{this.name}'s math: {math}");
         return math;
@@ -26,12 +28,21 @@ public class EnviroCard : Card
 
     public override Color MyColor()
     {
-        return Color.blue;
+        return Color.red;
     }
 
     #endregion
 
 #region Gameplay
+
+    public override bool CanPlayMe(Player player, bool pay)
+    {
+        canPlayInColumn = player.FilterRows(false);
+        if (canPlayInColumn.Count >= 1)
+            return base.CanPlayMe(player, pay);
+        else
+            return false;
+    }
 
     public override void OnPlayEffect(Player player, int logged)
     {
@@ -46,39 +57,28 @@ public class EnviroCard : Card
             {
                 int next = player.currentChain.decisions[player.chainTracker];
                 //Debug.Log($"resolved choose row with choice {next}");
-                player.inReaction.Add(PlayEnviro);
+                player.inReaction.Add(PlayTroop);
                 player.DecisionMade(next);
             }
             else
             {
                 //Debug.Log($"add rows: {player.chainTracker}, {player.currentChain.decisions.Count}");
-                player.NewChains(0, 5, 0);
+                player.NewChains(0, canPlayInColumn.Count, 0);
             }
         }
         else if (player.myType == PlayerType.Human)
         {
-            player.ChooseRow(Manager.inst.allRows, $"Where to play {this.name}?", PlayEnviro);
+            player.ChooseRow(canPlayInColumn, $"Where to play {this.name}?", PlayTroop);
         }
 
-        void PlayEnviro()
+        void PlayTroop()
         {
             int rememberChoice = player.choice;
+            MovingTroop newTroop = player.availableTroops[0];
+            Log.inst.RememberStep(newTroop, StepType.Revert, () => newTroop.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
 
-            Environment existingEnviro = Manager.inst.allRows[rememberChoice].environment;
-            if (existingEnviro != null)
-            {
-                Log.inst.PreserveTextRPC($"{existingEnviro.player.name}'s {existingEnviro.name} has been replaced.", logged+1);
-                existingEnviro.MoveEnviroRPC(-1, logged + 1);
-            }
-
-            Environment newEnviro = player.availableEnviros[0];
-            Log.inst.RememberStep(newEnviro, StepType.Revert, () => newEnviro.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
-            newEnviro.MoveEnviroRPC(rememberChoice, logged + 1);
-
-            foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
-                card.OtherCardPlayed(player, entity, newEnviro, logged + 1);
-
-            Log.inst.RememberStep(player, StepType.UndoPoint, () => player.MayPlayCard());
+            newTroop.MoveTroopRPC(rememberChoice, logged + 1);
+            DonePlaying(player, newTroop, logged + 1);
         }
     }
 
