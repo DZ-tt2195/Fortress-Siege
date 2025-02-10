@@ -8,6 +8,7 @@
     "LikesEnviro",
     "Pumpkin",
     "Sunflower",
-    "Trapper"
+    "Trapper",
+    "TrashCan"
   ]
 }

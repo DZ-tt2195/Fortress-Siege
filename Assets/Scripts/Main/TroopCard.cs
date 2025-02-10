@@ -9,7 +9,6 @@ public class TroopCard : Card
 
     public int power { get; protected set; }
     public int health { get; protected set; }
-    protected int abilityValue;
     List<Row> canPlayInColumn = new();
 
     protected override void Awake()

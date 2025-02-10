@@ -8,8 +8,6 @@ public class EnviroCard : Card
 
 #region Setup
 
-    protected int abilityValue;
-
     protected override void Awake()
     {
         base.Awake();

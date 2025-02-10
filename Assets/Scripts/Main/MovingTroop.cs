@@ -12,10 +12,11 @@ public class MovingTroop : Entity
 
     int myHealth;
     int myPower;
-
     public int calcHealth { get; private set; }
     public int calcPower { get; private set; }
+
     public bool stunned { get; private set; }
+    public bool shielded { get; private set; }
 
     protected override void Awake()
     {
@@ -97,6 +98,21 @@ public class MovingTroop : Entity
 
     public void ChangeStatsRPC(int power, int health, int logged)
     {
+        if (power < 0 || health < 0)
+        {
+            if (power < 0)
+            {
+                Log.inst.AddText($"{player.name}'s {this.name} would lose {Mathf.Abs(power)} Power.", logged);
+                power = 0;
+            }
+            if (health < 0)
+            {
+                Log.inst.AddText($"{player.name}'s {this.name} would lose {Mathf.Abs(health)} Health.", logged);
+                health = 0;
+            }
+            ShieldStatusRPC(false, logged);
+        }
+
         Log.inst.RememberStep(this, StepType.Revert, () => ChangeStats(false, power, health, logged));
     }
 
@@ -143,10 +159,6 @@ public class MovingTroop : Entity
         heartText.text = calcHealth.ToString();
     }
 
-    #endregion
-
-#region Attacking
-
     public void Attack(int logged)
     {
         Player opposingPlayer = Manager.inst.OpposingPlayer(this.player);
@@ -173,6 +185,32 @@ public class MovingTroop : Entity
             opposingPlayer.myBase.ChangeHealthRPC(-this.calcPower, logged + 1);
             foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
                 card.CardAttacked(entity, this, opposingPlayer.myBase, logged+1);
+        }
+    }
+
+    #endregion
+
+#region Statuses
+
+    public void ShieldStatusRPC(bool shielded, int logged)
+    {
+        Log.inst.RememberStep(this, StepType.Revert, () => ShieldStatus(false, shielded, logged));
+    }
+
+    [PunRPC]
+    void ShieldStatus(bool undo, bool newStatus, int logged)
+    {
+        if (undo)
+        {
+            shielded = !newStatus;
+        }
+        else
+        {
+            shielded = newStatus;
+            if (newStatus)
+                Log.inst.AddText($"{player.name}'s {this.name} is Shielded.", logged);
+            else
+                Log.inst.AddText($"{player.name}'s {this.name} is no longer Shielded.", logged);
         }
     }
 

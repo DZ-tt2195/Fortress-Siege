@@ -302,6 +302,22 @@ public class Manager : PhotonCompatible
         CleanUp();
     }
 
+    public void CleanUp()
+    {
+        foreach (Row row in allRows)
+        {
+            foreach (MovingTroop troop in row.playerTroops)
+            {
+                if (troop != null)
+                {
+                    troop.RecalculateStats();
+                    if (troop.calcHealth <= 0)
+                        troop.MoveTroopRPC(-1, -1);
+                }
+            }
+        }
+    }
+
     #endregion
 
 #region Ending
@@ -391,6 +407,14 @@ public class Manager : PhotonCompatible
         return null;
     }
 
+    public MovingTroop FindOpposingTroop(Player player, int row)
+    {
+        if (player.playerPosition == 0)
+            return allRows[row].playerTroops[1];
+        else
+            return allRows[row].playerTroops[0];
+    }
+
     [PunRPC]
     internal void SetCurrentPlayer(int playerPosition)
     {
@@ -410,30 +434,6 @@ public class Manager : PhotonCompatible
                 listOfCards.Add((row.playerTroops[1].myCard, row.playerTroops[1]));
         }
         return listOfCards;
-    }
-
-    public MovingTroop FindOpposingTroop(Player player, int row)
-    {
-        if (player.playerPosition == 0)
-            return allRows[row].playerTroops[1];
-        else
-            return allRows[row].playerTroops[0];
-    }
-
-    public void CleanUp()
-    {
-        foreach (Row row in allRows)
-        {
-            foreach (MovingTroop troop in row.playerTroops)
-            {
-                if (troop != null)
-                {
-                    troop.RecalculateStats();
-                    if (troop.calcHealth <= 0)
-                        troop.MoveTroopRPC(-1, -1);
-                }
-            }
-        }
     }
 
     #endregion

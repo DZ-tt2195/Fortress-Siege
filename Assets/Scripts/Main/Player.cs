@@ -313,7 +313,7 @@ public class Player : PhotonCompatible
 #region Main Turn
 
     [PunRPC]
-    public void YourTurn()
+    internal void YourTurn()
     {
         Log.inst.historyStack.Clear();
         Log.inst.currentDecisionInStack = -1;
@@ -333,37 +333,37 @@ public class Player : PhotonCompatible
         {
             currentChain = new(Log.inst.historyStack[0]);
             chainsToResolve.Add(currentChain);
-            StartCoroutine(SimulateGame());
+            StartCoroutine(FindAIRoute());
         }
         else
         {
             PopStack();
         }
+    }
 
-        IEnumerator SimulateGame()
+    IEnumerator FindAIRoute()
+    {
+        yield return new WaitForSeconds(1f);
+        PopStack();
+
+        while (chainsToResolve.Count > 0)
         {
-            yield return new WaitForSeconds(1f);
-            PopStack();
-
-            while (chainsToResolve.Count > 0)
-            {
-                yield return null;
-            }
-
-            Debug.Log($"{finishedChains.Count} chains finished");
-            finishedChains = finishedChains.Shuffle();
-            currentChain = finishedChains.OrderByDescending(chain => chain.math).FirstOrDefault();
-            chainTracker = -1;
-
-            string answer = $"Best chain: {currentChain.math} -> ";
-            foreach (int nextInt in currentChain.decisions)
-                answer += $"{nextInt} ";
-            Debug.Log(answer);
-
-            finishedChains.Clear();
-            Log.inst.RememberStep(this, StepType.UndoPoint, () => MayPlayCard());
-            PopStack();
+            yield return null;
         }
+
+        Debug.Log($"{finishedChains.Count} chains finished");
+        finishedChains = finishedChains.Shuffle();
+        currentChain = finishedChains.OrderByDescending(chain => chain.math).FirstOrDefault();
+        chainTracker = -1;
+
+        string answer = $"Best chain: {currentChain.math} -> ";
+        foreach (int nextInt in currentChain.decisions)
+            answer += $"{nextInt} ";
+        Debug.Log(answer);
+
+        finishedChains.Clear();
+        Log.inst.RememberStep(this, StepType.UndoPoint, () => MayPlayCard());
+        PopStack();
     }
 
     internal void MayPlayCard()
@@ -407,37 +407,7 @@ public class Player : PhotonCompatible
             {
                 if (myType == PlayerType.Computer && !currentChain.complete)
                 {
-                    currentChain.complete = true;
-                    chainsToResolve.Remove(currentChain);
-                    finishedChains.Add(currentChain);
-
-                    Manager.inst.SimulateBattle();
-                    currentChain.math = PlayerScore(this) - PlayerScore(Manager.inst.OpposingPlayer(this));
-                    Debug.Log($"CHAIN ENDED with score {currentChain.math}. decisions: {currentChain.PrintDecisions()}");
-                    currentChain = null;
-
-                    float PlayerScore(Player player)
-                    {
-                        int answer = player.myBase.myHealth + player.cardsInHand.Count * 2;
-
-                        foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
-                            answer += card.CoinEffect(player, entity, -1);
-
-                        if (player == this)
-                            answer -= coins*2;
-
-                        foreach (Row row in Manager.inst.allRows)
-                        {
-                            MovingTroop troop = row.playerTroops[playerPosition];
-                            if (troop != null && troop.calcHealth >= 1)
-                                answer += troop.calcPower + troop.calcHealth;
-                        }
-
-                        if (player.myBase.myHealth <= 0)
-                            return -Mathf.Infinity;
-                        else
-                            return answer;
-                    }
+                    FinishChain();
                 }
                 else
                 {
@@ -447,6 +417,41 @@ public class Player : PhotonCompatible
                     Manager.inst.DoFunction(() => Manager.inst.Continue());
                 }
             }
+        }
+    }
+
+    void FinishChain()
+    {
+        currentChain.complete = true;
+        chainsToResolve.Remove(currentChain);
+        finishedChains.Add(currentChain);
+
+        Manager.inst.SimulateBattle();
+        currentChain.math = PlayerScore(this) - PlayerScore(Manager.inst.OpposingPlayer(this));
+        Debug.Log($"CHAIN ENDED with score {currentChain.math}. decisions: {currentChain.PrintDecisions()}");
+        currentChain = null;
+
+        float PlayerScore(Player player)
+        {
+            int answer = player.myBase.myHealth + player.cardsInHand.Count * 2;
+
+            foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
+                answer += card.CoinEffect(player, entity, -1);
+
+            if (player == this)
+                answer -= coins * 2;
+
+            foreach (Row row in Manager.inst.allRows)
+            {
+                MovingTroop troop = row.playerTroops[playerPosition];
+                if (troop != null && troop.calcHealth >= 1)
+                    answer += troop.calcPower + troop.calcHealth;
+            }
+
+            if (player.myBase.myHealth <= 0)
+                return -Mathf.Infinity;
+            else
+                return answer;
         }
     }
 
