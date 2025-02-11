@@ -20,7 +20,6 @@ public class KeywordTooltip : MonoBehaviour
     float Ydisplace;
     [SerializeField] List<KeywordHover> linkedKeywords = new();
     [SerializeField] List<KeywordHover> spriteKeywords = new();
-    [SerializeField] List<KeywordHover> spriteKeywordStatuses = new();
     [SerializeField] TMP_Text tooltipText;
 
     private void Awake()
@@ -36,13 +35,11 @@ public class KeywordTooltip : MonoBehaviour
             hover.description = EditText(hover.description);
         foreach (KeywordHover hover in spriteKeywords)
             hover.description = EditText(hover.description);
-        foreach (KeywordHover hover in spriteKeywordStatuses)
-            hover.description = EditText(hover.description);
     }
 
     public string EditText(string text)
     {
-        string answer = text;
+        string answer = Regex.Replace(text, "(?<=[a-z])(?=[A-Z])", " ");
         foreach (KeywordHover link in linkedKeywords)
         {
             foreach (string keyword in link.keywordVariations)
@@ -53,11 +50,8 @@ public class KeywordTooltip : MonoBehaviour
         }
         foreach (KeywordHover link in spriteKeywords)
         {
-            answer = answer.Replace(link.keywordVariations[0], $"<link=\"{link.keywordVariations[0]}\"><sprite=\"Symbols\" name=\"{link.keywordVariations[0]}\"></link>");
-        }
-        foreach (KeywordHover link in spriteKeywordStatuses)
-        {
-            answer = answer.Replace(link.keywordVariations[0], $"<link=\"{link.keywordVariations[0]}\"><sprite=\"Statuses\" name=\"{link.keywordVariations[0]}\"></link>");
+            string toReplace = link.keywordVariations[0];
+            answer = answer.Replace(toReplace, $"<link=\"{toReplace}\"><sprite=\"{toReplace}\" name=\"{toReplace}\"></link>");
         }
         return answer;
     }
@@ -73,11 +67,6 @@ public class KeywordTooltip : MonoBehaviour
             }
         }
         foreach (KeywordHover link in spriteKeywords)
-        {
-            if (link.keywordVariations[0].Equals(target))
-                return link;
-        }
-        foreach (KeywordHover link in spriteKeywordStatuses)
         {
             if (link.keywordVariations[0].Equals(target))
                 return link;
@@ -117,15 +106,6 @@ public class KeywordTooltip : MonoBehaviour
             }
         }
         foreach (KeywordHover entry in spriteKeywords)
-        {
-            if (entry.keywordVariations[0].Equals(target))
-            {
-                tooltipText.text = entry.description;
-                tooltipText.transform.parent.position = CalculatePosition(mousePosition);
-                return;
-            }
-        }
-        foreach (KeywordHover entry in spriteKeywordStatuses)
         {
             if (entry.keywordVariations[0].Equals(target))
             {

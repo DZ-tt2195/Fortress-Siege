@@ -17,7 +17,7 @@ public class EnviroCard : Card
     protected float Math()
     {
         float math = (-2 - this.coinCost * 2) + ((6f/2) + abilityValue);
-        if (Mathf.Abs(math) >= 1f)
+        if (Mathf.Abs(math) >= 2f)
             Debug.Log($"{this.name}'s math: {math}");
         return math;
     }

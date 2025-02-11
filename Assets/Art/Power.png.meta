@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e1da2a8a3a5db4aa1868f3c017c40721
+guid: 622f0a73dbf714eb6ab01d0178f6ebeb
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8630923909508717717
-    second: Health_0
+      213: -1344053862893166480
+    second: Power_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Health_0
+      name: Power_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 428
-        height: 379
+        x: 15
+        y: 3
+        width: 620
+        height: 591
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b63ae42de6cc83880800000000000000
-      internalID: -8630923909508717717
+      spriteID: 070e24ff126f85de0800000000000000
+      internalID: -1344053862893166480
       vertices: []
       indices: 
       edges: []
@@ -172,7 +172,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Health_0: -8630923909508717717
+      Power_0: -1344053862893166480
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

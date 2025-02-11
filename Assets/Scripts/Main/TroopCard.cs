@@ -20,14 +20,14 @@ public class TroopCard : Card
     protected float Math()
     {
         float math = (-2 - this.coinCost*2) + (health + power + abilityValue);
-        if (Mathf.Abs(math) >= 1f)
+        if (Mathf.Abs(math) >= 2f)
             Debug.Log($"{this.name}'s math: {math}");
         return math;
     }
 
     public override Color MyColor()
     {
-        return Color.red;
+        return Color.gray;
     }
 
     #endregion

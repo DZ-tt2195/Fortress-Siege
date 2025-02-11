@@ -300,9 +300,9 @@ public class Player : PhotonCompatible
         {
             coins += amount;
             if (amount >= 0)
-                Log.inst.AddText($"{this.name} gains ${amount}.", logged);
+                Log.inst.AddText($"{this.name} gains {amount} Coin.", logged);
             else
-                Log.inst.AddText($"{this.name} loses ${Mathf.Abs(amount)}.", logged);
+                Log.inst.AddText($"{this.name} loses ${Mathf.Abs(amount)} Coin.", logged);
         }
         if (myBase != null)
             myBase.UpdateText();

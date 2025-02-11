@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 5415db874ed4f42c3a8353ee1ca74fa1
+guid: 78caa38d5c60f4bcbade1aaa1539da69
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7854629474860912292
-    second: Damage_0
+      213: 3570696057915082496
+    second: Gold Coin_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Damage_0
+      name: Gold Coin_0
       rect:
         serializedVersion: 2
-        x: 15
-        y: 3
-        width: 620
-        height: 591
+        x: 0
+        y: 0
+        width: 384
+        height: 384
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c513a94bb10cef290800000000000000
-      internalID: -7854629474860912292
+      spriteID: 0078ae47529ad8130800000000000000
+      internalID: 3570696057915082496
       vertices: []
       indices: 
       edges: []
@@ -164,7 +164,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -172,7 +172,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Damage_0: -7854629474860912292
+      Gold Coin_0: 3570696057915082496
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

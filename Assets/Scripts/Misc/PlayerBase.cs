@@ -18,9 +18,7 @@ public class PlayerBase : Entity
 
     public void UpdateText()
     {
-        myText.text = $"{player.name}" +
-            $"\n${player.coins}" +
-            $"\n{player.cardsInHand.Count} Cards";
+        myText.text = KeywordTooltip.instance.EditText($"{player.name}\n{player.coins} Coin\n{player.cardsInHand.Count} Card");
     }
 
     internal void AssignPlayer(Player player, int health)
@@ -57,5 +55,6 @@ public class PlayerBase : Entity
             else if (health < 0)
                 Log.inst.AddText($"{player.name} loses {Mathf.Abs(health)} Health.", logged);
         }
+        UpdateText();
     }
 }
