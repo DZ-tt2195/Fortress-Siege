@@ -17,7 +17,7 @@ public class TrashCan : TroopCard
     public override void DonePlaying(Player player, Entity createdEntity, int logged)
     {
         if (createdEntity is MovingTroop troop)
-            troop.ShieldStatusRPC(true, logged);
+            troop.ShieldStatusRPC(true, logged, this.name);
         base.DonePlaying(player, createdEntity, logged);
     }
 }

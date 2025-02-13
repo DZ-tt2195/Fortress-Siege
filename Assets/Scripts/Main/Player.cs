@@ -191,19 +191,20 @@ public class Player : PhotonCompatible
 
 #region Draw Card
 
-    public void DrawCardRPC(int cardAmount, int logged)
+    public void DrawCardRPC(int cardAmount, int logged, string source)
     {
         for (int i = 0; i < cardAmount; i++)
         {
             Card card = deck.GetChild(0).GetComponent<Card>();
-            Log.inst.RememberStep(this, StepType.Revert, () => DrawFromDeck(false, card.pv.ViewID, logged));
+            Log.inst.RememberStep(this, StepType.Revert, () => DrawFromDeck(false, card.pv.ViewID, logged, source));
         }
     }
 
     [PunRPC]
-    void DrawFromDeck(bool undo, int PV, int logged)
+    void DrawFromDeck(bool undo, int PV, int logged, string source)
     {
         Card card = PhotonView.Find(PV).GetComponent<Card>();
+        string parathentical = source == "" ? "" : $" ({source})";
 
         if (undo)
         {
@@ -216,9 +217,9 @@ public class Player : PhotonCompatible
         {
             PutCardInHand(card);
             if (InControl() && myType == PlayerType.Human)
-                Log.inst.AddText($"{this.name} draws {card.name}.", logged);
+                Log.inst.AddText($"{this.name} draws {card.name}{parathentical}.", logged);
             else
-                Log.inst.AddText($"{this.name} draws 1 Card.", logged);
+                Log.inst.AddText($"{this.name} draws 1 Card{parathentical}.", logged);
         }
         SortHand();
     }
@@ -289,9 +290,15 @@ public class Player : PhotonCompatible
         SortHand();
     }
 
-    [PunRPC]
-    public void GainLoseCoin(bool undo, int amount, int logged)
+    public void CoinRPC(int amount, int logged, string source)
     {
+        Log.inst.RememberStep(this, StepType.Revert, () => GainLoseCoin(false, amount, logged, source));
+    }
+
+    [PunRPC]
+    void GainLoseCoin(bool undo, int amount, int logged, string source)
+    {
+        string parathentical = source == "" ? "" : $" ({source})";
         if (undo)
         {
             coins -= amount;
@@ -300,9 +307,9 @@ public class Player : PhotonCompatible
         {
             coins += amount;
             if (amount >= 0)
-                Log.inst.AddText($"{this.name} gains {amount} Coin.", logged);
+                Log.inst.AddText($"{this.name} gains {amount} Coin{parathentical}.", logged);
             else
-                Log.inst.AddText($"{this.name} loses ${Mathf.Abs(amount)} Coin.", logged);
+                Log.inst.AddText($"{this.name} loses ${Mathf.Abs(amount)} Coin{parathentical}.", logged);
         }
         if (myBase != null)
             myBase.UpdateText();
@@ -400,7 +407,7 @@ public class Player : PhotonCompatible
                 Card toPlay = canPlay[choice - 100];
                 Log.inst.PreserveTextRPC($"{this.name} plays {toPlay.name}.", 0);
                 DiscardPlayerCard(toPlay, -1);
-                Log.inst.RememberStep(this, StepType.Revert, () => GainLoseCoin(false, -1 * toPlay.coinCost, 0));
+                Log.inst.RememberStep(this, StepType.Revert, () => GainLoseCoin(false, -1 * toPlay.coinCost, 0, ""));
                 toPlay.OnPlayEffect(this, 0);
             }
             catch

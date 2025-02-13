@@ -221,13 +221,13 @@ public class Manager : PhotonCompatible
 
             foreach (Player player in playersInOrder)
             {
-                player.DrawCardRPC(1, 1);
-                Log.inst.RememberStep(player, StepType.Revert, () => player.GainLoseCoin(false, -1 * player.coins, -1));
+                player.CoinRPC(-1 * player.coins, -1, "");
 
-                int playerCoins = turnNumber;
+                int totalCoins = turnNumber;
                 foreach ((Card card, Entity entity) in GatherAbilities())
-                    playerCoins += card.CoinEffect(player, entity, 0);
-                Log.inst.RememberStep(player, StepType.Revert, () => player.GainLoseCoin(false, playerCoins, 1));
+                    totalCoins += card.CoinEffect(player, entity, 0);
+                player.CoinRPC(totalCoins, 0, "");
+                player.DrawCardRPC(1, 0, "");
             }
 
             Log.inst.ShareSteps();

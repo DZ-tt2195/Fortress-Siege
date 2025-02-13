@@ -1,5 +1,6 @@
 using UnityEngine;
 using Photon.Pun;
+using System.Text.RegularExpressions;
 
 public class Environment : Entity
 {
@@ -25,7 +26,7 @@ public class Environment : Entity
             if (cardID >= 0)
             {
                 myCard = PhotonView.Find(cardID).GetComponent<EnviroCard>();
-                this.name = myCard.name;
+                this.name = Regex.Replace(myCard.name, "(?<=[a-z])(?=[A-Z])", " ");
                 this.image.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
             }
         }

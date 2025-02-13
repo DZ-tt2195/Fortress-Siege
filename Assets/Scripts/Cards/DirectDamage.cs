@@ -16,6 +16,6 @@ public class DirectDamage : EnviroCard
     {
         Player opposingPlayer = Manager.inst.OpposingPlayer(entity.player);
         if (Manager.inst.allRows[entity.currentRow].playerTroops[entity.player.playerPosition] != null)
-            Log.inst.RememberStep(opposingPlayer.myBase, StepType.Revert, () => opposingPlayer.myBase.ChangeHealthRPC(-3, logged));
+            opposingPlayer.myBase.ChangeHealthRPC(-3, logged, this.name);
     }
 }

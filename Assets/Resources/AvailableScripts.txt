@@ -1,5 +1,6 @@
 {
   [
+    "Bank",
     "Battlefield",
     "DirectDamage",
     "GrowShroom",

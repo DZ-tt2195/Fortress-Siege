@@ -35,14 +35,15 @@ public class PlayerBase : Entity
         UpdateText();
     }
 
-    public void ChangeHealthRPC(int health, int logged)
+    public void ChangeHealthRPC(int health, int logged, string source)
     {
-        Log.inst.RememberStep(this, StepType.Revert, () => ChangeHealth(false, health, logged));
+        Log.inst.RememberStep(this, StepType.Revert, () => ChangeHealth(false, health, logged, source));
     }
 
     [PunRPC]
-    void ChangeHealth(bool undo, int health, int logged)
+    void ChangeHealth(bool undo, int health, int logged, string source)
     {
+        string parathentical = source == "" ? "" : $" ({source})";
         if (undo)
         {
             myHealth -= health;
@@ -51,9 +52,9 @@ public class PlayerBase : Entity
         {
             myHealth += health;
             if (health > 0)
-                Log.inst.AddText($"{player.name} gets +{health} Health.", logged);
+                Log.inst.AddText($"{player.name} gets +{health} Health{source}.", logged);
             else if (health < 0)
-                Log.inst.AddText($"{player.name} loses {Mathf.Abs(health)} Health.", logged);
+                Log.inst.AddText($"{player.name} loses {Mathf.Abs(health)} Health{source}.", logged);
         }
         UpdateText();
     }

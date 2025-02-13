@@ -18,7 +18,7 @@ public class Sunflower : TroopCard
     {
         if (player == entity.player)
         {
-            Log.inst.PreserveTextRPC($"{player.name}'s {entity.name} gives +$1.", logged);
+            Log.inst.PreserveTextRPC($"{player.name}'s {entity.name} gives +1 Coin.", logged);
             return 1;
         }
         else

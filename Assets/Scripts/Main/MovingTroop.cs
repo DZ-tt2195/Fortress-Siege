@@ -1,6 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
 using TMPro;
+using System.Text.RegularExpressions;
 
 public class MovingTroop : Entity
 {
@@ -39,7 +40,7 @@ public class MovingTroop : Entity
             if (cardID >= 0)
             {
                 myCard = PhotonView.Find(cardID).GetComponent<TroopCard>();
-                this.name = myCard.name;
+                this.name = Regex.Replace(myCard.name, "(?<=[a-z])(?=[A-Z])", " ");
                 this.image.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
 
                 TroopCard intoTroop = (TroopCard)myCard;
@@ -96,29 +97,31 @@ public class MovingTroop : Entity
         }
     }
 
-    public void ChangeStatsRPC(int power, int health, int logged)
+    public void ChangeStatsRPC(int power, int health, int logged, string source)
     {
+        string parathentical = source == "" ? "" : $" to ({source})";
         if (power < 0 || health < 0)
         {
             if (power < 0)
             {
-                Log.inst.AddText($"{player.name}'s {this.name} would lose {Mathf.Abs(power)} Power.", logged);
+                Log.inst.AddText($"{player.name}'s {this.name} would lose {Mathf.Abs(power)} Power{parathentical}.", logged);
                 power = 0;
             }
             if (health < 0)
             {
-                Log.inst.AddText($"{player.name}'s {this.name} would lose {Mathf.Abs(health)} Health.", logged);
+                Log.inst.AddText($"{player.name}'s {this.name} would lose {Mathf.Abs(health)} Health{parathentical}.", logged);
                 health = 0;
             }
-            ShieldStatusRPC(false, logged);
+            ShieldStatusRPC(false, logged, source);
         }
 
-        Log.inst.RememberStep(this, StepType.Revert, () => ChangeStats(false, power, health, logged));
+        Log.inst.RememberStep(this, StepType.Revert, () => ChangeStats(false, power, health, logged, source));
     }
 
     [PunRPC]
-    void ChangeStats(bool undo, int power, int health, int logged)
+    void ChangeStats(bool undo, int power, int health, int logged, string source)
     {
+        string parathentical = source == "" ? "" : $" ({source})";
         if (undo)
         {
             myPower -= power;
@@ -128,15 +131,15 @@ public class MovingTroop : Entity
         {
             myPower += power;
             if (power > 0)
-                Log.inst.AddText($"{player.name}'s {this.name} gets +{power} Power.", logged);
+                Log.inst.AddText($"{player.name}'s {this.name} gets +{power} Power{parathentical}.", logged);
             else if (power < 0)
-                Log.inst.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(power)} Power.", logged);
+                Log.inst.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(power)} Power{parathentical}.", logged);
 
             myHealth += health;
             if (health > 0)
-                Log.inst.AddText($"{player.name}'s {this.name} gets +{health} Health.", logged);
+                Log.inst.AddText($"{player.name}'s {this.name} gets +{health} Health{parathentical}.", logged);
             else if (health < 0)
-                Log.inst.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(health)} Health.", logged);
+                Log.inst.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(health)} Health{parathentical}.", logged);
         }
         RecalculateStats();
     }
@@ -166,7 +169,7 @@ public class MovingTroop : Entity
 
         if (stunned)
         {
-            this.StunStatusRPC(false, logged);
+            this.StunStatusRPC(false, logged, "");
         }
         else if (calcPower == 0)
         {
@@ -175,14 +178,14 @@ public class MovingTroop : Entity
         else if (opposingTroop != null)
         {
             Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} attacks {opposingPlayer.name}'s {opposingTroop.name}.", logged);
-            opposingTroop.ChangeStatsRPC(0, -this.calcPower, logged + 1);
+            opposingTroop.ChangeStatsRPC(0, -this.calcPower, logged + 1, "");
             foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
                 card.CardAttacked(entity, this, opposingTroop, logged+1);
         }
         else
         {
             Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} attacks {opposingPlayer.name}.", logged);
-            opposingPlayer.myBase.ChangeHealthRPC(-this.calcPower, logged + 1);
+            opposingPlayer.myBase.ChangeHealthRPC(-this.calcPower, logged + 1, "");
             foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
                 card.CardAttacked(entity, this, opposingPlayer.myBase, logged+1);
         }
@@ -192,14 +195,15 @@ public class MovingTroop : Entity
 
 #region Statuses
 
-    public void ShieldStatusRPC(bool shielded, int logged)
+    public void ShieldStatusRPC(bool shielded, int logged, string source)
     {
-        Log.inst.RememberStep(this, StepType.Revert, () => ShieldStatus(false, shielded, logged));
+        Log.inst.RememberStep(this, StepType.Revert, () => ShieldStatus(false, shielded, logged, source));
     }
 
     [PunRPC]
-    void ShieldStatus(bool undo, bool newStatus, int logged)
+    void ShieldStatus(bool undo, bool newStatus, int logged, string source)
     {
+        string parathentical = source == "" ? "" : $" ({source})";
         if (undo)
         {
             shielded = !newStatus;
@@ -208,20 +212,21 @@ public class MovingTroop : Entity
         {
             shielded = newStatus;
             if (newStatus)
-                Log.inst.AddText($"{player.name}'s {this.name} is Shielded.", logged);
+                Log.inst.AddText($"{player.name}'s {this.name} is Shielded{parathentical}.", logged);
             else
-                Log.inst.AddText($"{player.name}'s {this.name} is no longer Shielded.", logged);
+                Log.inst.AddText($"{player.name}'s {this.name} is no longer Shielded{parathentical}.", logged);
         }
     }
 
-    public void StunStatusRPC(bool stunned, int logged)
+    public void StunStatusRPC(bool stunned, int logged, string source)
     {
-        Log.inst.RememberStep(this, StepType.Revert, () => StunStatus(false, stunned, logged));
+        Log.inst.RememberStep(this, StepType.Revert, () => StunStatus(false, stunned, logged, source));
     }
 
     [PunRPC]
-    void StunStatus(bool undo, bool newStatus, int logged)
+    void StunStatus(bool undo, bool newStatus, int logged, string source)
     {
+        string parathentical = source == "" ? "" : $" ({source})";
         if (undo)
         {
             stunned = !newStatus;
@@ -230,9 +235,9 @@ public class MovingTroop : Entity
         {
             stunned = newStatus;
             if (newStatus)
-                Log.inst.AddText($"{player.name}'s {this.name} is Stunned.", logged);
+                Log.inst.AddText($"{player.name}'s {this.name} is Stunned{parathentical}.", logged);
             else
-                Log.inst.AddText($"{player.name}'s {this.name} is no longer Stunned.", logged);
+                Log.inst.AddText($"{player.name}'s {this.name} is no longer Stunned{parathentical}.", logged);
         }
     }
 

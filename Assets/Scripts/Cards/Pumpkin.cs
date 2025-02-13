@@ -16,7 +16,7 @@ public class Pumpkin : TroopCard
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)
     {
-        Manager.inst.OpposingPlayer(player).DrawCardRPC(1, logged);
+        Manager.inst.OpposingPlayer(player).DrawCardRPC(1, logged, this.name);
         base.DonePlaying(player, createdEntity, logged);
     }
 }
