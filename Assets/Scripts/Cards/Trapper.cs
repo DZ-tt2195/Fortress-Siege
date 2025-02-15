@@ -8,7 +8,7 @@ public class Trapper : EnviroCard
         this.bottomType = this.GetType();
         this.coinCost = 1;
         this.abilityValue = 1;
-        this.extraText = "Start of combat: Deal 1 damage to the opposing troop here.";
+        this.extraText = "Start of combat: Deal 1 damage to the opposing Troop here.";
         Math();
     }
 

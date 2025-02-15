@@ -7,9 +7,9 @@ public class LikesEnviro : TroopCard
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 2;
-        this.power = 2;
+        this.power = 3;
         this.health = 2;
-        this.abilityValue = 2;
+        this.abilityValue = 2*0.5f;
         this.extraText = "If there's an Environment here, this gets +2 Health.";
         Math();
     }

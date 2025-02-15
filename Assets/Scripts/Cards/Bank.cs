@@ -8,7 +8,7 @@ public class Bank : EnviroCard
         this.bottomType = this.GetType();
         this.coinCost = 3;
         this.abilityValue = 4;
-        this.extraText = "When you play a troop here: +2 Coin.";
+        this.extraText = "When you play a Troop here: +2 Coin.";
         Math();
     }
 

@@ -8,7 +8,7 @@ public class HealthBuff : EnviroCard
         this.bottomType = this.GetType();
         this.coinCost = 2;
         this.abilityValue = 3;
-        this.extraText = "Your troops here have +3 Health.";
+        this.extraText = "Your Troops here have +3 Health.";
         Math();
     }
 

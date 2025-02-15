@@ -10,7 +10,7 @@ public class GrowShroom : TroopCard
         this.power = 2;
         this.health = 2;
         this.abilityValue = 4;
-        this.extraText = "When you play another troop: It gets +2 Power +2 Health.";
+        this.extraText = "When you play another Troop: It gets +2 Power +2 Health.";
         Math();
     }
 

@@ -76,7 +76,10 @@ public class MovingTroop : Entity
                 Manager.inst.allRows[oldPosition].playerTroops[player.playerPosition] = null;
 
             this.currentRow = newPosition;
-            Log.inst.AddText($"{player.name} moves {this.name} to row {newPosition+1}.", logged);
+            if (currentRow >= 0)
+                Log.inst.AddText($"{player.name} moves {this.name} to row {newPosition + 1}.", logged);
+            else
+                Log.inst.AddText($"{player.name}'s {this.name} is destroyed.", logged);
         }
 
         if (currentRow > -1)

@@ -64,10 +64,7 @@ public class EnviroCard : Card
 
             Environment existingEnviro = Manager.inst.allRows[rememberChoice].environment;
             if (existingEnviro != null)
-            {
-                Log.inst.PreserveTextRPC($"{existingEnviro.player.name}'s {existingEnviro.name} has been replaced.", logged+1);
                 existingEnviro.MoveEnviroRPC(-1, logged + 1);
-            }
 
             Environment newEnviro = player.availableEnviros[0];
             Log.inst.RememberStep(newEnviro, StepType.Revert, () => newEnviro.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));

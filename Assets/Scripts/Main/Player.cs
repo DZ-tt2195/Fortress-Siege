@@ -534,7 +534,7 @@ public class Player : PhotonCompatible
 
     public void ChooseRow(List<Row> listOfRows, string changeInstructions, Action action)
     {
-        IEnumerator haveCardsEnabled = KeepCardsOn();
+        IEnumerator haveRowsEnabled = KeepRowsOn();
         inReaction.Add(Disable);
         if (action != null)
         {
@@ -547,9 +547,9 @@ public class Player : PhotonCompatible
         else if (listOfRows.Count == 1 && action != null)
             DecisionMade(0);
         else
-            StartCoroutine(haveCardsEnabled);
+            StartCoroutine(haveRowsEnabled);
 
-        IEnumerator KeepCardsOn()
+        IEnumerator KeepRowsOn()
         {
             float elapsedTime = 0f;
             while (elapsedTime < 0.3f)
@@ -570,7 +570,7 @@ public class Player : PhotonCompatible
 
         void Disable()
         {
-            StopCoroutine(haveCardsEnabled);
+            StopCoroutine(haveRowsEnabled);
 
             foreach (Row nextRow in listOfRows)
             {

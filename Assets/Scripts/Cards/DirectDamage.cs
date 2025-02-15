@@ -8,7 +8,7 @@ public class DirectDamage : EnviroCard
         this.bottomType = this.GetType();
         this.coinCost = 2;
         this.abilityValue = 3;
-        this.extraText = "Start of combat: If you have a troop here, deal 3 damage to the other player.";
+        this.extraText = "Start of combat: If you have a Troop here, deal 3 damage to the other player.";
         Math();
     }
 
