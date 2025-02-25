@@ -300,6 +300,16 @@ public class Manager : PhotonCompatible
             }
         }
         CleanUp();
+
+        foreach (Row row in allRows)
+        {
+            foreach (MovingTroop troop in row.playerTroops)
+            {
+                if (troop != null && troop.shielded)
+                    troop.ShieldStatusRPC(false, 0);
+            }
+        }
+
     }
 
     public void CleanUp()

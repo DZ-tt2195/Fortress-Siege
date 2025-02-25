@@ -10,6 +10,7 @@ public class MovingTroop : Entity
 
     TMP_Text powerText;
     TMP_Text heartText;
+    TMP_Text statusText;
 
     int myHealth;
     int myPower;
@@ -25,6 +26,7 @@ public class MovingTroop : Entity
         this.bottomType = this.GetType();
         heartText = this.transform.Find("Heart Text").GetComponent<TMP_Text>();
         powerText = this.transform.Find("Power Text").GetComponent<TMP_Text>();
+        statusText = this.transform.Find("Status Text").GetComponent<TMP_Text>();
     }
 
     [PunRPC]
@@ -100,24 +102,19 @@ public class MovingTroop : Entity
         }
     }
 
-    public void ChangeStatsRPC(int power, int health, int logged, string source)
+    public void ChangeStatsRPC(int power, int health, int logged, string source = "")
     {
         string parathentical = source == "" ? "" : $" to ({source})";
-        if (power < 0 || health < 0)
+        if (power < 0)
         {
-            if (power < 0)
-            {
-                Log.inst.AddText($"{player.name}'s {this.name} would lose {Mathf.Abs(power)} Power{parathentical}.", logged);
-                power = 0;
-            }
-            if (health < 0)
-            {
-                Log.inst.AddText($"{player.name}'s {this.name} would lose {Mathf.Abs(health)} Health{parathentical}.", logged);
-                health = 0;
-            }
-            ShieldStatusRPC(false, logged, source);
+            Log.inst.AddText($"{player.name}'s {this.name} is Shielded from losing {Mathf.Abs(power)} Power{parathentical}.", logged);
+            power = 0;
         }
-
+        if (health < 0)
+        {
+            Log.inst.AddText($"{player.name}'s {this.name} Shielded from losing {Mathf.Abs(health)} Health{parathentical}.", logged);
+            health = 0;
+        }
         Log.inst.RememberStep(this, StepType.Revert, () => ChangeStats(false, power, health, logged, source));
     }
 
@@ -152,6 +149,13 @@ public class MovingTroop : Entity
         (int troopPower, int troopHealth) = myCard.PassiveStats(this);
         calcPower = myPower + troopPower;
         calcHealth = myHealth + troopHealth;
+
+        statusText.text = "";
+        if (stunned)
+            statusText.text += "StunImage";
+        if (shielded)
+            statusText.text += "ShieldedImage";
+        statusText.text = KeywordTooltip.instance.EditText(statusText.text);
 
         Environment enviro = Manager.inst.allRows[currentRow].environment;
         if (enviro != null)
@@ -198,7 +202,7 @@ public class MovingTroop : Entity
 
 #region Statuses
 
-    public void ShieldStatusRPC(bool shielded, int logged, string source)
+    public void ShieldStatusRPC(bool shielded, int logged, string source = "")
     {
         Log.inst.RememberStep(this, StepType.Revert, () => ShieldStatus(false, shielded, logged, source));
     }
@@ -219,9 +223,10 @@ public class MovingTroop : Entity
             else
                 Log.inst.AddText($"{player.name}'s {this.name} is no longer Shielded{parathentical}.", logged);
         }
+        RecalculateStats();
     }
 
-    public void StunStatusRPC(bool stunned, int logged, string source)
+    public void StunStatusRPC(bool stunned, int logged, string source = "")
     {
         Log.inst.RememberStep(this, StepType.Revert, () => StunStatus(false, stunned, logged, source));
     }
@@ -242,6 +247,7 @@ public class MovingTroop : Entity
             else
                 Log.inst.AddText($"{player.name}'s {this.name} is no longer Stunned{parathentical}.", logged);
         }
+        RecalculateStats();
     }
 
     #endregion
