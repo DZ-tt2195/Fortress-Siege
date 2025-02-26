@@ -6,7 +6,7 @@ public class HealthBuff : EnviroCard
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 2;
+        this.coinCost = 3;
         this.abilityValue = 3;
         this.extraText = "Your Troops here have +3 Health.";
         Math();

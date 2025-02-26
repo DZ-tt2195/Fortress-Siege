@@ -6,9 +6,9 @@ public class TrashCan : TroopCard
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 3;
-        this.power = 2;
-        this.health = 3;
+        this.coinCost = 5;
+        this.power = 3;
+        this.health = 2;
         this.abilityValue = 3;
         this.extraText = "When you play this: It gains Shielded.";
         Math();

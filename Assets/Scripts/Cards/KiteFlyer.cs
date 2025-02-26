@@ -6,10 +6,10 @@ public class KiteFlyer : TroopCard
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 2;
+        this.coinCost = 3;
         this.power = 1;
-        this.health = 3;
-        this.abilityValue = 2;
+        this.health = 2;
+        this.abilityValue = 3;
         this.extraText = "When this attacks: +1 Card.";
         Math();
     }

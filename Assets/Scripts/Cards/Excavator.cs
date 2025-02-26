@@ -8,10 +8,10 @@ public class Excavator : TroopCard
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 3;
-        this.power = 4;
+        this.coinCost = 4;
+        this.power = 3;
         this.health = 1;
-        this.abilityValue = 6/2;
+        this.abilityValue = 6f/2;
         this.extraText = "When you play this: You may destroy an Environment.";
         Math();
     }

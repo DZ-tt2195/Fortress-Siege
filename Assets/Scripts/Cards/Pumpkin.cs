@@ -7,9 +7,9 @@ public class Pumpkin : TroopCard
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 1;
-        this.power = 3;
+        this.power = 4;
         this.health = 3;
-        this.abilityValue = -2;
+        this.abilityValue = -3;
         this.extraText = "When you play this: The other player gets +1 Card.";
         Math();
     }

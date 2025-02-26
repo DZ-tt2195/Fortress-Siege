@@ -6,7 +6,7 @@ public class Battlefield : EnviroCard
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 3;
+        this.coinCost = 4;
         this.abilityValue = 4;
         this.extraText = "Your Troops here get +1 Power +1 Health. The other player's Troops here get -1 Power -1 Health.";
         Math();

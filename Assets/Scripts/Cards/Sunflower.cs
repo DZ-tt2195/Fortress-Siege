@@ -7,10 +7,10 @@ public class Sunflower : TroopCard
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 1;
-        this.power = 0;
+        this.power = 1;
         this.health = 2;
-        this.abilityValue = 2;
-        this.extraText = "Start of turn: You get +$1.";
+        this.abilityValue = 1;
+        this.extraText = "Start of turn: You get +1 Coin.";
         Math();
     }
 

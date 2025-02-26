@@ -19,7 +19,7 @@ public class TroopCard : Card
 
     protected float Math()
     {
-        float math = (-2 - this.coinCost*2) + (health + power + abilityValue);
+        float math = (-3 - this.coinCost) + (health + power + abilityValue);
         if (Mathf.Abs(math) >= 2f)
             Debug.Log($"{this.name}'s math: {math}");
         return math;
