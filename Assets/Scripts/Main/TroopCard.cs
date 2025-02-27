@@ -72,7 +72,7 @@ public class TroopCard : Card
 
         void PlayTroop()
         {
-            int rememberChoice = player.choice;
+            int rememberChoice = canPlayInColumn[player.choice].position;
             MovingTroop newTroop = player.availableTroops[0];
             Log.inst.RememberStep(newTroop, StepType.Revert, () => newTroop.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
 

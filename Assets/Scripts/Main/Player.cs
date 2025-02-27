@@ -402,7 +402,7 @@ public class Player : PhotonCompatible
 
         void ActionResolution()
         {
-            try
+            if (choice - 100 < canPlay.Count)
             {
                 Card toPlay = canPlay[choice - 100];
                 Log.inst.PreserveTextRPC($"{this.name} plays {toPlay.name}.", 0);
@@ -410,7 +410,7 @@ public class Player : PhotonCompatible
                 Log.inst.RememberStep(this, StepType.Revert, () => GainLoseCoin(false, -1 * toPlay.coinCost, 0, ""));
                 toPlay.OnPlayEffect(this, 0);
             }
-            catch
+            else
             {
                 if (myType == PlayerType.Computer && !currentChain.complete)
                 {

@@ -60,9 +60,9 @@ public class EnviroCard : Card
 
         void PlayEnviro()
         {
-            int rememberChoice = player.choice;
-
-            Environment existingEnviro = Manager.inst.allRows[rememberChoice].environment;
+            Row row = Manager.inst.allRows[player.choice];
+            int rememberChoice = row.position;
+            Environment existingEnviro = row.environment;
             if (existingEnviro != null)
                 existingEnviro.MoveEnviroRPC(-1, logged + 1);
 

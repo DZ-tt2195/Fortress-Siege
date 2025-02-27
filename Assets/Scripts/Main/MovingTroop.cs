@@ -129,7 +129,7 @@ public class MovingTroop : Entity
         }
         else
         {
-            myPower += power;
+            myPower = Mathf.Min(myPower+power, 0);
             if (power > 0)
                 Log.inst.AddText($"{player.name}'s {this.name} gets +{power} Power{parathentical}.", logged);
             else if (power < 0)

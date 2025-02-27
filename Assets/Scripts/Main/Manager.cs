@@ -11,6 +11,7 @@ using System;
 
 [Serializable] public class Row
 {
+    public int position;
     public Button button;
     [ReadOnly] public MovingTroop[] playerTroops;
     [ReadOnly] public Environment environment = null;
@@ -82,8 +83,12 @@ public class Manager : PhotonCompatible
             MakeObject(CarryVariables.inst.playerPrefab.gameObject);
         MakeObject(CarryVariables.inst.playerPrefab.gameObject);
 
-        foreach (Row row in allRows)
+        for (int i = 0; i<allRows.Count; i++)
+        {
+            Row row = allRows[i];
             row.playerTroops = new MovingTroop[2];
+            row.position = i;
+        }
 
         StartCoroutine(Setup());
     }

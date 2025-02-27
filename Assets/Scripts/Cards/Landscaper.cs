@@ -2,17 +2,17 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Excavator : TroopCard
+public class Landscaper : TroopCard
 {
     protected override void Awake()
     {
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 4;
-        this.power = 3;
-        this.health = 1;
-        this.abilityValue = 6f/2;
-        this.extraText = "When you play this: You may destroy an Environment.";
+        this.power = 2;
+        this.health = 3;
+        this.abilityValue = 2;
+        this.extraText = "When you play this: An opposing Troop loses 2 Power.";
         Math();
     }
 
@@ -22,28 +22,29 @@ public class Excavator : TroopCard
     }
 
     void CardDecision(Player player, Entity createdEntity, int logged)
-    { 
-        List<Row> withEnviros = Manager.inst.allRows.Where(row => row.environment != null).ToList();
-        List<string> actions = new() { $"Decline" };
+    {
+        Player otherPlayer = Manager.inst.OpposingPlayer(player);
+        List<Row> withTroops = otherPlayer.FilterRows(true);
 
         if (player.myType == PlayerType.Computer)
         {
             if (player.chainTracker < player.currentChain.decisions.Count)
             {
                 int next = player.currentChain.decisions[player.chainTracker];
-                //Debug.Log($"resolved continue turn with choice {next}");
-                player.inReaction.Add(Excavation);
+                player.inReaction.Add(LosePower);
                 player.DecisionMade(next);
             }
             else
             {
-                //Debug.Log($"{chainTracker}, {currentChain.decisions.Count}");
-                player.NewChains(-1, withEnviros.Count, 1);
+                if (withTroops.Count == 0)
+                    player.NewChains(-1, 0, 1);
+                else
+                    player.NewChains(0, withTroops.Count, 1);
             }
         }
         else
         {
-            if (withEnviros.Count == 0)
+            if (withTroops.Count == 0)
             {
                 Log.inst.undoToThis = null;
                 base.DonePlaying(player, createdEntity, logged);
@@ -51,22 +52,21 @@ public class Excavator : TroopCard
             }
             else
             {
-                player.ChooseButton(actions, Vector3.zero, "Destroy an Environment?", Excavation);
-                player.ChooseRow(withEnviros, "Destroy an Environment?", null);
+                player.ChooseRow(withTroops, "Choose an opposing troop to lose 2 Power.", LosePower);
             }
         }
 
-        void Excavation()
+        void LosePower()
         {
-            if (player.choice < withEnviros.Count)
+            if (player.choice < withTroops.Count)
             {
-                Row toRemove = withEnviros[player.choice];
-                Environment enviro = toRemove.environment;
-                enviro.MoveEnviroRPC(-1, logged);
+                Row targetRow = withTroops[player.choice];
+                MovingTroop targetTroop = targetRow.playerTroops[otherPlayer.playerPosition];
+                targetTroop.ChangeStatsRPC(-2, 0, logged);
             }
             else
             {
-                Log.inst.PreserveTextRPC($"{this.name} doesn't destroy an Environment.", logged);
+                Log.inst.PreserveTextRPC($"{this.name} has no troops to target.", logged);
             }
             base.DonePlaying(player, createdEntity, logged);
         }

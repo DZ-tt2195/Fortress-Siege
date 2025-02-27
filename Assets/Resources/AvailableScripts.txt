@@ -8,8 +8,10 @@
     "GrowShroom",
     "HealthBuff",
     "KiteFlyer",
+    "Landscaper",
     "LikesEnviro",
     "Pumpkin",
+    "SumoWrestler",
     "Sunflower",
     "Trapper",
     "TrashCan"
