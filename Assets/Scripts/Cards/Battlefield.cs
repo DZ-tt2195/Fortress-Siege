@@ -8,7 +8,7 @@ public class Battlefield : EnviroCard
         this.bottomType = this.GetType();
         this.coinCost = 4;
         this.abilityValue = 4;
-        this.extraText = "Your Troops here get +1 Power +1 Health. The other player's Troops here get -1 Power -1 Health.";
+        this.extraText = "Your Troops here get +1 Power +1 Health. Opposing Troops here get -1 Power -1 Health.";
         Math();
     }
 

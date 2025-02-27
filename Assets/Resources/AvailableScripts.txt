@@ -3,7 +3,9 @@
     "Assassin",
     "Bank",
     "Battlefield",
+    "Cannon",
     "DirectDamage",
+    "DrainWeak",
     "Excavator",
     "GrowShroom",
     "HealthBuff",
@@ -14,6 +16,7 @@
     "SumoWrestler",
     "Sunflower",
     "Trapper",
-    "TrashCan"
+    "TrashCan",
+    "Vampire"
   ]
 }

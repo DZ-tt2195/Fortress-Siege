@@ -159,7 +159,7 @@ public class Player : PhotonCompatible
                 pv.Owner.NickName = this.name;
             }
 
-            //DrawCardRPC(4, -1);
+            DrawCardRPC(4, -1);
             Manager.inst.DoFunction(() => Manager.inst.PlayerDone());
         }
     }
@@ -191,7 +191,7 @@ public class Player : PhotonCompatible
 
 #region Draw Card
 
-    public void DrawCardRPC(int cardAmount, int logged, string source)
+    public void DrawCardRPC(int cardAmount, int logged, string source = "")
     {
         for (int i = 0; i < cardAmount; i++)
         {
