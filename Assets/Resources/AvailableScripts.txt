@@ -6,17 +6,20 @@
     "Cannon",
     "DirectDamage",
     "DrainWeak",
+    "Electrician",
     "Excavator",
     "GrowShroom",
     "HealthBuff",
     "KiteFlyer",
     "Landscaper",
     "LikesEnviro",
+    "PeaPod",
     "Pumpkin",
     "SumoWrestler",
     "Sunflower",
     "Trapper",
     "TrashCan",
-    "Vampire"
+    "Vampire",
+    "Vampirism"
   ]
 }

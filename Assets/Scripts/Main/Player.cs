@@ -402,9 +402,10 @@ public class Player : PhotonCompatible
 
         void ActionResolution()
         {
-            if (choice - 100 < canPlay.Count)
+            int convertedChoice = choice - 100;
+            if (convertedChoice < canPlay.Count && convertedChoice > 0)
             {
-                Card toPlay = canPlay[choice - 100];
+                Card toPlay = canPlay[convertedChoice];
                 Log.inst.PreserveTextRPC($"{this.name} plays {toPlay.name}.", 0);
                 DiscardPlayerCard(toPlay, -1);
                 Log.inst.RememberStep(this, StepType.Revert, () => GainLoseCoin(false, -1 * toPlay.coinCost, 0, ""));
