@@ -6,12 +6,10 @@ public class Cannon : TroopCard
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 4;
+        this.coinCost = 3;
         this.power = 3;
-        this.health = 7;
-        this.abilityValue = -3;
+        this.health = 6;
         this.extraText = "When this attacks: It gets Stunned.";
-        Math();
     }
 
     public override void CardAttacked(Entity entity, MovingTroop attacker, Entity defender, int logged)

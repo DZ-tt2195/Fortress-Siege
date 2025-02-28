@@ -7,9 +7,7 @@ public class DirectDamage : EnviroCard
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 3;
-        this.abilityValue = 3;
         this.extraText = "Start of combat: If you have a Troop here, deal 3 damage to the other player.";
-        Math();
     }
 
     public override void StartOfCombat(Entity entity, int logged)

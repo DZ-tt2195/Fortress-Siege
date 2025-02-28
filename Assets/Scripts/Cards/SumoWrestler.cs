@@ -11,9 +11,7 @@ public class SumoWrestler : TroopCard
         this.coinCost = 2;
         this.power = 3;
         this.health = 3;
-        this.abilityValue = 0;
         this.extraText = "When you play this: Move an opposing troop.";
-        Math();
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)

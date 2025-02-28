@@ -8,10 +8,8 @@ public class TrashCan : TroopCard
         this.bottomType = this.GetType();
         this.coinCost = 5;
         this.power = 3;
-        this.health = 2;
-        this.abilityValue = 3;
+        this.health = 3;
         this.extraText = "When you play this: It gains Shielded.";
-        Math();
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)

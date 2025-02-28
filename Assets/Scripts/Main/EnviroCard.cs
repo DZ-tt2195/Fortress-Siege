@@ -14,14 +14,6 @@ public class EnviroCard : Card
         this.bottomType = this.GetType();
     }
 
-    protected float Math()
-    {
-        float math = (-3 - this.coinCost) + ((6f/2) + abilityValue);
-        if (Mathf.Abs(math) >= 2f)
-            Debug.Log($"{this.name}'s math: {math}");
-        return math;
-    }
-
     public override Color MyColor()
     {
         return Color.blue;

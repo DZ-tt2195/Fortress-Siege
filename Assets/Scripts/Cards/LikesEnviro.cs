@@ -9,9 +9,7 @@ public class LikesEnviro : TroopCard
         this.coinCost = 2;
         this.power = 3;
         this.health = 1;
-        this.abilityValue = 2*0.5f;
         this.extraText = "If there's an Environment here, this gets +2 Health.";
-        Math();
     }
 
     public override (int, int) PassiveStats(MovingTroop troop, Environment enviro = null)

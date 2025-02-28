@@ -8,11 +8,9 @@ public class Vampire : TroopCard
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 5;
-        this.power = 5;
-        this.health = 5;
-        this.abilityValue = -2;
-        this.extraText = "When you play this: Deal 2 damage to one of your Troops (could be this).";
-        Math();
+        this.power = 6;
+        this.health = 6;
+        this.extraText = "When you play this: Deal 3 damage to one of your Troops (could be this).";
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)
@@ -46,7 +44,7 @@ public class Vampire : TroopCard
         {
             Row targetRow = withTroops[player.choice];
             MovingTroop targetTroop = targetRow.playerTroops[player.playerPosition];
-            targetTroop.ChangeStatsRPC(0, -2, logged);
+            targetTroop.ChangeStatsRPC(0, -3, logged);
             base.DonePlaying(player, createdEntity, logged);
         }
     }

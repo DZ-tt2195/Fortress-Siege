@@ -9,9 +9,7 @@ public class Sunflower : TroopCard
         this.coinCost = 1;
         this.power = 1;
         this.health = 2;
-        this.abilityValue = 1;
         this.extraText = "Start of turn: You get +1 Coin.";
-        Math();
     }
 
     public override int CoinEffect(Player player, Entity entity, int logged)

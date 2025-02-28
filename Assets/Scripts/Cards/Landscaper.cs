@@ -10,10 +10,8 @@ public class Landscaper : TroopCard
         this.bottomType = this.GetType();
         this.coinCost = 4;
         this.power = 2;
-        this.health = 3;
-        this.abilityValue = 2;
+        this.health = 4;
         this.extraText = "When you play this: An opposing Troop loses 2 Power.";
-        Math();
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)

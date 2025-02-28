@@ -7,9 +7,7 @@ public class DrainWeak : EnviroCard
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 2;
-        this.abilityValue = 2;
         this.extraText = "Opposing Troops here with 2 Power or less get -2 Health.";
-        Math();
     }
 
     public override (int, int) PassiveStats(MovingTroop troop, Environment enviro = null)

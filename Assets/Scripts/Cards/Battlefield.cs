@@ -7,9 +7,7 @@ public class Battlefield : EnviroCard
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 4;
-        this.abilityValue = 4;
         this.extraText = "Your Troops here get +1 Power +1 Health. Opposing Troops here get -1 Power -1 Health.";
-        Math();
     }
 
     public override (int, int) PassiveStats(MovingTroop troop, Environment enviro = null)

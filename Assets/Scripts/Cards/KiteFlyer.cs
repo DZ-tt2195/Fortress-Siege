@@ -9,9 +9,7 @@ public class KiteFlyer : TroopCard
         this.coinCost = 3;
         this.power = 1;
         this.health = 2;
-        this.abilityValue = 3;
         this.extraText = "When this attacks: +1 Card.";
-        Math();
     }
 
     public override void CardAttacked(Entity entity, MovingTroop attacker, Entity defender, int logged)

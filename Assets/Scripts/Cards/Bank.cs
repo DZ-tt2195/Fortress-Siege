@@ -7,9 +7,7 @@ public class Bank : EnviroCard
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 2;
-        this.abilityValue = 2;
         this.extraText = "When you play a Troop here: +2 Coin.";
-        Math();
     }
 
     public override void OtherCardPlayed(Player player, Entity thisEntity, Entity playedEntity, int logged)

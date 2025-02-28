@@ -10,9 +10,7 @@ public class Assassin : TroopCard
         this.coinCost = 3;
         this.power = 2;
         this.health = 2;
-        this.abilityValue = 4;
         this.extraText = "If the other player has a Troop here, this gets +4 Power.";
-        Math();
     }
 
     public override (int, int) PassiveStats(MovingTroop troop, Environment enviro = null)
