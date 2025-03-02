@@ -1,9 +1,11 @@
 {
   [
     "Assassin",
+    "AsteroidShroom",
     "Bank",
     "Battlefield",
     "Cannon",
+    "CardProfit",
     "DirectDamage",
     "DrainWeak",
     "Electrician",
@@ -13,6 +15,7 @@
     "KiteFlyer",
     "Landscaper",
     "LikesEnviro",
+    "NeutronImp",
     "PeaPod",
     "Pumpkin",
     "SumoWrestler",

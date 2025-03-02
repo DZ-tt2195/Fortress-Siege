@@ -14,7 +14,7 @@ public class GrowShroom : TroopCard
 
     public override void OtherCardPlayed(Player player, Entity thisEntity, Entity playedEntity, int logged)
     {
-        if (thisEntity.player == playedEntity.player && playedEntity is MovingTroop troop)
-            troop.ChangeStatsRPC(1, 1, logged, this.name);
+        if (thisEntity.player == playedEntity.player && playedEntity is MovingTroop newTroop && thisEntity != playedEntity)
+            newTroop.ChangeStatsRPC(1, 1, logged, this.name);
     }
 }

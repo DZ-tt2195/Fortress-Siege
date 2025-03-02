@@ -133,6 +133,10 @@ public class Card : PhotonCompatible
     {
     }
 
+    public virtual void EndOfTurn(Entity entity, int logged)
+    {
+    }
+
     public virtual int CoinEffect(Player player, Entity entity, int logged)
     {
         return 0;

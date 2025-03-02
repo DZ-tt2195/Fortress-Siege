@@ -5,8 +5,6 @@ using MyBox;
 using Photon.Pun;
 using System.Linq.Expressions;
 using System;
-using System.Linq;
-using UnityEngine.Rendering;
 
 public enum StepType { None, UndoPoint, Revert }
 
@@ -165,7 +163,7 @@ public class Log : PhotonCompatible
     void TextShared(bool undo, string text, int logged)
     {
         if (!undo)
-            Log.inst.AddText(text, logged);
+            AddText(text, logged);
     }
 
     /*

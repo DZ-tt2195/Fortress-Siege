@@ -304,17 +304,25 @@ public class Manager : PhotonCompatible
                 return troop != null && troop.calcHealth >= 1;
             }
         }
-        CleanUp();
 
+        Log.inst.PreserveTextRPC("", 0);
+        Log.inst.PreserveTextRPC($"End of round {turnNumber}.", 0);
         foreach (Row row in allRows)
         {
+            if (row.environment != null)
+                row.environment.myCard.EndOfTurn(row.environment, 1);
+
             foreach (MovingTroop troop in row.playerTroops)
             {
-                if (troop != null && troop.shielded)
-                    troop.ShieldStatusRPC(false, 0);
+                if (troop != null)
+                {
+                    troop.myCard.EndOfTurn(troop, 1);
+                    if (troop.shielded)
+                        troop.ShieldStatusRPC(false, 1);
+                }
             }
         }
-
+        CleanUp();
     }
 
     public void CleanUp()
