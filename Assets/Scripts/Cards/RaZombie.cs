@@ -1,23 +1,23 @@
 using UnityEngine;
 
-public class Sunflower : TroopCard
+public class RaZombie : TroopCard
 {
     protected override void Awake()
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 1;
-        this.power = 1;
+        this.coinCost = 4;
+        this.power = 4;
         this.health = 2;
-        this.extraText = "Start of turn: +1 Coin.";
+        this.extraText = "Start of turn: The other player loses 1 Coin.";
     }
 
     public override int CoinEffect(Player player, Entity entity, int logged)
     {
-        if (player == entity.player)
+        if (player != entity.player)
         {
-            Log.inst.PreserveTextRPC($"{player.name}'s {entity.name} gives +1 Coin.", logged);
-            return 1;
+            Log.inst.PreserveTextRPC($"{player.name} loses 1 Coin to {entity.name}.", logged);
+            return -1;
         }
         else
         {

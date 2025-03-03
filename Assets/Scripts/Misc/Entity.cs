@@ -25,4 +25,8 @@ public class Entity : PhotonCompatible, IPointerClickHandler
         if (eventData.button == PointerEventData.InputButton.Right && myCard != null)
             CarryVariables.inst.RightClickDisplay(this.myCard, 1);
     }
+
+    public virtual void MoveEntityRPC(int newPosition, int logged)
+    {
+    }
 }

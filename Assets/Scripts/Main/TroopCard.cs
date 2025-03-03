@@ -68,7 +68,7 @@ public class TroopCard : Card
             MovingTroop newTroop = player.availableTroops[0];
             Log.inst.RememberStep(newTroop, StepType.Revert, () => newTroop.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
 
-            newTroop.MoveTroopRPC(rememberChoice, logged + 1);
+            newTroop.MoveEntityRPC(rememberChoice, logged + 1);
             DonePlaying(player, newTroop, logged + 1);
         }
     }

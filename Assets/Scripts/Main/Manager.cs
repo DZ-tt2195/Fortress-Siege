@@ -335,7 +335,7 @@ public class Manager : PhotonCompatible
                 {
                     troop.RecalculateStats();
                     if (troop.calcHealth <= 0)
-                        troop.MoveTroopRPC(-1, -1);
+                        troop.MoveEntityRPC(-1, -1);
                 }
             }
         }

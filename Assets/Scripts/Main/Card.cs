@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using MyBox;
 using System.Collections;
+using Photon.Pun;
 
 public class Card : PhotonCompatible
 {
@@ -113,7 +114,7 @@ public class Card : PhotonCompatible
     public virtual void DonePlaying(Player player, Entity createdEntity, int logged)
     {
         foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
-            card.OtherCardPlayed(player, entity, createdEntity, logged);
+            card.OtherCardPlayed(entity, createdEntity, logged);
         Log.inst.RememberStep(player, StepType.UndoPoint, () => player.MayPlayCard());
     }
 
@@ -121,7 +122,7 @@ public class Card : PhotonCompatible
 
 #region Abilities
 
-    public virtual void OtherCardPlayed(Player player, Entity thisEntity, Entity playedEntity, int logged)
+    public virtual void OtherCardPlayed(Entity thisEntity, Entity playedEntity, int logged)
     {
     }
 

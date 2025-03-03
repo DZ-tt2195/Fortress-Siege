@@ -12,7 +12,7 @@ public class NeutronImp : TroopCard
         this.extraText = "When any player plays an Environment: This does an attack.";
     }
 
-    public override void OtherCardPlayed(Player player, Entity thisEntity, Entity playedEntity, int logged)
+    public override void OtherCardPlayed(Entity thisEntity, Entity playedEntity, int logged)
     {
         if (playedEntity is Environment)
         {

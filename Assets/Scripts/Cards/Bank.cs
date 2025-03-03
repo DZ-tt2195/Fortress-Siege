@@ -10,9 +10,9 @@ public class Bank : EnviroCard
         this.extraText = "When you play a Troop here: +2 Coin.";
     }
 
-    public override void OtherCardPlayed(Player player, Entity thisEntity, Entity playedEntity, int logged)
+    public override void OtherCardPlayed(Entity thisEntity, Entity playedEntity, int logged)
     {
-        if (thisEntity.player == player && playedEntity is MovingTroop && thisEntity.currentRow == playedEntity.currentRow)
-            player.CoinRPC(2, logged, this.name);
+        if (thisEntity.player == playedEntity.player && playedEntity is MovingTroop && thisEntity.currentRow == playedEntity.currentRow)
+            thisEntity.player.CoinRPC(2, logged, this.name);
     }
 }

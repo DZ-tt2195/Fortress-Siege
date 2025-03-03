@@ -189,7 +189,7 @@ public class Player : PhotonCompatible
 
     #endregion
 
-#region Draw Card
+#region Cards
 
     public void DrawCardRPC(int cardAmount, int logged, string source = "")
     {
@@ -243,6 +243,7 @@ public class Player : PhotonCompatible
 
         float midPoint = (start + end) / 2;
         int maxFit = (int)((Mathf.Abs(start) + Mathf.Abs(end)) / gap);
+        cardsInHand = cardsInHand.OrderBy(card => card.coinCost).ToList();
 
         for (int i = 0; i < cardsInHand.Count; i++)
         {
@@ -261,10 +262,6 @@ public class Player : PhotonCompatible
                 StartCoroutine(nextCard.RevealCard(0.25f));
         }
     }
-
-    #endregion
-
-#region Discard Card
 
     public void DiscardPlayerCard(Card card, int logged)
     {
@@ -290,6 +287,34 @@ public class Player : PhotonCompatible
         SortHand();
     }
 
+    public void BounceCardRPC(Entity entity, int logged)
+    {
+        entity.MoveEntityRPC(-1, -1);
+        Log.inst.RememberStep(this, StepType.Revert, () => BounceCard(false, entity.myCard.pv.ViewID, logged));
+    }
+
+    [PunRPC]
+    void BounceCard(bool undo, int PV, int logged)
+    {
+        Card card = PhotonView.Find(PV).GetComponent<Card>();
+        if (undo)
+        {
+            cardsInHand.Remove(card);
+            card.transform.localPosition = new Vector2(0, -1100);
+            card.transform.SetParent(discard);
+        }
+        else
+        {
+            Log.inst.AddText($"{this.name}'s {card.name} gets Bounced.", logged);
+            PutCardInHand(card);
+        }
+        SortHand();
+    }
+
+    #endregion
+
+#region Main Turn
+
     public void CoinRPC(int amount, int logged, string source)
     {
         Log.inst.RememberStep(this, StepType.Revert, () => GainLoseCoin(false, amount, logged, source));
@@ -314,10 +339,6 @@ public class Player : PhotonCompatible
         if (myBase != null)
             myBase.UpdateText();
     }
-
-    #endregion
-
-#region Main Turn
 
     [PunRPC]
     internal void YourTurn()

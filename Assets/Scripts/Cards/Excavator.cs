@@ -60,7 +60,7 @@ public class Excavator : TroopCard
             {
                 Row toRemove = withEnviros[player.choice];
                 Environment enviro = toRemove.environment;
-                enviro.MoveEnviroRPC(-1, logged);
+                enviro.MoveEntityRPC(-1, logged);
             }
             else
             {

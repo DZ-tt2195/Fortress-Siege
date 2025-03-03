@@ -36,7 +36,7 @@ public class Environment : Entity
 
 #region Gameplay
 
-    public void MoveEnviroRPC(int newPosition, int logged)
+    public override void MoveEntityRPC(int newPosition, int logged)
     {
         int oldRow = this.currentRow;
         Log.inst.RememberStep(this, StepType.Revert, () => MoveEnviro(false, oldRow, newPosition, logged));

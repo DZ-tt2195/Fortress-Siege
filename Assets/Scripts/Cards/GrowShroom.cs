@@ -12,7 +12,7 @@ public class GrowShroom : TroopCard
         this.extraText = "When you play another Troop: It gets +1 Power and +1 Health.";
     }
 
-    public override void OtherCardPlayed(Player player, Entity thisEntity, Entity playedEntity, int logged)
+    public override void OtherCardPlayed(Entity thisEntity, Entity playedEntity, int logged)
     {
         if (thisEntity.player == playedEntity.player && playedEntity is MovingTroop newTroop && thisEntity != playedEntity)
             newTroop.ChangeStatsRPC(1, 1, logged, this.name);

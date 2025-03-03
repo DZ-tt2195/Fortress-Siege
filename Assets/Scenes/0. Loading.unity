@@ -1146,6 +1146,11 @@ MonoBehaviour:
     - Shield
     description: Can't lose Health or Power this turn.
     color: {r: 1, g: 1, b: 1, a: 0}
+  - keywordVariations:
+    - Bounced
+    - Bounce
+    description: Card returned to player's hand.
+    color: {r: 1, g: 1, b: 1, a: 0}
   spriteKeywords:
   - keywordVariations:
     - Card

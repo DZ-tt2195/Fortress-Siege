@@ -56,7 +56,7 @@ public class MovingTroop : Entity
 
 #region Gameplay
 
-    public void MoveTroopRPC(int newPosition, int logged)
+    public override void MoveEntityRPC(int newPosition, int logged)
     {
         int oldRow = this.currentRow;
         Log.inst.RememberStep(this, StepType.Revert, () => MoveTroop(false, oldRow, newPosition, logged));

@@ -105,7 +105,7 @@ public class SumoWrestler : TroopCard
         void MoveTarget()
         {
             int rememberChoice = blankSpots[player.choice].position;
-            targetTroop.MoveTroopRPC(rememberChoice, logged);
+            targetTroop.MoveEntityRPC(rememberChoice, logged);
             base.DonePlaying(player, createdEntity, logged);
         }
     }

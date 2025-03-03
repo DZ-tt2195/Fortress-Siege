@@ -56,11 +56,11 @@ public class EnviroCard : Card
             int rememberChoice = row.position;
             Environment existingEnviro = row.environment;
             if (existingEnviro != null)
-                existingEnviro.MoveEnviroRPC(-1, logged + 1);
+                existingEnviro.MoveEntityRPC(-1, logged + 1);
 
             Environment newEnviro = player.availableEnviros[0];
             Log.inst.RememberStep(newEnviro, StepType.Revert, () => newEnviro.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
-            newEnviro.MoveEnviroRPC(rememberChoice, logged + 1);
+            newEnviro.MoveEntityRPC(rememberChoice, logged + 1);
             DonePlaying(player, newEnviro, logged+1);
         }
     }
