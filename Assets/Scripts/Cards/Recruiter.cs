@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class KiteFlyer : TroopCard
+public class Recruiter : TroopCard
 {
     protected override void Awake()
     {

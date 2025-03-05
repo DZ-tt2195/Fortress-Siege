@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class DrainWeak : EnviroCard
+public class Weakness : AuraCard
 {
     protected override void Awake()
     {
@@ -10,7 +10,7 @@ public class DrainWeak : EnviroCard
         this.extraText = "Opposing Troops here with 2 Power or less get -2 Health.";
     }
 
-    public override (int, int) PassiveStats(MovingTroop troop, Environment enviro = null)
+    public override (int, int) PassiveStats(MovingTroop troop, MovingAura enviro = null)
     {
         if (enviro.currentRow == troop.currentRow && troop.player != enviro.player && troop.calcPower <= 2)
             return (0, -2);

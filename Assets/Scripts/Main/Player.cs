@@ -53,7 +53,7 @@ public class Player : PhotonCompatible
     public int coins { get; private set; }
     public PlayerBase myBase { get; private set; }
     public List<MovingTroop> availableTroops = new();
-    public List<Environment> availableEnviros = new();
+    public List<MovingAura> availableEnviros = new();
 
     [Foldout("Cards", true)]
     public List<Card> cardsInHand = new();
@@ -183,8 +183,8 @@ public class Player : PhotonCompatible
     void AddEnviro(int PV)
     {
         GameObject obj = PhotonView.Find(PV).gameObject;
-        obj.AddComponent(Type.GetType("Environment"));
-        availableEnviros.Add(obj.GetComponent<Environment>());
+        obj.AddComponent(Type.GetType("MovingAura"));
+        availableEnviros.Add(obj.GetComponent<MovingAura>());
     }
 
     #endregion
@@ -315,7 +315,7 @@ public class Player : PhotonCompatible
 
 #region Main Turn
 
-    public void CoinRPC(int amount, int logged, string source)
+    public void CoinRPC(int amount, int logged, string source = "")
     {
         Log.inst.RememberStep(this, StepType.Revert, () => GainLoseCoin(false, amount, logged, source));
     }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Trapper : EnviroCard
+public class Targeted : AuraCard
 {
     protected override void Awake()
     {

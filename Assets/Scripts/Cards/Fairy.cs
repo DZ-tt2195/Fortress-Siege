@@ -2,14 +2,14 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-public class SumoWrestler : TroopCard
+public class Fairy : TroopCard
 {
     protected override void Awake()
     {
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 2;
-        this.power = 3;
+        this.power = 2;
         this.health = 3;
         this.extraText = "When you play this: Move an opposing troop.";
     }

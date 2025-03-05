@@ -1,14 +1,14 @@
 using UnityEngine;
 
-public class RaZombie : TroopCard
+public class Bandit : TroopCard
 {
     protected override void Awake()
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 4;
+        this.coinCost = 5;
         this.power = 4;
-        this.health = 2;
+        this.health = 4;
         this.extraText = "Start of turn: The other player loses 1 Coin.";
     }
 

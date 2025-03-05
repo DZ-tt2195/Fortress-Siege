@@ -2,7 +2,7 @@ using UnityEngine;
 using Photon.Pun;
 using System.Text.RegularExpressions;
 
-public class Environment : Entity
+public class MovingAura : Entity
 {
 
 #region Setup
@@ -25,7 +25,7 @@ public class Environment : Entity
 
             if (cardID >= 0)
             {
-                myCard = PhotonView.Find(cardID).GetComponent<EnviroCard>();
+                myCard = PhotonView.Find(cardID).GetComponent<AuraCard>();
                 this.name = Regex.Replace(myCard.name, "(?<=[a-z])(?=[A-Z])", " ");
                 this.image.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
             }
@@ -48,14 +48,14 @@ public class Environment : Entity
         if (undo)
         {
             if (newPosition > -1)
-                Manager.inst.allRows[newPosition].environment = null;
+                Manager.inst.allRows[newPosition].auraHere = null;
 
             this.currentRow = oldPosition;
         }
         else
         {
             if (oldPosition > -1)
-                Manager.inst.allRows[oldPosition].environment = null;
+                Manager.inst.allRows[oldPosition].auraHere = null;
 
             this.currentRow = newPosition;
             if (currentRow >= 0)
@@ -68,7 +68,7 @@ public class Environment : Entity
         {
             player.availableEnviros.Remove(this);
             Row spawnPoint = Manager.inst.allRows[currentRow];
-            spawnPoint.environment = this;
+            spawnPoint.auraHere = this;
 
             this.transform.SetParent(spawnPoint.button.transform);
             this.transform.localPosition = new((player.playerPosition) == 0 ? -100 : 100, 0);

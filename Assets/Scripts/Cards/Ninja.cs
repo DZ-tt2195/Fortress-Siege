@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class Assassin : TroopCard
+public class Ninja : TroopCard
 {
     protected override void Awake()
     {
@@ -13,7 +13,7 @@ public class Assassin : TroopCard
         this.extraText = "If the other player has a Troop here, this gets +4 Power.";
     }
 
-    public override (int, int) PassiveStats(MovingTroop troop, Environment enviro = null)
+    public override (int, int) PassiveStats(MovingTroop troop, MovingAura enviro = null)
     {
         MovingTroop otherTroop = Manager.inst.FindOpposingTroop(troop.player, troop.currentRow);
         if (otherTroop == null)

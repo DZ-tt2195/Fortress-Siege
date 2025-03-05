@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class DirectDamage : EnviroCard
+public class Hex : AuraCard
 {
     protected override void Awake()
     {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Vampirism : EnviroCard
+public class Vampirism : AuraCard
 {
     protected override void Awake()
     {

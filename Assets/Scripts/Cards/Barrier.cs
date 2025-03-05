@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class HealthBuff : EnviroCard
+public class Barrier : AuraCard
 {
     protected override void Awake()
     {
@@ -10,7 +10,7 @@ public class HealthBuff : EnviroCard
         this.extraText = "Your Troops here have +3 Health.";
     }
 
-    public override (int, int) PassiveStats(MovingTroop troop, Environment enviro = null)
+    public override (int, int) PassiveStats(MovingTroop troop, MovingAura enviro = null)
     {
         if (enviro.currentRow == troop.currentRow && enviro.player == troop.player)
             return (0, 3);

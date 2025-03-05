@@ -1,14 +1,14 @@
 using UnityEngine;
 
-public class Sunflower : TroopCard
+public class Miner : TroopCard
 {
     protected override void Awake()
     {
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 1;
-        this.power = 1;
-        this.health = 2;
+        this.power = 2;
+        this.health = 1;
         this.extraText = "Start of turn: +1 Coin.";
     }
 

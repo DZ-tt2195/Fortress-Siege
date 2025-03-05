@@ -157,7 +157,7 @@ public class MovingTroop : Entity
             statusText.text += "ShieldedImage";
         statusText.text = KeywordTooltip.instance.EditText(statusText.text);
 
-        Environment enviro = Manager.inst.allRows[currentRow].environment;
+        MovingAura enviro = Manager.inst.allRows[currentRow].auraHere;
         if (enviro != null)
         {
             (int enviroPower, int enviroHealth) = enviro.myCard.PassiveStats(this, enviro);

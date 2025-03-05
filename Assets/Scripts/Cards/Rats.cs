@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PeaPod : TroopCard
+public class Rats : TroopCard
 {
     protected override void Awake()
     {

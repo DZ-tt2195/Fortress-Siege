@@ -98,6 +98,7 @@ MonoBehaviour:
   - DrawFromDeck
   - StunStatus
   - ShieldStatus
+  - BounceCard
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 0

@@ -2,16 +2,16 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Excavator : TroopCard
+public class Golem : TroopCard
 {
     protected override void Awake()
     {
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 4;
-        this.power = 4;
+        this.power = 3;
         this.health = 1;
-        this.extraText = "When you play this: You may destroy an Environment.";
+        this.extraText = "When you play this: You may destroy an Aura.";
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)
@@ -21,7 +21,7 @@ public class Excavator : TroopCard
 
     void CardDecision(Player player, Entity createdEntity, int logged)
     { 
-        List<Row> withEnviros = Manager.inst.allRows.Where(row => row.environment != null).ToList();
+        List<Row> withAuras = Manager.inst.allRows.Where(row => row.auraHere != null).ToList();
         List<string> actions = new() { $"Decline" };
 
         if (player.myType == PlayerType.Computer)
@@ -36,12 +36,12 @@ public class Excavator : TroopCard
             else
             {
                 //Debug.Log($"{chainTracker}, {currentChain.decisions.Count}");
-                player.NewChains(-1, withEnviros.Count, 1);
+                player.NewChains(-1, withAuras.Count, 1);
             }
         }
         else
         {
-            if (withEnviros.Count == 0)
+            if (withAuras.Count == 0)
             {
                 Log.inst.undoToThis = null;
                 base.DonePlaying(player, createdEntity, logged);
@@ -49,22 +49,22 @@ public class Excavator : TroopCard
             }
             else
             {
-                player.ChooseButton(actions, Vector3.zero, "Destroy an Environment?", Excavation);
-                player.ChooseRow(withEnviros, "Destroy an Environment?", null);
+                player.ChooseButton(actions, Vector3.zero, "Destroy an Aura?", Excavation);
+                player.ChooseRow(withAuras, "Destroy an Aura?", null);
             }
         }
 
         void Excavation()
         {
-            if (player.choice < withEnviros.Count)
+            if (player.choice < withAuras.Count)
             {
-                Row toRemove = withEnviros[player.choice];
-                Environment enviro = toRemove.environment;
+                Row toRemove = withAuras[player.choice];
+                MovingAura enviro = toRemove.auraHere;
                 enviro.MoveEntityRPC(-1, logged);
             }
             else
             {
-                Log.inst.PreserveTextRPC($"{this.name} doesn't destroy an Environment.", logged);
+                Log.inst.PreserveTextRPC($"{this.name} doesn't destroy an Aura.", logged);
             }
             base.DonePlaying(player, createdEntity, logged);
         }

@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Landscaper : TroopCard
+public class Puppy : TroopCard
 {
     protected override void Awake()
     {
@@ -10,7 +10,7 @@ public class Landscaper : TroopCard
         this.bottomType = this.GetType();
         this.coinCost = 4;
         this.power = 2;
-        this.health = 4;
+        this.health = 3;
         this.extraText = "When you play this: An opposing Troop loses 2 Power.";
     }
 

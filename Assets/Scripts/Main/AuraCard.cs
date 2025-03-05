@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 
-public class EnviroCard : Card
+public class AuraCard : Card
 {
 
 #region Setup
@@ -54,11 +54,11 @@ public class EnviroCard : Card
         {
             Row row = Manager.inst.allRows[player.choice];
             int rememberChoice = row.position;
-            Environment existingEnviro = row.environment;
+            MovingAura existingEnviro = row.auraHere;
             if (existingEnviro != null)
                 existingEnviro.MoveEntityRPC(-1, logged + 1);
 
-            Environment newEnviro = player.availableEnviros[0];
+            MovingAura newEnviro = player.availableEnviros[0];
             Log.inst.RememberStep(newEnviro, StepType.Revert, () => newEnviro.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
             newEnviro.MoveEntityRPC(rememberChoice, logged + 1);
             DonePlaying(player, newEnviro, logged+1);

@@ -1,16 +1,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Vampire : TroopCard
+public class Commander : TroopCard
 {
     protected override void Awake()
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 5;
-        this.power = 6;
-        this.health = 6;
-        this.extraText = "When you play this: Deal 3 damage to one of your Troops (could be this).";
+        this.coinCost = 4;
+        this.power = 2;
+        this.health = 2;
+        this.extraText = "When you play this: One of your Troops does an attack.";
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)
@@ -27,7 +27,7 @@ public class Vampire : TroopCard
             if (player.chainTracker < player.currentChain.decisions.Count)
             {
                 int next = player.currentChain.decisions[player.chainTracker];
-                player.inReaction.Add(DealDamage);
+                player.inReaction.Add(DoAttack);
                 player.DecisionMade(next);
             }
             else
@@ -37,14 +37,14 @@ public class Vampire : TroopCard
         }
         else
         {
-            player.ChooseRow(withTroops, "Choose one of your troops to deal 3 damage to.", DealDamage);
+            player.ChooseRow(withTroops, "Choose one of your troops to do an attack.", DoAttack);
         }
 
-        void DealDamage()
+        void DoAttack()
         {
             Row targetRow = withTroops[player.choice];
             MovingTroop targetTroop = targetRow.playerTroops[player.playerPosition];
-            targetTroop.ChangeStatsRPC(0, -3, logged);
+            targetTroop.Attack(logged);
             base.DonePlaying(player, createdEntity, logged);
         }
     }

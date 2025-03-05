@@ -14,7 +14,7 @@ using System;
     public int position;
     public Button button;
     [ReadOnly] public MovingTroop[] playerTroops;
-    [ReadOnly] public Environment environment = null;
+    [ReadOnly] public MovingAura auraHere = null;
 }
 
 public class Manager : PhotonCompatible
@@ -309,8 +309,8 @@ public class Manager : PhotonCompatible
         Log.inst.PreserveTextRPC($"End of round {turnNumber}.", 0);
         foreach (Row row in allRows)
         {
-            if (row.environment != null)
-                row.environment.myCard.EndOfTurn(row.environment, 1);
+            if (row.auraHere != null)
+                row.auraHere.myCard.EndOfTurn(row.auraHere, 1);
 
             foreach (MovingTroop troop in row.playerTroops)
             {
@@ -449,8 +449,8 @@ public class Manager : PhotonCompatible
         List<(Card, Entity)> listOfCards = new();
         foreach (Row row in allRows)
         {
-            if (row.environment != null)
-                listOfCards.Add((row.environment.myCard, row.environment));
+            if (row.auraHere != null)
+                listOfCards.Add((row.auraHere.myCard, row.auraHere));
             if (row.playerTroops[0] != null)
                 listOfCards.Add((row.playerTroops[0].myCard, row.playerTroops[0]));
             if (row.playerTroops[1] != null)

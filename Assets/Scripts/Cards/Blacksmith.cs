@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class GrowShroom : TroopCard
+public class Blacksmith : TroopCard
 {
     protected override void Awake()
     {

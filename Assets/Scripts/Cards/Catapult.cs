@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class AsteroidShroom : TroopCard
+public class Catapult : TroopCard
 {
     protected override void Awake()
     {

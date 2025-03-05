@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Bank : EnviroCard
+public class Piracy : AuraCard
 {
     protected override void Awake()
     {

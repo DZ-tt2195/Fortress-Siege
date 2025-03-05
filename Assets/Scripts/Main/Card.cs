@@ -143,7 +143,7 @@ public class Card : PhotonCompatible
         return 0;
     }
 
-    public virtual (int, int) PassiveStats(MovingTroop troop, Environment enviro = null)
+    public virtual (int, int) PassiveStats(MovingTroop troop, MovingAura enviro = null)
     {
         return (0, 0);
     }
