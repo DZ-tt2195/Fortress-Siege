@@ -24,7 +24,7 @@ public class Puppy : TroopCard
         Player otherPlayer = Manager.inst.OpposingPlayer(player);
         List<Row> withTroops = otherPlayer.FilterRows(true);
 
-        if (player.myType == PlayerType.Computer)
+        if (player.myType == PlayerType.Bot)
         {
             if (player.chainTracker < player.currentChain.decisions.Count)
             {

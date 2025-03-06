@@ -24,7 +24,7 @@ public class Golem : TroopCard
         List<Row> withAuras = Manager.inst.allRows.Where(row => row.auraHere != null).ToList();
         List<string> actions = new() { $"Decline" };
 
-        if (player.myType == PlayerType.Computer)
+        if (player.myType == PlayerType.Bot)
         {
             if (player.chainTracker < player.currentChain.decisions.Count)
             {

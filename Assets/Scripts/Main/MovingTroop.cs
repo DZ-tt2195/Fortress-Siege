@@ -104,16 +104,19 @@ public class MovingTroop : Entity
 
     public void ChangeStatsRPC(int power, int health, int logged, string source = "")
     {
-        string parathentical = source == "" ? "" : $" to ({source})";
-        if (power < 0)
+        string parathentical = source == "" ? "" : $" (to {source})";
+        if (shielded)
         {
-            Log.inst.AddText($"{player.name}'s {this.name} is Shielded from losing {Mathf.Abs(power)} Power{parathentical}.", logged);
-            power = 0;
-        }
-        if (health < 0)
-        {
-            Log.inst.AddText($"{player.name}'s {this.name} Shielded from losing {Mathf.Abs(health)} Health{parathentical}.", logged);
-            health = 0;
+            if (power < 0)
+            {
+                Log.inst.AddText($"{player.name}'s {this.name} is Shielded from losing {Mathf.Abs(power)} Power{parathentical}.", logged);
+                power = 0;
+            }
+            if (health < 0)
+            {
+                Log.inst.AddText($"{player.name}'s {this.name} is Shielded from losing {Mathf.Abs(health)} Health{parathentical}.", logged);
+                health = 0;
+            }
         }
         Log.inst.RememberStep(this, StepType.Revert, () => ChangeStats(false, power, health, logged, source));
     }

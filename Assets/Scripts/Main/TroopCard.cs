@@ -42,7 +42,7 @@ public class TroopCard : Card
 
     void ChooseRow(Player player, int logged)
     {
-        if (player.myType == PlayerType.Computer)
+        if (player.myType == PlayerType.Bot)
         {
             if (player.chainTracker < player.currentChain.decisions.Count)
             {

@@ -11,7 +11,7 @@ public class Fairy : TroopCard
         this.coinCost = 2;
         this.power = 2;
         this.health = 3;
-        this.extraText = "When you play this: Move an opposing troop.";
+        this.extraText = "When you play this: Move an opposing troop to another row.";
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)
@@ -24,7 +24,7 @@ public class Fairy : TroopCard
         Player otherPlayer = Manager.inst.OpposingPlayer(player);
         List<Row> withTroops = otherPlayer.FilterRows(true);
 
-        if (player.myType == PlayerType.Computer)
+        if (player.myType == PlayerType.Bot)
         {
             if (player.chainTracker < player.currentChain.decisions.Count)
             {
@@ -75,7 +75,7 @@ public class Fairy : TroopCard
         Player otherPlayer = Manager.inst.OpposingPlayer(player);
         List<Row> blankSpots = otherPlayer.FilterRows(false);
 
-        if (player.myType == PlayerType.Computer)
+        if (player.myType == PlayerType.Bot)
         {
             if (player.chainTracker < player.currentChain.decisions.Count)
             {

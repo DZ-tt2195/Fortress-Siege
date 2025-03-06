@@ -22,7 +22,7 @@ public class Commander : TroopCard
     {
         List<Row> withTroops = player.FilterRows(true);
 
-        if (player.myType == PlayerType.Computer)
+        if (player.myType == PlayerType.Bot)
         {
             if (player.chainTracker < player.currentChain.decisions.Count)
             {

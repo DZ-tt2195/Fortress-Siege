@@ -39,7 +39,7 @@ using System;
     }
 }
 
-public enum PlayerType { Human, Computer }
+public enum PlayerType { Human, Bot }
 
 public class Player : PhotonCompatible
 {
@@ -94,7 +94,7 @@ public class Player : PhotonCompatible
         if (PhotonNetwork.IsConnected && pv.AmOwner)
         {
             if (PhotonNetwork.CurrentRoom.MaxPlayers == 1 && Manager.inst.storePlayers.childCount == 0)
-                DoFunction(() => SendName("Computer"), RpcTarget.AllBuffered);
+                DoFunction(() => SendName("Bot"), RpcTarget.AllBuffered);
             else
                 DoFunction(() => SendName(PlayerPrefs.GetString("Online Username")), RpcTarget.AllBuffered);
 
@@ -313,7 +313,7 @@ public class Player : PhotonCompatible
 
     #endregion
 
-#region Main Turn
+#region Turn
 
     public void CoinRPC(int amount, int logged, string source = "")
     {
@@ -334,7 +334,7 @@ public class Player : PhotonCompatible
             if (amount >= 0)
                 Log.inst.AddText($"{this.name} gains {amount} Coin{parathentical}.", logged);
             else
-                Log.inst.AddText($"{this.name} loses ${Mathf.Abs(amount)} Coin{parathentical}.", logged);
+                Log.inst.AddText($"{this.name} loses {Mathf.Abs(amount)} Coin{parathentical}.", logged);
         }
         if (myBase != null)
             myBase.UpdateText();
@@ -357,7 +357,7 @@ public class Player : PhotonCompatible
         Log.inst.DoFunction(() => Log.inst.AddText($"{this.name}'s turn", 0));
         Log.inst.RememberStep(this, StepType.UndoPoint, () => MayPlayCard());
 
-        if (myType == PlayerType.Computer)
+        if (myType == PlayerType.Bot)
         {
             currentChain = new(Log.inst.historyStack[0]);
             chainsToResolve.Add(currentChain);
@@ -382,7 +382,6 @@ public class Player : PhotonCompatible
         Debug.Log($"{finishedChains.Count} chains finished");
         finishedChains = finishedChains.Shuffle();
         currentChain = finishedChains.OrderByDescending(chain => chain.math).FirstOrDefault();
-        chainTracker = -1;
 
         string answer = $"Best chain: {currentChain.math} -> ";
         foreach (int nextInt in currentChain.decisions)
@@ -390,7 +389,9 @@ public class Player : PhotonCompatible
         Debug.Log(answer);
 
         finishedChains.Clear();
+        Log.inst.InvokeUndo(Log.inst.historyStack[0]);
         Log.inst.RememberStep(this, StepType.UndoPoint, () => MayPlayCard());
+        chainTracker = -1;
         PopStack();
     }
 
@@ -400,7 +401,7 @@ public class Player : PhotonCompatible
         List<string> actions = new() { $"End Turn" };
         List<Card> canPlay = cardsInHand.Where(card => card.CanPlayMe(this, true)).ToList();
 
-        if (myType == PlayerType.Computer)
+        if (myType == PlayerType.Bot)
         {
             if (chainTracker < currentChain.decisions.Count)
             {
@@ -424,7 +425,7 @@ public class Player : PhotonCompatible
         void ActionResolution()
         {
             int convertedChoice = choice - 100;
-            if (convertedChoice < canPlay.Count && convertedChoice > 0)
+            if (convertedChoice < canPlay.Count && convertedChoice >= 0)
             {
                 Card toPlay = canPlay[convertedChoice];
                 Log.inst.PreserveTextRPC($"{this.name} plays {toPlay.name}.", 0);
@@ -434,7 +435,7 @@ public class Player : PhotonCompatible
             }
             else
             {
-                if (myType == PlayerType.Computer && !currentChain.complete)
+                if (myType == PlayerType.Bot && !currentChain.complete)
                 {
                     FinishChain();
                 }
@@ -486,7 +487,7 @@ public class Player : PhotonCompatible
 
     #endregion
 
-#region Make Decision
+#region Decide
 
     public void ChooseButton(List<string> possibleChoices, Vector2 position, string changeInstructions, Action action)
     {
@@ -614,7 +615,7 @@ public class Player : PhotonCompatible
 
     #endregion
 
-#region Resolve Decision
+#region Resolve
 
     public void NewChains(int low, int high, int increment)
     {
@@ -687,7 +688,7 @@ public class Player : PhotonCompatible
         foreach (Action action in newActions)
             action();
 
-        if (currentChain == null && myType == PlayerType.Computer)
+        if (currentChain == null && myType == PlayerType.Bot)
             FindNewestChain();
 
         for (int i = Log.inst.historyStack.Count - 1; i >= 0; i--)

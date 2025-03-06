@@ -7,7 +7,7 @@ using Photon.Pun;
 public class Card : PhotonCompatible
 {
 
-#region Variables
+#region Setup
 
     public Button button { get; private set; }
     public Image border { get; private set; }
@@ -16,10 +16,6 @@ public class Card : PhotonCompatible
     public string extraText { get; protected set; }
     public int coinCost { get; protected set; }
     public string artistText { get; protected set; }
-
-    #endregion
-
-#region Setup
 
     protected override void Awake()
     {
@@ -31,7 +27,12 @@ public class Card : PhotonCompatible
         layout = GetComponent<CardLayout>();
         this.transform.localScale = Vector3.Lerp(Vector3.one, Manager.inst.canvas.transform.localScale, 0.5f);
     }
-    
+
+    public virtual Color MyColor()
+    {
+        return Color.white;
+    }
+
     #endregion
 
 #region Animations
@@ -90,15 +91,6 @@ public class Card : PhotonCompatible
     }
 
     #endregion
-
-#region Layout
-
-    public virtual Color MyColor()
-    {
-        return Color.white;
-    }
-
-#endregion
 
 #region Gameplay
 
