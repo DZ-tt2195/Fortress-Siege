@@ -3,6 +3,7 @@
     "Bandit",
     "Barrier",
     "Blacksmith",
+    "Bomb",
     "Cannon",
     "Catapult",
     "Commander",

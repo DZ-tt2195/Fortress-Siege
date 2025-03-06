@@ -1,16 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
-using System.Reflection;
-using Photon.Pun;
-using System.Collections;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 using TMPro;
-using System.IO; 
+using System.IO;
 using System.Linq;
-using UnityEngine.Networking;
-using System;
 
 public class CarryVariables : MonoBehaviour
 {
@@ -33,6 +26,7 @@ public class CarryVariables : MonoBehaviour
     [SerializeField] Transform rightClickBackground;
     [SerializeField] CardLayout rightClickCard;
     [SerializeField] TMP_Text rightClickText;
+    [SerializeField] TMP_Text artistText;
 
     [Foldout("Misc", true)]
     [SerializeField] Transform permanentCanvas;
@@ -68,7 +62,18 @@ public class CarryVariables : MonoBehaviour
     {
         rightClickBackground.gameObject.SetActive(true);
         rightClickCard.FillInCards(card);
-        rightClickCard.cg.alpha = (alpha == 0) ? 0 : 1;
+
+        if (alpha == 0)
+        {
+            rightClickCard.cg.alpha = 0;
+            artistText.transform.parent.gameObject.SetActive(false);
+        }
+        else
+        {
+            rightClickCard.cg.alpha = 1;
+            artistText.transform.parent.gameObject.SetActive(!card.artistText.IsNullOrEmpty());
+            artistText.text = card.artistText;
+        }
     }
 
     #endregion

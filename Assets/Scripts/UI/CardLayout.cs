@@ -45,10 +45,7 @@ public class CardLayout : MonoBehaviour, IPointerClickHandler
     public void FillInCards(Card card)
     {
         myCard = card;
-        try
-        {
-            artBox.sprite = Resources.Load<Sprite>($"Card Art/{card.name}");
-        } catch { }
+        try {artBox.sprite = Resources.Load<Sprite>($"Card Art/{card.name}");} catch { }
         background.color = card.MyColor();
         description.text = KeywordTooltip.instance.EditText(card.extraText);
         cardName.text = card.name;

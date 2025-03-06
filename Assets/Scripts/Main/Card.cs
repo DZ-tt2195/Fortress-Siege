@@ -15,6 +15,7 @@ public class Card : PhotonCompatible
 
     public string extraText { get; protected set; }
     public int coinCost { get; protected set; }
+    public string artistText { get; protected set; }
 
     #endregion
 
