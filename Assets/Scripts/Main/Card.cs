@@ -108,6 +108,7 @@ public class Card : PhotonCompatible
     {
         foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
             card.OtherCardPlayed(entity, createdEntity, logged);
+        Manager.inst.CleanUp(logged);
         Log.inst.RememberStep(player, StepType.UndoPoint, () => player.MayPlayCard());
     }
 

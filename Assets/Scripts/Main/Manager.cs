@@ -179,7 +179,7 @@ public class Manager : PhotonCompatible
     [PunRPC]
     public void Instructions(string text)
     {
-        instructions.text = /*KeywordTooltip.instance.EditText*/(text);
+        instructions.text = KeywordTooltip.instance.EditText(text);
     }
 
     [PunRPC]
@@ -278,7 +278,7 @@ public class Manager : PhotonCompatible
     {
         foreach ((Card card, Entity entity) in GatherAbilities())
             card.StartOfCombat(entity, 1);
-        CleanUp();
+        CleanUp(1);
 
         foreach (Row row in allRows)
         {
@@ -298,6 +298,7 @@ public class Manager : PhotonCompatible
             {
                 secondTroop.Attack(0);
             }
+            CleanUp(1);
 
             bool Alive(MovingTroop troop)
             {
@@ -322,10 +323,10 @@ public class Manager : PhotonCompatible
                 }
             }
         }
-        CleanUp();
+        CleanUp(1);
     }
 
-    public void CleanUp()
+    public void CleanUp(int logged)
     {
         foreach (Row row in allRows)
         {
@@ -335,7 +336,7 @@ public class Manager : PhotonCompatible
                 {
                     troop.RecalculateStats();
                     if (troop.calcHealth <= 0)
-                        troop.MoveEntityRPC(-1, -1);
+                        troop.MoveEntityRPC(-1, logged);
                 }
             }
         }
@@ -405,7 +406,6 @@ public class Manager : PhotonCompatible
         }
     }
 
-
     #endregion
 
 #region Misc
@@ -428,6 +428,14 @@ public class Manager : PhotonCompatible
                 return player;
         }
         return null;
+    }
+
+    public MovingTroop FindMyTroop(Player player, int row)
+    {
+        if (player.playerPosition == 0)
+            return allRows[row].playerTroops[0];
+        else
+            return allRows[row].playerTroops[1];
     }
 
     public MovingTroop FindOpposingTroop(Player player, int row)

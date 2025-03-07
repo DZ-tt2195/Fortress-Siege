@@ -14,6 +14,7 @@
     "Ghost",
     "Golem",
     "Hex",
+    "Invincibility",
     "Miner",
     "Ninja",
     "Piracy",

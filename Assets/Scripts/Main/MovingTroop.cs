@@ -56,52 +56,6 @@ public class MovingTroop : Entity
 
 #region Gameplay
 
-    public override void MoveEntityRPC(int newPosition, int logged)
-    {
-        int oldRow = this.currentRow;
-        Log.inst.RememberStep(this, StepType.Revert, () => MoveTroop(false, oldRow, newPosition, logged));
-    }
-
-    [PunRPC]
-    void MoveTroop(bool undo, int oldPosition, int newPosition, int logged)
-    {
-        if (undo)
-        {
-            if (newPosition > -1)
-                Manager.inst.allRows[newPosition].playerTroops[player.playerPosition] = null;
-
-            this.currentRow = oldPosition;
-        }
-        else
-        {
-            if (oldPosition > -1)
-                Manager.inst.allRows[oldPosition].playerTroops[player.playerPosition] = null;
-
-            this.currentRow = newPosition;
-            if (currentRow >= 0)
-                Log.inst.AddText($"{player.name} moves {this.name} to row {newPosition + 1}.", logged);
-            else
-                Log.inst.AddText($"{player.name}'s {this.name} is destroyed.", logged);
-        }
-
-        if (currentRow > -1)
-        {
-            player.availableTroops.Remove(this);
-            Row spawnPoint = Manager.inst.allRows[currentRow];
-            spawnPoint.playerTroops[player.playerPosition] = this;
-
-            this.transform.SetParent(spawnPoint.button.transform);
-            this.transform.localPosition = new((player.playerPosition) == 0 ? -575 : 575, 0);
-            this.transform.localScale = Vector3.one;
-            RecalculateStats();
-        }
-        else
-        {
-            player.availableTroops.Add(this);
-            this.transform.SetParent(null);
-        }
-    }
-
     public void ChangeStatsRPC(int power, int health, int logged, string source = "")
     {
         string parathentical = source == "" ? "" : $" (to {source})";
@@ -179,11 +133,12 @@ public class MovingTroop : Entity
 
         if (stunned)
         {
-            this.StunStatusRPC(false, logged, "");
+            Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} can't attack (it's Stunned).", logged);
+            this.StunStatusRPC(false, logged+1, "");
         }
         else if (calcPower == 0)
         {
-            Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} has 0 Power.", logged);
+            Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} can't attack (it has 0 Power).", logged);
         }
         else if (opposingTroop != null)
         {
@@ -203,7 +158,53 @@ public class MovingTroop : Entity
 
     #endregion
 
-#region Statuses
+#region Misc
+
+    public override void MoveEntityRPC(int newPosition, int logged)
+    {
+        int oldRow = this.currentRow;
+        Log.inst.RememberStep(this, StepType.Revert, () => MoveTroop(false, oldRow, newPosition, logged));
+    }
+
+    [PunRPC]
+    void MoveTroop(bool undo, int oldPosition, int newPosition, int logged)
+    {
+        if (undo)
+        {
+            if (newPosition > -1)
+                Manager.inst.allRows[newPosition].playerTroops[player.playerPosition] = null;
+
+            this.currentRow = oldPosition;
+        }
+        else
+        {
+            if (oldPosition > -1)
+                Manager.inst.allRows[oldPosition].playerTroops[player.playerPosition] = null;
+
+            this.currentRow = newPosition;
+            if (currentRow >= 0)
+                Log.inst.AddText($"{player.name} moves {this.name} to row {newPosition + 1}.", logged);
+            else
+                Log.inst.AddText($"{player.name}'s {this.name} is destroyed.", logged);
+        }
+
+        if (currentRow > -1)
+        {
+            player.availableTroops.Remove(this);
+            Row spawnPoint = Manager.inst.allRows[currentRow];
+            spawnPoint.playerTroops[player.playerPosition] = this;
+
+            this.transform.SetParent(spawnPoint.button.transform);
+            this.transform.localPosition = new((player.playerPosition) == 0 ? -575 : 575, 0);
+            this.transform.localScale = Vector3.one;
+            RecalculateStats();
+        }
+        else
+        {
+            player.availableTroops.Add(this);
+            this.transform.SetParent(null);
+        }
+    }
 
     public void ShieldStatusRPC(bool shielded, int logged, string source = "")
     {

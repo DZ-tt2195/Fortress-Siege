@@ -397,7 +397,7 @@ public class Player : PhotonCompatible
 
     internal void MayPlayCard()
     {
-        Manager.inst.CleanUp();
+        Manager.inst.CleanUp(-1);
         List<string> actions = new() { $"End Turn" };
         List<Card> canPlay = cardsInHand.Where(card => card.CanPlayMe(this, true)).ToList();
 
