@@ -35,7 +35,7 @@ public class PlayerBase : Entity
         UpdateText();
     }
 
-    public void ChangeHealthRPC(int health, int logged, string source)
+    public void ChangeHealthRPC(int health, int logged, string source = "")
     {
         Log.inst.RememberStep(this, StepType.Revert, () => ChangeHealth(false, health, logged, source));
     }

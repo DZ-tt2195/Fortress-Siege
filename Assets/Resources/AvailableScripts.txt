@@ -1,5 +1,6 @@
 {
   [
+    "Angel",
     "Bandit",
     "Barrier",
     "Blacksmith",
@@ -11,6 +12,7 @@
     "Dominance",
     "Enlarge",
     "Fairy",
+    "FlagBearer",
     "Ghost",
     "Golem",
     "Hex",
