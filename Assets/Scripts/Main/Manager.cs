@@ -135,7 +135,7 @@ public class Manager : PhotonCompatible
         for (int i = 0; i < storePlayers.childCount; i++)
         {
             GameObject nextPlayer = storePlayers.transform.GetChild(i).gameObject;
-            DoFunction(() => AddPlayer(nextPlayer.GetComponent<PhotonView>().ViewID, i, nextPlayer.name.Equals("Computer") ? 1 : 0));
+            DoFunction(() => AddPlayer(nextPlayer.GetComponent<PhotonView>().ViewID, i, nextPlayer.name.Equals("Bot") ? 1 : 0));
         }
     }
 

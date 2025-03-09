@@ -99,8 +99,11 @@ public class KeywordTooltip : MonoBehaviour
             {
                 if (keyword.Equals(target))
                 {
-                    tooltipText.text = entry.description;
-                    tooltipText.transform.parent.position = CalculatePosition(mousePosition);
+                    if (string.IsNullOrWhiteSpace(entry.description))
+                    {
+                        tooltipText.text = entry.description;
+                        tooltipText.transform.parent.position = CalculatePosition(mousePosition);
+                    }
                     return;
                 }
             }
@@ -109,8 +112,11 @@ public class KeywordTooltip : MonoBehaviour
         {
             if (entry.keywordVariations[0].Equals(target))
             {
-                tooltipText.text = entry.description;
-                tooltipText.transform.parent.position = CalculatePosition(mousePosition);
+                if (string.IsNullOrWhiteSpace(entry.description))
+                {
+                    tooltipText.text = entry.description;
+                    tooltipText.transform.parent.position = CalculatePosition(mousePosition);
+                }
                 return;
             }
         }
