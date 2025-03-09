@@ -26,7 +26,7 @@ public class MovingAura : Entity
             if (cardID >= 0)
             {
                 myCard = PhotonView.Find(cardID).GetComponent<AuraCard>();
-                this.name = Regex.Replace(myCard.name, "(?<=[a-z])(?=[A-Z])", " ");
+                this.name = myCard.name;
                 this.image.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
             }
         }

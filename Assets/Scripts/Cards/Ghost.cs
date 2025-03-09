@@ -10,6 +10,7 @@ public class Ghost : TroopCard
         this.power = 4;
         this.health = 3;
         this.extraText = "When you play this: The other player gets +1 Card.";
+        this.artistText = "Eric J. Carter\nDominion: Nocturne\n(Ghost)";
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)

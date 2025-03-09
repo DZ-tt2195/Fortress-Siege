@@ -42,7 +42,7 @@ public class MovingTroop : Entity
             if (cardID >= 0)
             {
                 myCard = PhotonView.Find(cardID).GetComponent<TroopCard>();
-                this.name = Regex.Replace(myCard.name, "(?<=[a-z])(?=[A-Z])", " ");
+                this.name = myCard.name;
                 this.image.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
 
                 TroopCard intoTroop = (TroopCard)myCard;

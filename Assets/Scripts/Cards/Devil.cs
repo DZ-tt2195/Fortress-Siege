@@ -11,6 +11,7 @@ public class Devil : TroopCard
         this.power = 6;
         this.health = 6;
         this.extraText = "When you play this: Deal 3 damage to one of your Troops (could be this).";
+        this.artistText = "Jack Wang\nMTG: Shadows over Innistrad\n(Sin Prodder)";
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)

@@ -10,6 +10,7 @@ public class Miner : TroopCard
         this.power = 2;
         this.health = 1;
         this.extraText = "Start of turn: +1 Coin.";
+        this.artistText = "Martin Hoffmann\nDominion: Rising Sun\n(Gold Mine)";
     }
 
     public override int CoinEffect(Player player, Entity entity, int logged)

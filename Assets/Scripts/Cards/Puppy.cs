@@ -12,6 +12,7 @@ public class Puppy : TroopCard
         this.power = 2;
         this.health = 3;
         this.extraText = "When you play this: An opposing Troop loses 2 Power.";
+        this.artistText = "Claus Stephan\nDominion: Menagerie\n(Sheepdog)";
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)

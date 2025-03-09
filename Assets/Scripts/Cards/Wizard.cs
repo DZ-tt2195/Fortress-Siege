@@ -10,6 +10,7 @@ public class Wizard : TroopCard
         this.power = 2;
         this.health = 2;
         this.extraText = "When any player plays an Aura: This does an attack.";
+        this.artistText = "Harald Lieske\nDominion: Allies\n(Conjurer)";
     }
 
     public override void OtherCardPlayed(Entity thisEntity, Entity playedEntity, int logged)

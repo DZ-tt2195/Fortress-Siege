@@ -10,6 +10,7 @@ public class Angel : TroopCard
         this.power = 3;
         this.health = 4;
         this.extraText = "End of turn: You get +1 Health per Troop you have (including this).";
+        this.artistText = "Magali Villeneuve\nMTG: Oath of the Gatewatch\n(Linvala, the Preserver)";
     }
 
     public override void EndOfTurn(Entity entity, int logged)

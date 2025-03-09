@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using System.Linq;
 using MyBox;
 using System;
+using System.Text.RegularExpressions;
 
 [Serializable] public class DecisionChain
 {
@@ -123,12 +124,15 @@ public class Player : PhotonCompatible
     void AddCard(int position, int ID, string cardName)
     {
         GameObject nextObject = PhotonView.Find(ID).gameObject;
-        nextObject.name = cardName;
         nextObject.transform.SetParent(deck);
         nextObject.transform.SetSiblingIndex(position);
         nextObject.transform.localPosition = new(0, -10000);
-        Type type = Type.GetType(cardName.Replace(" ", ""));
+
+        Type type = Type.GetType(cardName);
         nextObject.AddComponent(type);
+        nextObject.name = Regex.Replace(cardName, "(?<=[a-z])(?=[A-Z])", " ");
+        Card card = nextObject.GetComponent<Card>();
+        card.layout.FillInCards(card);
     }
 
     [PunRPC]

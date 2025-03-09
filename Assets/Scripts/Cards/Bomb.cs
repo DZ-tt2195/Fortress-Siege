@@ -10,6 +10,7 @@ public class Bomb : TroopCard
         this.power = 6;
         this.health = 1;
         this.extraText = "End of turn: This loses 1 Health.";
+        this.artistText = "Thomas Tang\nAll Shapes and Sizes\n(Bomb)";
     }
 
     public override void EndOfTurn(Entity entity, int logged)

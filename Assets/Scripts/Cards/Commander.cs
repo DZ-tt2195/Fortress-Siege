@@ -11,6 +11,7 @@ public class Commander : TroopCard
         this.power = 2;
         this.health = 2;
         this.extraText = "When you play this: One of your Troops does an attack.";
+        this.artistText = "Julien Delval\nDominion: Plunder\n(First Mate)";
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)

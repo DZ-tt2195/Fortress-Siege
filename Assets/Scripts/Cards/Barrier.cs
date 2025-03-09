@@ -8,6 +8,7 @@ public class Barrier : AuraCard
         this.bottomType = this.GetType();
         this.coinCost = 3;
         this.extraText = "Your Troops here have +3 Health.";
+        this.artistText = "Joshua Stewart\nDominion: Empires\n(Wall)";
     }
 
     public override (int, int) PassiveStats(MovingTroop troop, MovingAura enviro = null)

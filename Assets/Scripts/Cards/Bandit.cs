@@ -10,6 +10,7 @@ public class Bandit : TroopCard
         this.power = 4;
         this.health = 4;
         this.extraText = "Start of turn: The other player loses 1 Coin.";
+        this.artistText = "Hans Krill\nDominion: Plunder\n(Cutthroat)";
     }
 
     public override int CoinEffect(Player player, Entity entity, int logged)

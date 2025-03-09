@@ -8,6 +8,7 @@ public class Vampirism : AuraCard
         this.bottomType = this.GetType();
         this.coinCost = 4;
         this.extraText = "When one of your Troops here attacks the other player: You get +4 Health.";
+        this.artistText = "Martin Hoffmann\nDominion: Nocturne\n(Vampire)";
     }
 
     public override void CardAttacked(Entity entity, MovingTroop attacker, Entity defender, int logged)

@@ -10,6 +10,7 @@ public class Recruiter : TroopCard
         this.power = 1;
         this.health = 2;
         this.extraText = "When this attacks: +1 Card.";
+        this.artistText = "Julien Delval\nDominion: Renaissance\n(Recruiter)";
     }
 
     public override void CardAttacked(Entity entity, MovingTroop attacker, Entity defender, int logged)

@@ -11,6 +11,7 @@ public class Ninja : TroopCard
         this.power = 2;
         this.health = 2;
         this.extraText = "If the other player has a Troop here, this gets +4 Power.";
+        this.artistText = "Elisa Cella\nDominion: Rising Sun\n(Ninja)";
     }
 
     public override (int, int) PassiveStats(MovingTroop troop, MovingAura enviro = null)

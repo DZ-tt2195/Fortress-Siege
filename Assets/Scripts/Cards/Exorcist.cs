@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Golem : TroopCard
+public class Exorcist : TroopCard
 {
     protected override void Awake()
     {
@@ -12,6 +12,7 @@ public class Golem : TroopCard
         this.power = 3;
         this.health = 1;
         this.extraText = "When you play this: You may destroy an Aura.";
+        this.artistText = "Joshua Stewart\nDominion: Nocturne\n(Exorcist)";
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)

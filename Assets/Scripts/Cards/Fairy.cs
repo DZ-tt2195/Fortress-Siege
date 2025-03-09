@@ -12,6 +12,7 @@ public class Fairy : TroopCard
         this.power = 2;
         this.health = 3;
         this.extraText = "When you play this: Move an opposing troop to another row.";
+        this.artistText = "Claus Stephan\nDominion: Nocturne\n(Pixie)";
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)
