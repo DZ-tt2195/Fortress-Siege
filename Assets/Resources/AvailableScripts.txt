@@ -1,6 +1,7 @@
 {
   [
     "Angel",
+    "Archer",
     "Bandit",
     "Barrier",
     "Blacksmith",

@@ -7,10 +7,10 @@ public class DoubleBounce : AuraCard
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 1;
-        this.extraText = "End of turn: If both players have Troops here, Bounce them both.";
+        this.extraText = "Start of combat: If both players have Troops here, Bounce them both.";
     }
 
-    public override void EndOfTurn(Entity entity, int logged)
+    public override void StartOfCombat(Entity entity, int logged)
     {
         Row row = Manager.inst.allRows[entity.currentRow];
         if (row.playerTroops[0] != null && row.playerTroops[1] != null)

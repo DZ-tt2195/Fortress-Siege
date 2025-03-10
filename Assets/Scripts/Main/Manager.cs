@@ -308,11 +308,13 @@ public class Manager : PhotonCompatible
 
         Log.inst.PreserveTextRPC("", 0);
         Log.inst.PreserveTextRPC($"End of round {turnNumber}.", 0);
+
         foreach (Row row in allRows)
         {
             if (row.auraHere != null)
+            {
                 row.auraHere.myCard.EndOfTurn(row.auraHere, 1);
-
+            }
             foreach (MovingTroop troop in row.playerTroops)
             {
                 if (troop != null)
