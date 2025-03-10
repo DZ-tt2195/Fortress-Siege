@@ -10,6 +10,7 @@
     "Commander",
     "Devil",
     "Dominance",
+    "DoubleBounce",
     "Enlarge",
     "Exorcist",
     "Fairy",

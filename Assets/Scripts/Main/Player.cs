@@ -59,7 +59,6 @@ public class Player : PhotonCompatible
     [Foldout("Cards", true)]
     public List<Card> cardsInHand = new();
     [SerializeField] Transform deck;
-    [SerializeField] Transform discard;
 
     [Foldout("UI", true)]
     [SerializeField] TMP_Text resourceText;
@@ -284,32 +283,33 @@ public class Player : PhotonCompatible
         else
         {
             cardsInHand.Remove(card);
-            card.transform.SetParent(discard);
+            card.transform.SetParent(null);
             Log.inst.AddText($"{this.name} discards {card.name}.", logged);
             StartCoroutine(card.MoveCard(new(0, -10000), 0.25f, Vector3.one));
         }
         SortHand();
     }
 
-    public void BounceCardRPC(Entity entity, int logged)
+    public void BounceCardRPC(Entity entity, int logged, string source = "")
     {
         entity.MoveEntityRPC(-1, -1);
-        Log.inst.RememberStep(this, StepType.Revert, () => BounceCard(false, entity.myCard.pv.ViewID, logged));
+        Log.inst.RememberStep(this, StepType.Revert, () => BounceCard(false, entity.myCard.pv.ViewID, logged, source));
     }
 
     [PunRPC]
-    void BounceCard(bool undo, int PV, int logged)
+    void BounceCard(bool undo, int PV, int logged, string source)
     {
+        string parathentical = source == "" ? "" : $" ({source})";
         Card card = PhotonView.Find(PV).GetComponent<Card>();
         if (undo)
         {
             cardsInHand.Remove(card);
             card.transform.localPosition = new Vector2(0, -1100);
-            card.transform.SetParent(discard);
+            card.transform.SetParent(null);
         }
         else
         {
-            Log.inst.AddText($"{this.name}'s {card.name} gets Bounced.", logged);
+            Log.inst.AddText($"{this.name}'s {card.name} gets Bounced{parathentical}.", logged);
             PutCardInHand(card);
         }
         SortHand();
