@@ -1,7 +1,9 @@
 using UnityEngine;
 using Photon.Pun;
 using TMPro;
-using System.Text.RegularExpressions;
+using System.Collections.Generic;
+
+public enum StatusEffect { Shielded, Stunned }
 
 public class MovingTroop : Entity
 {
@@ -17,8 +19,7 @@ public class MovingTroop : Entity
     public int calcHealth { get; private set; }
     public int calcPower { get; private set; }
 
-    public bool stunned { get; private set; }
-    public bool shielded { get; private set; }
+    public Dictionary<StatusEffect, bool> statusDict = new();
 
     protected override void Awake()
     {
@@ -59,7 +60,7 @@ public class MovingTroop : Entity
     public void ChangeStatsRPC(int power, int health, int logged, string source = "")
     {
         string parathentical = source == "" ? "" : $" (to {source})";
-        if (shielded)
+        if (statusDict[StatusEffect.Shielded])
         {
             if (power < 0)
             {
@@ -108,9 +109,9 @@ public class MovingTroop : Entity
         calcHealth = myHealth + troopHealth;
 
         statusText.text = "";
-        if (stunned)
+        if (statusDict[StatusEffect.Stunned])
             statusText.text += "StunImage";
-        if (shielded)
+        if (statusDict[StatusEffect.Shielded])
             statusText.text += "ShieldedImage";
         statusText.text = KeywordTooltip.instance.EditText(statusText.text);
 
@@ -128,13 +129,14 @@ public class MovingTroop : Entity
 
     public void Attack(int logged)
     {
+        RecalculateStats();
         Player opposingPlayer = Manager.inst.OpposingPlayer(this.player);
         MovingTroop opposingTroop = Manager.inst.FindOpposingTroop(this.player, this.currentRow);
 
-        if (stunned)
+        if (statusDict[StatusEffect.Stunned])
         {
             Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} can't attack (it's Stunned).", logged);
-            this.StunStatusRPC(false, logged+1, "");
+            this.StatusEffectRPC(StatusEffect.Stunned, false, logged+1, "");
         }
         else if (calcPower == 0)
         {
@@ -206,50 +208,27 @@ public class MovingTroop : Entity
         }
     }
 
-    public void ShieldStatusRPC(bool shielded, int logged, string source = "")
+    public void StatusEffectRPC(StatusEffect status, bool newStatus, int logged, string source = "")
     {
-        Log.inst.RememberStep(this, StepType.Revert, () => ShieldStatus(false, shielded, logged, source));
+        Log.inst.RememberStep(this, StepType.Revert, () => ChangeStatus(false, (int)status, newStatus, logged, source));
     }
 
     [PunRPC]
-    void ShieldStatus(bool undo, bool newStatus, int logged, string source)
+    void ChangeStatus(bool undo, int statusNumber, bool newStatus, int logged, string source)
     {
+        StatusEffect toChange = (StatusEffect)statusNumber;
         string parathentical = source == "" ? "" : $" ({source})";
         if (undo)
         {
-            shielded = !newStatus;
+            statusDict[toChange] = !newStatus;
         }
         else
         {
-            shielded = newStatus;
+            statusDict[toChange] = newStatus;
             if (newStatus)
-                Log.inst.AddText($"{player.name}'s {this.name} is Shielded{parathentical}.", logged);
+                Log.inst.AddText($"{player.name}'s {this.name} is {toChange}{parathentical}.", logged);
             else
-                Log.inst.AddText($"{player.name}'s {this.name} is no longer Shielded{parathentical}.", logged);
-        }
-        RecalculateStats();
-    }
-
-    public void StunStatusRPC(bool stunned, int logged, string source = "")
-    {
-        Log.inst.RememberStep(this, StepType.Revert, () => StunStatus(false, stunned, logged, source));
-    }
-
-    [PunRPC]
-    void StunStatus(bool undo, bool newStatus, int logged, string source)
-    {
-        string parathentical = source == "" ? "" : $" ({source})";
-        if (undo)
-        {
-            stunned = !newStatus;
-        }
-        else
-        {
-            stunned = newStatus;
-            if (newStatus)
-                Log.inst.AddText($"{player.name}'s {this.name} is Stunned{parathentical}.", logged);
-            else
-                Log.inst.AddText($"{player.name}'s {this.name} is no longer Stunned{parathentical}.", logged);
+                Log.inst.AddText($"{player.name}'s {this.name} is no longer {toChange}{parathentical}.", logged);
         }
         RecalculateStats();
     }

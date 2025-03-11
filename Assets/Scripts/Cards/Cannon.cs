@@ -16,6 +16,6 @@ public class Cannon : TroopCard
     public override void CardAttacked(Entity entity, MovingTroop attacker, Entity defender, int logged)
     {
         if (entity == attacker)
-            attacker.StunStatusRPC(true, logged, attacker.name);
+            attacker.StatusEffectRPC(StatusEffect.Stunned, true, logged, attacker.name);
     }
 }
