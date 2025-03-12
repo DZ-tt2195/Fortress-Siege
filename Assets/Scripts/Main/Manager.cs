@@ -330,6 +330,9 @@ public class Manager : PhotonCompatible
 
     public void CleanUp(int logged)
     {
+        foreach (Player player in playersInOrder)
+            player.myBase.UpdateText();
+
         foreach (Row row in allRows)
         {
             foreach (MovingTroop troop in row.playerTroops)

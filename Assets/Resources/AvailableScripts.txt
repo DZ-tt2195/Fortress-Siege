@@ -18,6 +18,7 @@
     "FlagBearer",
     "Ghost",
     "Hex",
+    "Hunter",
     "Invincibility",
     "Miner",
     "Ninja",

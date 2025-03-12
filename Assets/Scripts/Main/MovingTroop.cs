@@ -2,6 +2,7 @@ using UnityEngine;
 using Photon.Pun;
 using TMPro;
 using System.Collections.Generic;
+using System;
 
 public enum StatusEffect { Shielded, Stunned }
 
@@ -28,6 +29,8 @@ public class MovingTroop : Entity
         heartText = this.transform.Find("Heart Text").GetComponent<TMP_Text>();
         powerText = this.transform.Find("Power Text").GetComponent<TMP_Text>();
         statusText = this.transform.Find("Status Text").GetComponent<TMP_Text>();
+        foreach (StatusEffect value in Enum.GetValues(typeof(StatusEffect)))
+            statusDict.Add(value, false);
     }
 
     [PunRPC]
@@ -87,7 +90,7 @@ public class MovingTroop : Entity
         }
         else
         {
-            myPower = Mathf.Min(myPower+power, 0);
+            myPower += power;
             if (power > 0)
                 Log.inst.AddText($"{player.name}'s {this.name} gets +{power} Power{parathentical}.", logged);
             else if (power < 0)
@@ -138,9 +141,9 @@ public class MovingTroop : Entity
             Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} can't attack (it's Stunned).", logged);
             this.StatusEffectRPC(StatusEffect.Stunned, false, logged+1, "");
         }
-        else if (calcPower == 0)
+        else if (calcPower <= 0)
         {
-            Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} can't attack (it has 0 Power).", logged);
+            Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} can't attack (it has {calcPower} Power).", logged);
         }
         else if (opposingTroop != null)
         {

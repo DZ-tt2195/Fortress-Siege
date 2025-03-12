@@ -7,17 +7,20 @@ using Photon.Pun;
 public class PlayerBase : Entity
 {
     TMP_Text myText;
+    TMP_Text heartText;
     public int myHealth { get; private set; }
 
     protected override void Awake()
     {
         base.Awake();
         this.bottomType = this.GetType();
+        heartText = this.transform.Find("Heart Text").GetComponent<TMP_Text>();
         myText = this.transform.Find("Personal Text").GetComponent<TMP_Text>();
     }
 
     public void UpdateText()
     {
+        heartText.text = $"{myHealth}";
         myText.text = KeywordTooltip.instance.EditText($"{player.name}\n{player.coins} Coin\n{player.cardsInHand.Count} Card");
     }
 

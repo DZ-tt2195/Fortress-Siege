@@ -156,7 +156,6 @@ MonoBehaviour:
   availableEnviros: []
   cardsInHand: []
   deck: {fileID: 1788577225800641295}
-  discard: {fileID: 0}
   resourceText: {fileID: 1694358012973467107}
   chainTracker: 0
 --- !u!1 &1262142806565398546
