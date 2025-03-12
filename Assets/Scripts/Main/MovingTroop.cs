@@ -107,9 +107,12 @@ public class MovingTroop : Entity
 
     public void RecalculateStats()
     {
+        calcPower = myPower;
+        calcHealth = myHealth;
+
         (int troopPower, int troopHealth) = myCard.PassiveStats(this);
-        calcPower = myPower + troopPower;
-        calcHealth = myHealth + troopHealth;
+        calcPower += (troopPower < 0 && statusDict[StatusEffect.Shielded]) ? 0 : troopPower;
+        calcHealth += (troopHealth < 0 && statusDict[StatusEffect.Shielded]) ? 0 : troopHealth;
 
         statusText.text = "";
         if (statusDict[StatusEffect.Stunned])
@@ -122,8 +125,8 @@ public class MovingTroop : Entity
         if (enviro != null)
         {
             (int enviroPower, int enviroHealth) = enviro.myCard.PassiveStats(this, enviro);
-            calcPower += enviroPower;
-            calcHealth += enviroHealth;
+            calcPower += (enviroPower < 0 && statusDict[StatusEffect.Shielded]) ? 0 : enviroPower; ;
+            calcHealth += (enviroHealth < 0 && statusDict[StatusEffect.Shielded]) ? 0 : enviroHealth;
         }
 
         powerText.text = calcPower.ToString();
