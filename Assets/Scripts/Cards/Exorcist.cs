@@ -61,7 +61,7 @@ public class Exorcist : TroopCard
             {
                 Row toRemove = withAuras[player.choice];
                 MovingAura enviro = toRemove.auraHere;
-                enviro.MoveEntityRPC(-1, logged);
+                enviro.DestroyEntityRPC(logged);
             }
             else
             {

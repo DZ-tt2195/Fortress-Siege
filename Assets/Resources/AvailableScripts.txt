@@ -3,6 +3,7 @@
     "Angel",
     "Archer",
     "Bandit",
+    "Barbarian",
     "Barrier",
     "Blacksmith",
     "Bomb",

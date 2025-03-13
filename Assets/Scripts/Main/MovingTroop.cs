@@ -60,7 +60,7 @@ public class MovingTroop : Entity
 
 #region Gameplay
 
-    public void ChangeStatsRPC(int power, int health, int logged, string source = "")
+    public void ChangeStatsRPC(int power, int health, int logged, string source = "", bool triggerAbilities = true)
     {
         string parathentical = source == "" ? "" : $" (to {source})";
         if (statusDict[StatusEffect.Shielded])
@@ -76,7 +76,10 @@ public class MovingTroop : Entity
                 health = 0;
             }
         }
+
         Log.inst.RememberStep(this, StepType.Revert, () => ChangeStats(false, power, health, logged, source));
+        if (health < 0 && triggerAbilities)
+            myCard.TookDamage(this, logged + 1);
     }
 
     [PunRPC]
@@ -133,7 +136,7 @@ public class MovingTroop : Entity
         heartText.text = calcHealth.ToString();
     }
 
-    public void Attack(int logged)
+    public int Attack(bool triggerAbilities, int logged)
     {
         RecalculateStats();
         Player opposingPlayer = Manager.inst.OpposingPlayer(this.player);
@@ -143,24 +146,34 @@ public class MovingTroop : Entity
         {
             Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} can't attack (it's Stunned).", logged);
             this.StatusEffectRPC(StatusEffect.Stunned, false, logged+1, "");
+            return 0;
         }
         else if (calcPower <= 0)
         {
             Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} can't attack (it has {calcPower} Power).", logged);
+            return 0;
         }
         else if (opposingTroop != null)
         {
             Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} attacks {opposingPlayer.name}'s {opposingTroop.name}.", logged);
-            opposingTroop.ChangeStatsRPC(0, -this.calcPower, logged + 1, "");
-            foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
-                card.CardAttacked(entity, this, opposingTroop, logged+1);
+            if (triggerAbilities)
+            {
+                foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
+                    card.CardAttacked(entity, this, opposingTroop, logged + 1);
+            }
+            opposingTroop.ChangeStatsRPC(0, -this.calcPower, logged + 1, "", false);
+            return this.calcPower;
         }
         else
         {
             Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} attacks {opposingPlayer.name}.", logged);
+            if (triggerAbilities)
+            {
+                foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
+                    card.CardAttacked(entity, this, opposingPlayer.myBase, logged + 1);
+            }
             opposingPlayer.myBase.ChangeHealthRPC(-this.calcPower, logged + 1, "");
-            foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
-                card.CardAttacked(entity, this, opposingPlayer.myBase, logged+1);
+            return this.calcPower;
         }
     }
 

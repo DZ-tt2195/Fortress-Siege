@@ -18,7 +18,7 @@ public class Wizard : TroopCard
         if (playedEntity is MovingAura)
         {
             MovingTroop troop = (MovingTroop)thisEntity;
-            troop.Attack(logged);
+            troop.Attack(true, logged);
         }
     }
 }

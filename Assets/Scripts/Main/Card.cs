@@ -142,6 +142,14 @@ public class Card : PhotonCompatible
         return (0, 0);
     }
 
+    public virtual void TookDamage(MovingTroop entity, int logged)
+    {
+    }
+
+    public virtual void WhenDestroy(Entity entity, int logged)
+    {
+    }
+
 #endregion
 
 }

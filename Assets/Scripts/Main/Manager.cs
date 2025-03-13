@@ -277,7 +277,10 @@ public class Manager : PhotonCompatible
     internal void SimulateBattle()
     {
         foreach ((Card card, Entity entity) in GatherAbilities())
-            card.StartOfCombat(entity, 1);
+        {
+            if (entity.currentRow >= 0)
+                card.StartOfCombat(entity, 1);
+        }
         CleanUp(1);
 
         foreach (Row row in allRows)
@@ -285,26 +288,38 @@ public class Manager : PhotonCompatible
             MovingTroop firstTroop = row.playerTroops[0];
             MovingTroop secondTroop = row.playerTroops[1];
 
-            if (Alive(firstTroop) && Alive(secondTroop))
-            {
-                firstTroop.Attack(0);
-                secondTroop.Attack(0);
-            }
-            else if (Alive(firstTroop))
-            {
-                firstTroop.Attack(0);
-            }
-            else if (Alive(secondTroop))
-            {
-                secondTroop.Attack(0);
-            }
-            CleanUp(1);
+            bool firstAlive = IsAlive(firstTroop);
+            bool secondAlive = IsAlive(secondTroop);
 
-            bool Alive(MovingTroop troop)
+            if (firstAlive || secondAlive)
             {
-                return troop != null && troop.calcHealth >= 1;
+                int attack1 = firstAlive ? firstTroop.Attack(false, 0) : 0;
+                int attack2 = secondAlive ? secondTroop.Attack(false, 0) : 0;
+
+                foreach ((Card card, Entity entity) in GatherAbilities())
+                {
+                    if (entity.currentRow >= 0)
+                    {
+                        if (attack1 > 0)
+                            card.CardAttacked(entity, firstTroop, secondAlive ? secondTroop : playersInOrder[1].myBase, 1);
+                        if (attack2 > 0)
+                            card.CardAttacked(entity, secondTroop, firstAlive ? firstTroop : playersInOrder[0].myBase, 1);
+                    }
+                }
+
+                if (firstAlive && secondAlive)
+                {
+                    if (attack1 > 0 && !secondTroop.statusDict[StatusEffect.Stunned])
+                        secondTroop.myCard.TookDamage(secondTroop, 1);
+                    if (attack2 > 0 && !firstTroop.statusDict[StatusEffect.Stunned])
+                        firstTroop.myCard.TookDamage(firstTroop, 1);
+                }
             }
+
+            CleanUp(1);
         }
+
+        bool IsAlive(MovingTroop troop) => troop != null && troop.calcHealth >= 1;
 
         Log.inst.PreserveTextRPC("", 0);
         Log.inst.PreserveTextRPC($"End of round {turnNumber}.", 0);
@@ -325,7 +340,9 @@ public class Manager : PhotonCompatible
                 }
             }
         }
-        CleanUp(1);
+
+        for (int i = 0; i<0; i++)
+            CleanUp(1);
     }
 
     public void CleanUp(int logged)
@@ -341,7 +358,7 @@ public class Manager : PhotonCompatible
                 {
                     troop.RecalculateStats();
                     if (troop.calcHealth <= 0)
-                        troop.MoveEntityRPC(-1, logged);
+                        troop.DestroyEntityRPC(logged);
                 }
             }
         }

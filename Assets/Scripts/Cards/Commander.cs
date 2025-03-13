@@ -8,8 +8,8 @@ public class Commander : TroopCard
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 4;
-        this.power = 2;
-        this.health = 2;
+        this.power = 3;
+        this.health = 1;
         this.extraText = "When you play this: One of your Troops does an attack.";
         this.artistText = "Julien Delval\nDominion: Plunder\n(First Mate)";
     }
@@ -45,7 +45,7 @@ public class Commander : TroopCard
         {
             Row targetRow = withTroops[player.choice];
             MovingTroop targetTroop = targetRow.playerTroops[player.playerPosition];
-            targetTroop.Attack(logged);
+            targetTroop.Attack(true, logged);
             base.DonePlaying(player, createdEntity, logged);
         }
     }

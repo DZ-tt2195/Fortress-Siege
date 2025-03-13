@@ -29,4 +29,10 @@ public class Entity : PhotonCompatible, IPointerClickHandler
     public virtual void MoveEntityRPC(int newPosition, int logged)
     {
     }
+
+    public void DestroyEntityRPC(int logged)
+    {
+        MoveEntityRPC(-1, logged);
+        myCard.WhenDestroy(this, logged + 1);
+    }
 }
