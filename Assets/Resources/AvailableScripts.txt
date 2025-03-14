@@ -30,6 +30,7 @@
     "Security",
     "Spirit",
     "Targeted",
+    "Treasurer",
     "Vampirism",
     "Weakness",
     "Wizard"
