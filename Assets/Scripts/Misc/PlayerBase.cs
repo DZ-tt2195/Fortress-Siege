@@ -31,9 +31,9 @@ public class PlayerBase : Entity
         this.myHealth = health;
 
         this.transform.SetParent(Manager.inst.canvas.transform);
-        this.image.color = (player.playerPosition == 0) ? Color.white : Color.black;
-        myText.color = (player.playerPosition == 0) ? Color.black : Color.white;
-        this.transform.localPosition = new(player.playerPosition == 0 ? -1100 : 470, 225);
+        this.image.color = (player.playerPosition == 0) ? Color.red : Color.blue;
+        this.transform.localPosition = new(player.playerPosition == 0 ? -1075 : 400, 225);
+        image.transform.localEulerAngles = new(0, 0, player.playerPosition == 0 ? 90 : -90);
 
         UpdateText();
     }

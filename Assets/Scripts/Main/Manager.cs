@@ -247,8 +247,6 @@ public class Manager : PhotonCompatible
 
         void TroopsAttack()
         {
-            Log.inst.PreserveTextRPC("", 0);
-            Log.inst.PreserveTextRPC("Combat phase.", 0);
             SimulateBattle();
             Log.inst.ShareSteps();
             Continue();
@@ -276,6 +274,9 @@ public class Manager : PhotonCompatible
 
     internal void SimulateBattle()
     {
+        Log.inst.PreserveTextRPC("", 0);
+        Log.inst.PreserveTextRPC("Combat phase.", 0);
+
         foreach ((Card card, Entity entity) in GatherAbilities())
         {
             if (entity.currentRow >= 0)
@@ -283,6 +284,7 @@ public class Manager : PhotonCompatible
         }
         CleanUp(1);
 
+        Log.inst.PreserveTextRPC("", 0);
         foreach (Row row in allRows)
         {
             MovingTroop firstTroop = row.playerTroops[0];
@@ -321,6 +323,11 @@ public class Manager : PhotonCompatible
 
         bool IsAlive(MovingTroop troop) => troop != null && troop.calcHealth >= 1;
 
+        EndRound();
+    }
+
+    void EndRound()
+    {
         Log.inst.PreserveTextRPC("", 0);
         Log.inst.PreserveTextRPC($"End of round {turnNumber}.", 0);
 
@@ -341,27 +348,34 @@ public class Manager : PhotonCompatible
             }
         }
 
-        for (int i = 0; i<0; i++)
-            CleanUp(1);
+        CleanUp(1);
     }
 
     public void CleanUp(int logged)
     {
-        foreach (Player player in playersInOrder)
-            player.myBase.UpdateText();
+        bool extraCleaning = false;
 
-        foreach (Row row in allRows)
+        do
         {
-            foreach (MovingTroop troop in row.playerTroops)
+            foreach (Player player in playersInOrder)
+                player.myBase.UpdateText();
+
+            foreach (Row row in allRows)
             {
-                if (troop != null)
+                foreach (MovingTroop troop in row.playerTroops)
                 {
-                    troop.RecalculateStats();
-                    if (troop.calcHealth <= 0)
-                        troop.DestroyEntityRPC(logged);
+                    if (troop != null)
+                    {
+                        troop.RecalculateStats();
+                        if (troop.calcHealth <= 0)
+                        {
+                            extraCleaning = true;
+                            troop.DestroyEntityRPC(logged);
+                        }
+                    }
                 }
             }
-        }
+        } while (extraCleaning);
     }
 
     #endregion

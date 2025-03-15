@@ -9,6 +9,7 @@
     "Bomb",
     "Cannon",
     "Catapult",
+    "ChargeUp",
     "Commander",
     "Devil",
     "Dominance",

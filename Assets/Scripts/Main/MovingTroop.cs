@@ -216,7 +216,7 @@ public class MovingTroop : Entity
             spawnPoint.playerTroops[player.playerPosition] = this;
 
             this.transform.SetParent(spawnPoint.button.transform);
-            this.transform.localPosition = new((player.playerPosition) == 0 ? -575 : 575, 0);
+            this.transform.localPosition = new((player.playerPosition) == 0 ? -400 : 400, 0);
             this.transform.localScale = Vector3.one;
             RecalculateStats();
         }

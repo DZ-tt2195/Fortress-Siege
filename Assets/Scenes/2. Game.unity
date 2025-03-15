@@ -264,21 +264,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playersInOrder: []
   allRows:
-  - button: {fileID: 1802340689598532882}
+  - position: 0
+    button: {fileID: 1802340689598532882}
     playerTroops: []
-    environment: {fileID: 0}
-  - button: {fileID: 1217375255}
+    auraHere: {fileID: 0}
+  - position: 0
+    button: {fileID: 1217375255}
     playerTroops: []
-    environment: {fileID: 0}
-  - button: {fileID: 1759571147}
+    auraHere: {fileID: 0}
+  - position: 0
+    button: {fileID: 1759571147}
     playerTroops: []
-    environment: {fileID: 0}
-  - button: {fileID: 1993642550}
+    auraHere: {fileID: 0}
+  - position: 0
+    button: {fileID: 1993642550}
     playerTroops: []
-    environment: {fileID: 0}
-  - button: {fileID: 1050297984}
+    auraHere: {fileID: 0}
+  - position: 0
+    button: {fileID: 1050297984}
     playerTroops: []
-    environment: {fileID: 0}
+    auraHere: {fileID: 0}
   instructions: {fileID: 2044377633}
   endScreen: {fileID: 576257097}
   scoreText: {fileID: 1513935922}
@@ -1238,7 +1243,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2662196578731420772, guid: 042aa65ae369e4dd79d9ff64a70c9be8, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 1375
+      value: 1150
       objectReference: {fileID: 0}
     - target: {fileID: 2662196578731420772, guid: 042aa65ae369e4dd79d9ff64a70c9be8, type: 3}
       propertyPath: m_SizeDelta.y
@@ -1419,7 +1424,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2662196578731420772, guid: 042aa65ae369e4dd79d9ff64a70c9be8, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 1375
+      value: 1150
       objectReference: {fileID: 0}
     - target: {fileID: 2662196578731420772, guid: 042aa65ae369e4dd79d9ff64a70c9be8, type: 3}
       propertyPath: m_SizeDelta.y
@@ -2341,7 +2346,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2662196578731420772, guid: 042aa65ae369e4dd79d9ff64a70c9be8, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 1375
+      value: 1150
       objectReference: {fileID: 0}
     - target: {fileID: 2662196578731420772, guid: 042aa65ae369e4dd79d9ff64a70c9be8, type: 3}
       propertyPath: m_SizeDelta.y
@@ -2575,7 +2580,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2662196578731420772, guid: 042aa65ae369e4dd79d9ff64a70c9be8, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 1375
+      value: 1150
       objectReference: {fileID: 0}
     - target: {fileID: 2662196578731420772, guid: 042aa65ae369e4dd79d9ff64a70c9be8, type: 3}
       propertyPath: m_SizeDelta.y
@@ -3022,7 +3027,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2662196578731420772, guid: 042aa65ae369e4dd79d9ff64a70c9be8, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 1375
+      value: 1150
       objectReference: {fileID: 0}
     - target: {fileID: 2662196578731420772, guid: 042aa65ae369e4dd79d9ff64a70c9be8, type: 3}
       propertyPath: m_SizeDelta.y
