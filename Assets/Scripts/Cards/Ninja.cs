@@ -8,8 +8,8 @@ public class Ninja : TroopCard
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 3;
-        this.power = 2;
-        this.health = 2;
+        this.power = 1;
+        this.health = 3;
         this.extraText = "If there's an opposing Troop here, this gets +4 Power.";
         this.artistText = "Elisa Cella\nDominion: Rising Sun\n(Ninja)";
     }

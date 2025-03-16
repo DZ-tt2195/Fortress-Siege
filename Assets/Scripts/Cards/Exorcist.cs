@@ -8,8 +8,8 @@ public class Exorcist : TroopCard
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 4;
-        this.power = 1;
+        this.coinCost = 5;
+        this.power = 3;
         this.health = 3;
         this.extraText = "When you play this: You may destroy an Aura.";
         this.artistText = "Joshua Stewart\nDominion: Nocturne\n(Exorcist)";
