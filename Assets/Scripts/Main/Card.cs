@@ -25,7 +25,8 @@ public class Card : PhotonCompatible
         border = this.transform.Find("Border").GetComponent<Image>();
         button = GetComponent<Button>();
         layout = GetComponent<CardLayout>();
-        this.transform.localScale = Vector3.Lerp(Vector3.one, Manager.inst.canvas.transform.localScale, 0.5f);
+        Canvas canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+        this.transform.localScale = Vector3.Lerp(Vector3.one, canvas.transform.localScale, 0.5f);
     }
 
     public virtual Color MyColor()
