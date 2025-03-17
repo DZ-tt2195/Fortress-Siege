@@ -1026,8 +1026,6 @@ MonoBehaviour:
 
     Targeted
 
-    Shapeshifter
-
     Bee'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8c64c47af7c1c4fb5b88d184433c6c44, type: 2}
@@ -1663,7 +1661,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'DoubleBounce
 
-    Charge Up'
+    Charge Up
+
+    Bouncer'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8c64c47af7c1c4fb5b88d184433c6c44, type: 2}
   m_sharedMaterial: {fileID: -3852492252101762229, guid: 8c64c47af7c1c4fb5b88d184433c6c44, type: 2}

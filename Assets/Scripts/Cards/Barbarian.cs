@@ -8,7 +8,7 @@ public class Barbarian : TroopCard
         this.bottomType = this.GetType();
         this.coinCost = 6;
         this.power = 5;
-        this.health = 2;
+        this.health = 3;
         this.extraText = "Start of combat: All opposing Troops lose 1 Power.";
         this.artistText = "Julien Delval\nDominion: Allies\n(Barbarian)";
     }

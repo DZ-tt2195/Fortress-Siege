@@ -8,7 +8,7 @@ public class Angel : TroopCard
         this.bottomType = this.GetType();
         this.coinCost = 6;
         this.power = 3;
-        this.health = 4;
+        this.health = 5;
         this.extraText = "End of turn: You get +1 Health per Troop you have (including this).";
         this.artistText = "Magali Villeneuve\nMTG: Oath of the Gatewatch\n(Linvala, the Preserver)";
     }
