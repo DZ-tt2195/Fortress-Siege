@@ -33,17 +33,17 @@ public class Devil : TroopCard
             }
             else
             {
-                player.NewChains(0, withTroops.Count, 1);
+                player.NewChains(player.RowsToInts(withTroops));
             }
         }
         else
         {
-            player.ChooseRow(withTroops, "Choose one of your troops to deal 3 damage to.", DealDamage);
+            player.ChooseRow(withTroops, "Deal 3 damage to one of your Troops.", DealDamage);
         }
 
         void DealDamage()
         {
-            Row targetRow = withTroops[player.choice];
+            Row targetRow = Manager.inst.allRows[player.choice];
             MovingTroop targetTroop = targetRow.playerTroops[player.playerPosition];
             targetTroop.ChangeStatsRPC(0, -3, logged);
             base.DonePlaying(player, createdEntity, logged);

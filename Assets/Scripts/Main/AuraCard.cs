@@ -42,7 +42,7 @@ public class AuraCard : Card
             else
             {
                 //Debug.Log($"add rows: {player.chainTracker}, {player.currentChain.decisions.Count}");
-                player.NewChains(0, 5, 0);
+                player.NewChains(new List<int> { 0, 1, 2, 3, 4});
             }
         }
         else if (player.myType == PlayerType.Human)

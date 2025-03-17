@@ -30,7 +30,7 @@ public class Manager : PhotonCompatible
     public Player currentPlayer { get; private set; }
 
     [Foldout("Gameplay", true)]
-    int turnNumber = 0;
+    public int turnNumber { get; private set; }
     List<Action> actionStack = new();
     int currentStep = -1;
     public List<Row> allRows = new();
@@ -54,6 +54,7 @@ public class Manager : PhotonCompatible
     {
         base.Awake();
         inst = this;
+        turnNumber = 0;
         bottomType = this.GetType();
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         storePlayers = GameObject.Find("Store Players").transform;
@@ -247,7 +248,7 @@ public class Manager : PhotonCompatible
 
         void TroopsAttack()
         {
-            SimulateBattle();
+            SimulateBattle(true);
             Log.inst.ShareSteps();
             Continue();
         }
@@ -272,7 +273,7 @@ public class Manager : PhotonCompatible
 
 #region Attacking
 
-    internal void SimulateBattle()
+    internal void SimulateBattle(bool debug = false)
     {
         Log.inst.PreserveTextRPC("", 0);
         Log.inst.PreserveTextRPC("Combat phase.", 0);
@@ -292,6 +293,8 @@ public class Manager : PhotonCompatible
 
             bool firstAlive = IsAlive(firstTroop);
             bool secondAlive = IsAlive(secondTroop);
+            //if (debug)
+                //Debug.Log($"round {turnNumber} -> row {row.position}: {firstAlive}, {secondAlive}");
 
             if (firstAlive || secondAlive)
             {
@@ -353,10 +356,10 @@ public class Manager : PhotonCompatible
 
     public void CleanUp(int logged)
     {
-        bool extraCleaning = false;
-
+        bool extraCleaning;
         do
         {
+            extraCleaning = false;
             foreach (Player player in playersInOrder)
                 player.myBase.UpdateText();
 

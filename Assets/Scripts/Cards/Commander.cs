@@ -33,7 +33,7 @@ public class Commander : TroopCard
             }
             else
             {
-                player.NewChains(0, withTroops.Count, 1);
+                player.NewChains(player.RowsToInts(withTroops));
             }
         }
         else
@@ -43,7 +43,7 @@ public class Commander : TroopCard
 
         void DoAttack()
         {
-            Row targetRow = withTroops[player.choice];
+            Row targetRow = Manager.inst.allRows[player.choice];
             MovingTroop targetTroop = targetRow.playerTroops[player.playerPosition];
             targetTroop.Attack(true, logged);
             base.DonePlaying(player, createdEntity, logged);

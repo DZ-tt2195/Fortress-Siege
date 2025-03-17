@@ -35,10 +35,11 @@ public class Fairy : TroopCard
             }
             else
             {
-                if (withTroops.Count == 0)
-                    player.NewChains(-1, 0, 1);
+
+                if (withTroops.Count == 0 || withTroops.Count == 5)
+                    player.NewChains(new List<int>() { -1 });
                 else
-                    player.NewChains(0, withTroops.Count, 1);
+                    player.NewChains(player.RowsToInts(withTroops));
             }
         }
         else
@@ -51,15 +52,15 @@ public class Fairy : TroopCard
             }
             else
             {
-                player.ChooseRow(withTroops, "Choose an opposing troop to move.", ChosenTroop);
+                player.ChooseRow(withTroops, "Move an opposing troop.", ChosenTroop);
             }
         }
 
         void ChosenTroop()
         {
-            if (player.choice < withTroops.Count)
+            if (player.choice >= 0)
             {
-                Row targetRow = withTroops[player.choice];
+                Row targetRow = Manager.inst.allRows[player.choice];
                 MovingTroop targetTroop = targetRow.playerTroops[otherPlayer.playerPosition];
                 Log.inst.RememberStep(this, StepType.UndoPoint, () => MoveChosenTroop(player, createdEntity, targetTroop, logged));
             }
@@ -86,7 +87,7 @@ public class Fairy : TroopCard
             }
             else
             {
-                player.NewChains(0, blankSpots.Count, 1);
+                player.NewChains(player.RowsToInts(blankSpots));
             }
         }
         else
@@ -105,7 +106,7 @@ public class Fairy : TroopCard
 
         void MoveTarget()
         {
-            int rememberChoice = blankSpots[player.choice].position;
+            int rememberChoice = Manager.inst.allRows[player.choice].position;
             targetTroop.MoveEntityRPC(rememberChoice, logged);
             base.DonePlaying(player, createdEntity, logged);
         }

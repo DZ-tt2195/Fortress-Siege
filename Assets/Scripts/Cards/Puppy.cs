@@ -35,10 +35,7 @@ public class Puppy : TroopCard
             }
             else
             {
-                if (withTroops.Count == 0)
-                    player.NewChains(-1, 0, 1);
-                else
-                    player.NewChains(0, withTroops.Count, 1);
+                player.NewChains(player.RowsToInts(withTroops));
             }
         }
         else
@@ -57,9 +54,9 @@ public class Puppy : TroopCard
 
         void LosePower()
         {
-            if (player.choice < withTroops.Count)
+            if (player.choice >= 0)
             {
-                Row targetRow = withTroops[player.choice];
+                Row targetRow = Manager.inst.allRows[player.choice];
                 MovingTroop targetTroop = targetRow.playerTroops[otherPlayer.playerPosition];
                 targetTroop.ChangeStatsRPC(-2, 0, logged);
             }

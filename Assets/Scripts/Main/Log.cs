@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using MyBox;
@@ -221,6 +222,7 @@ public class Log : PhotonCompatible
         }
         //Debug.Log($"deleted {counter} lines");
         ChangeScrolling();
+        scroll.value = 0;
 
         if (undoToThis != null)
         {
@@ -297,18 +299,27 @@ public class Log : PhotonCompatible
 
     public void ShareSteps()
     {
-        if (PhotonNetwork.IsConnected && PhotonNetwork.CurrentRoom.MaxPlayers >= 2)
+        StartCoroutine(OnlineShare());
+
+        IEnumerator OnlineShare()
         {
-            foreach (NextStep step in historyStack)
+            if (PhotonNetwork.IsConnected && PhotonNetwork.CurrentRoom.MaxPlayers >= 2)
             {
-                if (step.stepType == StepType.Revert)
+                foreach (NextStep step in historyStack)
                 {
-                    (string instruction, object[] parameters) = step.source.TranslateFunction(step.action);
-                    try { DoFunction(() => StepForOthers(step.source.pv.ViewID, instruction, parameters), RpcTarget.Others); } catch { }
+                    if (step.stepType == StepType.UndoPoint)
+                    {
+                        yield return new WaitForSeconds(0.5f);
+                    }
+                    else if (step.stepType == StepType.Revert)
+                    {
+                        (string instruction, object[] parameters) = step.source.TranslateFunction(step.action);
+                        DoFunction(() => StepForOthers(step.source.pv.ViewID, instruction, parameters), RpcTarget.Others);
+                    }
                 }
             }
+            DoFunction(() => ResetHistory());
         }
-        DoFunction(() => ResetHistory());
     }
 
     [PunRPC]

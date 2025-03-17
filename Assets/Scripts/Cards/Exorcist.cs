@@ -11,7 +11,7 @@ public class Exorcist : TroopCard
         this.coinCost = 5;
         this.power = 3;
         this.health = 3;
-        this.extraText = "When you play this: You may destroy an Aura.";
+        this.extraText = "When you play this: Destroy an Aura.";
         this.artistText = "Joshua Stewart\nDominion: Nocturne\n(Exorcist)";
     }
 
@@ -23,7 +23,6 @@ public class Exorcist : TroopCard
     void CardDecision(Player player, Entity createdEntity, int logged)
     { 
         List<Row> withAuras = Manager.inst.allRows.Where(row => row.auraHere != null).ToList();
-        List<string> actions = new() { $"Decline" };
 
         if (player.myType == PlayerType.Bot)
         {
@@ -36,8 +35,7 @@ public class Exorcist : TroopCard
             }
             else
             {
-                //Debug.Log($"{chainTracker}, {currentChain.decisions.Count}");
-                player.NewChains(-1, withAuras.Count, 1);
+                player.NewChains(player.RowsToInts(withAuras));
             }
         }
         else
@@ -50,16 +48,15 @@ public class Exorcist : TroopCard
             }
             else
             {
-                player.ChooseButton(actions, Vector3.zero, "Destroy an Aura?", Excavation);
-                player.ChooseRow(withAuras, "Destroy an Aura?", null);
+                player.ChooseRow(withAuras, "Destroy an Aura.", null);
             }
         }
 
         void Excavation()
         {
-            if (player.choice < withAuras.Count)
+            if (player.choice >= 0)
             {
-                Row toRemove = withAuras[player.choice];
+                Row toRemove = Manager.inst.allRows[player.choice];
                 MovingAura enviro = toRemove.auraHere;
                 enviro.DestroyEntityRPC(logged);
             }

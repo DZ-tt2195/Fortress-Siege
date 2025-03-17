@@ -192,15 +192,19 @@ public class MovingTroop : Entity
     {
         if (undo)
         {
-            if (newPosition > -1)
+            if (newPosition > -1 && Manager.inst.allRows[newPosition].playerTroops[player.playerPosition] == this)
+            {
                 Manager.inst.allRows[newPosition].playerTroops[player.playerPosition] = null;
+            }
 
             this.currentRow = oldPosition;
         }
         else
         {
-            if (oldPosition > -1)
+            if (oldPosition > -1 && Manager.inst.allRows[oldPosition].playerTroops[player.playerPosition] == this)
+            {
                 Manager.inst.allRows[oldPosition].playerTroops[player.playerPosition] = null;
+            }
 
             this.currentRow = newPosition;
             if (currentRow >= 0)

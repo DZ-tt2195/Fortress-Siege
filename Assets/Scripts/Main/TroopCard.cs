@@ -54,7 +54,7 @@ public class TroopCard : Card
             else
             {
                 //Debug.Log($"add rows: {player.chainTracker}, {player.currentChain.decisions.Count}");
-                player.NewChains(0, canPlayInColumn.Count, 0);
+                player.NewChains(player.RowsToInts(canPlayInColumn));
             }
         }
         else if (player.myType == PlayerType.Human)
@@ -64,7 +64,7 @@ public class TroopCard : Card
 
         void PlayTroop()
         {
-            int rememberChoice = canPlayInColumn[player.choice].position;
+            int rememberChoice = Manager.inst.allRows[player.choice].position;
             MovingTroop newTroop = player.availableTroops[0];
             Log.inst.RememberStep(newTroop, StepType.Revert, () => newTroop.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
 
