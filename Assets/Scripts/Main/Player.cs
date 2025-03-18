@@ -454,9 +454,8 @@ public class Player : PhotonCompatible
                 else
                 {
                     Log.inst.PreserveTextRPC($"{this.name} ends their turn.");
-                    Log.inst.ShareSteps();
                     Manager.inst.DoFunction(() => Manager.inst.Instructions($""));
-                    Manager.inst.DoFunction(() => Manager.inst.Continue());
+                    Log.inst.ShareSteps();
                 }
             }
         }

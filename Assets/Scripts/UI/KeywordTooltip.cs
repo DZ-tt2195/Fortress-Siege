@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 public class KeywordHover
 {
     public List<string> keywordVariations;
-    [TextArea(5,0)] public string description;
+    [TextArea(5, 0)] public string description;
     public Color color = Color.white;
 }
 
@@ -25,7 +25,7 @@ public class KeywordTooltip : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        XCap = tooltipText.rectTransform.sizeDelta.x/2f;
+        XCap = tooltipText.rectTransform.sizeDelta.x / 2f;
         Ydisplace = tooltipText.rectTransform.sizeDelta.y * 1.25f;
     }
 
@@ -39,7 +39,7 @@ public class KeywordTooltip : MonoBehaviour
 
     public string EditText(string text)
     {
-        string answer = Regex.Replace(text, "(?<=[a-z])(?=[A-Z])", " ");
+        string answer = text;
         foreach (KeywordHover link in linkedKeywords)
         {
             foreach (string keyword in link.keywordVariations)
@@ -83,14 +83,13 @@ public class KeywordTooltip : MonoBehaviour
     Vector3 CalculatePosition(Vector3 mousePosition)
     {
         return new Vector3
-            (Mathf.Clamp(mousePosition.x, XCap, Screen.width-XCap),
+            (Mathf.Clamp(mousePosition.x, XCap, Screen.width - XCap),
             mousePosition.y + (mousePosition.y > Ydisplace ? -0.5f : 0.5f) * Ydisplace,
             0);
     }
 
     public void ActivateTextBox(string target, Vector3 mousePosition)
     {
-        tooltipText.transform.parent.gameObject.SetActive(true);
         this.transform.SetAsLastSibling();
 
         foreach (KeywordHover entry in linkedKeywords)
@@ -99,10 +98,11 @@ public class KeywordTooltip : MonoBehaviour
             {
                 if (keyword.Equals(target))
                 {
-                    if (string.IsNullOrWhiteSpace(entry.description))
+                    if (!string.IsNullOrWhiteSpace(entry.description))
                     {
                         tooltipText.text = entry.description;
                         tooltipText.transform.parent.position = CalculatePosition(mousePosition);
+                        tooltipText.transform.parent.gameObject.SetActive(true);
                     }
                     return;
                 }
@@ -112,10 +112,11 @@ public class KeywordTooltip : MonoBehaviour
         {
             if (entry.keywordVariations[0].Equals(target))
             {
-                if (string.IsNullOrWhiteSpace(entry.description))
+                if (!string.IsNullOrWhiteSpace(entry.description))
                 {
                     tooltipText.text = entry.description;
                     tooltipText.transform.parent.position = CalculatePosition(mousePosition);
+                    tooltipText.transform.parent.gameObject.SetActive(true);
                 }
                 return;
             }

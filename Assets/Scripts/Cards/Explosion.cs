@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class DoubleBounce : AuraCard
+public class Explosion : AuraCard
 {
     protected override void Awake()
     {
@@ -8,6 +8,7 @@ public class DoubleBounce : AuraCard
         this.bottomType = this.GetType();
         this.coinCost = 1;
         this.extraText = "Start of combat: If both players have Troops here, Bounce them both.";
+        this.artistText = "Tomasz Jedruszek\nMTG: War of the Spark\n(Casualties of War)";
     }
 
     public override void StartOfCombat(Entity entity, int logged)

@@ -78,8 +78,6 @@ public class MovingTroop : Entity
         }
 
         Log.inst.RememberStep(this, StepType.Revert, () => ChangeStats(false, power, health, logged, source));
-        if (health < 0 && triggerAbilities)
-            myCard.TookDamage(this, logged + 1);
     }
 
     [PunRPC]

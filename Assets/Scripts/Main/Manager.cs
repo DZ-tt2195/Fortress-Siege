@@ -237,7 +237,6 @@ public class Manager : PhotonCompatible
             }
 
             Log.inst.ShareSteps();
-            Continue();
         }
 
         void PlayerSteps(int position)
@@ -250,7 +249,6 @@ public class Manager : PhotonCompatible
         {
             SimulateBattle(true);
             Log.inst.ShareSteps();
-            Continue();
         }
 
         void CheckDeadPlayers()
@@ -312,14 +310,6 @@ public class Manager : PhotonCompatible
                         if (attack2 > 0)
                             card.CardAttacked(entity, secondTroop, firstAlive ? firstTroop : playersInOrder[0].myBase, 1);
                     }
-                }
-
-                if (firstAlive && secondAlive)
-                {
-                    if (attack1 > 0 && !secondTroop.statusDict[StatusEffect.Stunned])
-                        secondTroop.myCard.TookDamage(secondTroop, 2);
-                    if (attack2 > 0 && !firstTroop.statusDict[StatusEffect.Stunned])
-                        firstTroop.myCard.TookDamage(firstTroop, 2);
                 }
 
                 if (playing)

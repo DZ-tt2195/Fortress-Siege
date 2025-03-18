@@ -321,6 +321,7 @@ public class Log : PhotonCompatible
                 }
             }
             DoFunction(() => ResetHistory());
+            Manager.inst.DoFunction(() => Manager.inst.Continue());
         }
     }
 

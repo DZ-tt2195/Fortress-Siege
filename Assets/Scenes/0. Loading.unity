@@ -1278,7 +1278,7 @@ MonoBehaviour:
     - Stun
     - Stunned
     - Stuns
-    description: Can't attack this turn.
+    description: Skips its next attack,
     color: {r: 1, g: 1, b: 1, a: 0}
   - keywordVariations:
     - Shielded
@@ -1645,9 +1645,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'DoubleBounce
-
-    Charge Up
+  m_text: 'Charge Up
 
     Bouncer'
   m_isRightToLeft: 0
