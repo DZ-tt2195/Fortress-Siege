@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 328e3e13d32b941588d5144d184047d9
+guid: 04f3900713ffe4b9fa47b00e0e0c7746
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5347788592756793029
-    second: Corsair_0
+      213: 2118160560421746820
+    second: Invincibility_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Corsair_0
+      name: Invincibility_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 850
-        height: 850
+        width: 1244
+        height: 1243
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b3168d2db96d8c5b0800000000000000
-      internalID: -5347788592756793029
+      spriteID: 4883e25aec7356d10800000000000000
+      internalID: 2118160560421746820
       vertices: []
       indices: 
       edges: []
@@ -172,7 +172,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Corsair_0: -5347788592756793029
+      Invincibility_0: 2118160560421746820
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

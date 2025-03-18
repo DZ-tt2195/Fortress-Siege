@@ -8,6 +8,7 @@ public class Hex : AuraCard
         this.bottomType = this.GetType();
         this.coinCost = 3;
         this.extraText = "Start of combat: If you have a Troop here, deal 3 damage to the other player.";
+        this.artistText = "Julien Delval\nDominion: Nocturne\n(Plague)";
     }
 
     public override void StartOfCombat(Entity entity, int logged)

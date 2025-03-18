@@ -6,9 +6,9 @@ public class Spirit : TroopCard
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 2;
+        this.coinCost = 3;
         this.power = 3;
-        this.health = 1;
+        this.health = 2;
         this.extraText = "If there's an Aura here, this gets +2 Health.";
         this.artistText = "Julien Delval\nDominion: Nocturne\n(Will-o'-Wisp)";
     }

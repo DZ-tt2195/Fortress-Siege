@@ -8,6 +8,7 @@ public class Enlarge : AuraCard
         this.bottomType = this.GetType();
         this.coinCost = 5;
         this.extraText = "Your Troops here get +3 Power and +3 Health.";
+        this.artistText = "Johan Grenier\nMTG: Ikoria: Lair of Behemoths\n(Colossification)";
     }
 
     public override (int, int) PassiveStats(MovingTroop troop, MovingAura enviro = null)

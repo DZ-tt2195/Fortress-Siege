@@ -6,8 +6,8 @@ public class Bomb : TroopCard
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 3;
-        this.power = 6;
+        this.coinCost = 2;
+        this.power = 5;
         this.health = 1;
         this.extraText = "End of turn: This loses 1 Health.";
         this.artistText = "Thomas Tang\nAll Shapes and Sizes\n(Bomb)";

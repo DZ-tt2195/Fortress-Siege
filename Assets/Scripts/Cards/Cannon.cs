@@ -6,9 +6,9 @@ public class Cannon : TroopCard
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 3;
+        this.coinCost = 2;
         this.power = 3;
-        this.health = 6;
+        this.health = 5;
         this.extraText = "When this attacks: It gets Stunned.";
         this.artistText = "Julian Kok Joon Wen\nMTG: Dominaria United\n(Artillery Blast)";
     }

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: f016b2081143e4247a95743da8d09a3f
+guid: 5af59dbf303444a93ac15db1dbd28e56
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6182518920641396402
-    second: Inferno_0
+      213: -6110310932012198389
+    second: Enlarge_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Inferno_0
+      name: Enlarge_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1200
-        height: 877
+        width: 1244
+        height: 1243
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e41c90e4cc7433aa0800000000000000
-      internalID: -6182518920641396402
+      spriteID: b061a36c490d33ba0800000000000000
+      internalID: -6110310932012198389
       vertices: []
       indices: 
       edges: []
@@ -172,7 +172,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Inferno_0: -6182518920641396402
+      Enlarge_0: -6110310932012198389
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

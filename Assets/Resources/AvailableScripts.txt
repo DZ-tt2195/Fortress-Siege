@@ -27,6 +27,7 @@
     "Miner",
     "Ninja",
     "Piracy",
+    "Protector",
     "Puppy",
     "Rats",
     "Recruiter",

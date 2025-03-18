@@ -8,6 +8,7 @@ public class Invincibility : AuraCard
         this.bottomType = this.GetType();
         this.coinCost = 5;
         this.extraText = "Start of combat: Your Troop here becomes Shielded.";
+        this.artistText = "Matt Stewart\nMTG: Ravnica Allegiance\n(Unbreakable Formation)";
     }
 
     public override void StartOfCombat(Entity entity, int logged)
