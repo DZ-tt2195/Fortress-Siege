@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: bbb9bbadeecb9472584c1623e4603a6e
+guid: 21d054398a6a6478e9fe186c72ae2659
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1483665779731714255
-    second: Bomb_0
+      213: 6103028769897215892
+    second: Piracy_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,12 +139,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Bomb_0
+      name: Piracy_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1225
+        width: 1228
         height: 1227
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 13f20b985d5f86be0800000000000000
-      internalID: -1483665779731714255
+      spriteID: 49776bbb45052b450800000000000000
+      internalID: 6103028769897215892
       vertices: []
       indices: 
       edges: []
@@ -172,7 +172,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Bomb_0: -1483665779731714255
+      Piracy_0: 6103028769897215892
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

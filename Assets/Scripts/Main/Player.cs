@@ -468,7 +468,7 @@ public class Player : PhotonCompatible
         chainsToResolve.Remove(currentChain);
         finishedChains.Add(currentChain);
 
-        Manager.inst.SimulateBattle();
+        Manager.inst.SimulateBattle(false);
         currentChain.math = PlayerScore(this) - PlayerScore(Manager.inst.OpposingPlayer(this));
         //Debug.Log($"CHAIN ENDED with score {currentChain.math}. decisions: {currentChain.PrintDecisions()}");
         currentChain = null;
@@ -717,7 +717,7 @@ public class Player : PhotonCompatible
                 IEnumerator RunFunction()
                 {
                     if (!simulating && myType == PlayerType.Bot)
-                        yield return new WaitForSeconds(0.5f);
+                        yield return new WaitForSeconds(Log.inst.waitTime);
                     step.action.Compile().Invoke();
                 }
                 break;

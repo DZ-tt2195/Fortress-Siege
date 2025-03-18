@@ -10,7 +10,7 @@ public class Bee : TroopCard
         this.power = 2;
         this.health = 2;
         this.extraText = "When this attacks another player's Troop: Stun them.";
-        this.artistText = "";
+        this.artistText = "Tom Wanerstrand\nMTG: Time Spiral\n(Unyaro Bees)";
     }
 
     public override void CardAttacked(Entity entity, MovingTroop attacker, Entity defender, int logged)

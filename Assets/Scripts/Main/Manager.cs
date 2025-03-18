@@ -273,7 +273,7 @@ public class Manager : PhotonCompatible
 
 #region Attacking
 
-    internal void SimulateBattle(bool debug = false)
+    internal void SimulateBattle(bool playing)
     {
         Log.inst.PreserveTextRPC("", 0);
         Log.inst.PreserveTextRPC("Combat phase.", 0);
@@ -284,8 +284,11 @@ public class Manager : PhotonCompatible
                 card.StartOfCombat(entity, 1);
         }
         CleanUp(1);
+        StartCoroutine(DoBattle(playing));
+    }
 
-        Log.inst.PreserveTextRPC("", 0);
+    IEnumerator DoBattle(bool playing)
+    { 
         foreach (Row row in allRows)
         {
             MovingTroop firstTroop = row.playerTroops[0];
@@ -293,13 +296,12 @@ public class Manager : PhotonCompatible
 
             bool firstAlive = IsAlive(firstTroop);
             bool secondAlive = IsAlive(secondTroop);
-            //if (debug)
-                //Debug.Log($"round {turnNumber} -> row {row.position}: {firstAlive}, {secondAlive}");
 
             if (firstAlive || secondAlive)
             {
-                int attack1 = firstAlive ? firstTroop.Attack(false, 0) : 0;
-                int attack2 = secondAlive ? secondTroop.Attack(false, 0) : 0;
+                Log.inst.PreserveTextRPC($"Row {row.position + 1}", 0);
+                int attack1 = firstAlive ? firstTroop.Attack(false, 1) : 0;
+                int attack2 = secondAlive ? secondTroop.Attack(false, 1) : 0;
 
                 foreach ((Card card, Entity entity) in GatherAbilities())
                 {
@@ -315,13 +317,16 @@ public class Manager : PhotonCompatible
                 if (firstAlive && secondAlive)
                 {
                     if (attack1 > 0 && !secondTroop.statusDict[StatusEffect.Stunned])
-                        secondTroop.myCard.TookDamage(secondTroop, 1);
+                        secondTroop.myCard.TookDamage(secondTroop, 2);
                     if (attack2 > 0 && !firstTroop.statusDict[StatusEffect.Stunned])
-                        firstTroop.myCard.TookDamage(firstTroop, 1);
+                        firstTroop.myCard.TookDamage(firstTroop, 2);
                 }
+
+                if (playing)
+                    yield return Log.inst.AddWait();
             }
 
-            CleanUp(1);
+            CleanUp(2);
         }
 
         bool IsAlive(MovingTroop troop) => troop != null && troop.calcHealth >= 1;

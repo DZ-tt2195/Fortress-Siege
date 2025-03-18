@@ -16,12 +16,16 @@ public class CardGallery : MonoBehaviour
     [SerializeField] TMP_Text searchResults;
     [SerializeField] RectTransform storeCards;
     [SerializeField] TMP_InputField searchInput;
+    [SerializeField] TMP_Dropdown costDropdown;
+    [SerializeField] TMP_Dropdown typeDropdown;
     [SerializeField] Scrollbar cardScroll;
     List<Card> allCards = new();
 
     private void Start()
     {
         searchInput.onValueChanged.AddListener(ChangeSearch);
+        costDropdown.onValueChanged.AddListener(ChangeDropdown);
+        typeDropdown.onValueChanged.AddListener(ChangeDropdown);
 
         foreach (string cardName in CarryVariables.inst.cardScripts)
         { 
@@ -61,15 +65,34 @@ public class CardGallery : MonoBehaviour
 
     void SearchCards()
     {
+        int searchCost;
+        try { searchCost = int.Parse(costDropdown.options[costDropdown.value].text); }
+        catch { searchCost = -1; }
+
         foreach (Card card in allCards)
         {
-            bool matches = (CompareStrings(searchInput.text, card.extraText) || CompareStrings(searchInput.text, card.name));
-            card.transform.SetParent(matches ? storeCards : null);
-            if (matches) card.transform.SetAsLastSibling();
+            bool stringMatch = (CompareStrings(searchInput.text, card.extraText) || CompareStrings(searchInput.text, card.name));
+            bool costMatch = ((searchCost == -1) || card.coinCost == searchCost);
+            bool typeMatch = typeDropdown.options[typeDropdown.value].text switch
+            {
+                "Any" => true,
+                "Troop" => card is TroopCard,
+                "Aura" => card is AuraCard,
+                _ => false
+            };
+            if (stringMatch && costMatch && typeMatch)
+            {
+                card.transform.SetParent(storeCards);
+                card.transform.SetAsLastSibling();
+            }
+            else
+            {
+                card.transform.SetParent(null);
+            }
         }
 
         storeCards.transform.localPosition = new Vector3(0, -1050, 0);
-        storeCards.sizeDelta = new Vector3(2560, Math.Max(750, 250 * (3+Mathf.Ceil(storeCards.childCount / 8f))));
+        storeCards.sizeDelta = new Vector3(2560, Math.Max(800, 400 * (Mathf.Ceil(storeCards.childCount / 8f))));
         searchResults.text = $"Found {storeCards.childCount} Cards";
     }
 

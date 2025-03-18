@@ -7,7 +7,7 @@ using Photon.Pun;
 using System.Linq.Expressions;
 using System;
 
-public enum StepType { None, UndoPoint, Revert }
+public enum StepType { None, UndoPoint, Revert, Wait }
 
 [Serializable]
 public class NextStep
@@ -61,6 +61,7 @@ public class Log : PhotonCompatible
         bool currentUndoState = false;
         public List<NextStep> historyStack = new();
         public int currentDecisionInStack = -1;
+        public float waitTime { get; private set; }
 
     protected override void Awake()
     {
@@ -68,6 +69,7 @@ public class Log : PhotonCompatible
         this.bottomType = this.GetType();
 
         inst = this;
+        waitTime = 0.5f;
         gridGroup = RT.GetComponent<GridLayoutGroup>();
         scroll = this.transform.GetChild(1).GetComponent<Scrollbar>();
 
@@ -307,11 +309,11 @@ public class Log : PhotonCompatible
             {
                 foreach (NextStep step in historyStack)
                 {
-                    if (step.stepType == StepType.UndoPoint)
+                    if (step.stepType == StepType.UndoPoint || step.stepType == StepType.Wait)
                     {
-                        yield return new WaitForSeconds(0.5f);
+                        yield return new WaitForSeconds(waitTime);
                     }
-                    else if (step.stepType == StepType.Revert)
+                    else
                     {
                         (string instruction, object[] parameters) = step.source.TranslateFunction(step.action);
                         DoFunction(() => StepForOthers(step.source.pv.ViewID, instruction, parameters), RpcTarget.Others);
@@ -352,6 +354,17 @@ public class Log : PhotonCompatible
             step.completed = true;
             //Debug.Log($"turned on: {stepNumber}, {step.actionName}");
         }
+    }
+
+    public IEnumerator AddWait()
+    {
+        yield return new WaitForSeconds(waitTime);
+        this.RememberStep(this, StepType.Wait, () => WaitFunction());
+    }
+
+    [PunRPC]
+    void WaitFunction()
+    {
     }
 
     #endregion
