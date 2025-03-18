@@ -8,6 +8,7 @@ public class Dominance : AuraCard
         this.bottomType = this.GetType();
         this.coinCost = 4;
         this.extraText = "Your Troops here get +1 Power and +1 Health. Opposing Troops here get -1 Power and -1 Health.";
+        this.artistText = "Claus Stephan\nDominion: Rising Sun\n(Practice)";
     }
 
     public override (int, int) PassiveStats(MovingTroop troop, MovingAura enviro = null)

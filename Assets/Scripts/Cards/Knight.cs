@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Protector : TroopCard
+public class Knight : TroopCard
 {
     protected override void Awake()
     {
@@ -10,7 +10,7 @@ public class Protector : TroopCard
         this.power = 3;
         this.health = 2;
         this.extraText = "When you play this: All your Troops become Shielded.";
-        this.artistText = "";
+        this.artistText = "Michael Watson\nDominion: Cornucopia & Guilds\n(Joust)";
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)
