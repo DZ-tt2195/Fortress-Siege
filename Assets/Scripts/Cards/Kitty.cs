@@ -1,18 +1,17 @@
-using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
+using UnityEngine;
 
-public class Puppy : TroopCard
+public class Kitty : TroopCard
 {
     protected override void Awake()
     {
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 4;
-        this.power = 4;
-        this.health = 1;
-        this.extraText = "When you play this: An opposing Troop loses 2 Health.";
-        this.artistText = "Claus Stephan\nDominion: Menagerie\n(Sheepdog)";
+        this.power = 1;
+        this.health = 4;
+        this.extraText = "When you play this: An opposing Troop loses 2 Power.";
+        this.artistText = "Howard Lyon\nMTG: Eldritch Moon\n(Harmless Offering)";
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)
@@ -48,7 +47,7 @@ public class Puppy : TroopCard
             }
             else
             {
-                player.ChooseRow(withTroops, "Choose an opposing troop to lose 2 Health.", LosePower);
+                player.ChooseRow(withTroops, "Choose an opposing troop to lose 2 Power.", LosePower);
             }
         }
 
@@ -58,7 +57,7 @@ public class Puppy : TroopCard
             {
                 Row targetRow = Manager.inst.allRows[player.choice];
                 MovingTroop targetTroop = targetRow.playerTroops[otherPlayer.playerPosition];
-                targetTroop.ChangeStatsRPC(0, -2, logged);
+                targetTroop.ChangeStatsRPC(-2, 0, logged);
             }
             else
             {

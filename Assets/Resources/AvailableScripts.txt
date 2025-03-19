@@ -25,6 +25,7 @@
     "Hex",
     "Hunter",
     "Invincibility",
+    "Kitty",
     "Knight",
     "Miner",
     "Ninja",
