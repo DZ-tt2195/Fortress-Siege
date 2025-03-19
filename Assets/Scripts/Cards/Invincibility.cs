@@ -14,7 +14,7 @@ public class Invincibility : AuraCard
     public override void StartOfCombat(Entity entity, int logged)
     {
         MovingTroop myTroop = Manager.inst.FindMyTroop(entity.player, entity.currentRow);
-        if (myTroop != null && !myTroop.statusDict[StatusEffect.Shielded])
+        if (myTroop != null)
             myTroop.StatusEffectRPC(StatusEffect.Shielded, true, logged, this.name);
     }
 }

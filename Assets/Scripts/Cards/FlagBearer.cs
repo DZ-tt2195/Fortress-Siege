@@ -6,9 +6,9 @@ public class FlagBearer : TroopCard
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 4;
+        this.coinCost = 3;
         this.power = 1;
-        this.health = 5;
+        this.health = 4;
         this.extraText = "End of turn: All Troops get +1 Power.";
     }
 

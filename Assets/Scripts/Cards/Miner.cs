@@ -7,7 +7,7 @@ public class Miner : TroopCard
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 1;
-        this.power = 2;
+        this.power = 1;
         this.health = 1;
         this.extraText = "Start of turn: +1 Coin.";
         this.artistText = "Martin Hoffmann\nDominion: Rising Sun\n(Gold Mine)";

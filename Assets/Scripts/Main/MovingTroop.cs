@@ -243,7 +243,7 @@ public class MovingTroop : Entity
         {
             statusDict[toChange] = !newStatus;
         }
-        else
+        else if (statusDict[toChange] != newStatus)
         {
             statusDict[toChange] = newStatus;
             if (newStatus)

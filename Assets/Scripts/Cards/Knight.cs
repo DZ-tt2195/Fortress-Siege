@@ -18,7 +18,7 @@ public class Knight : TroopCard
         foreach (Row row in Manager.inst.allRows)
         {
             MovingTroop troop = row.playerTroops[player.playerPosition];
-            if (troop != null && !troop.statusDict[StatusEffect.Shielded])
+            if (troop != null)
                 troop.StatusEffectRPC(StatusEffect.Shielded, true, logged);
         }
         base.DonePlaying(player, createdEntity, logged);

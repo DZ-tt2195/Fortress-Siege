@@ -339,8 +339,7 @@ public class Manager : PhotonCompatible
             {
                 if (troop != null)
                 {
-                    if (troop.statusDict[StatusEffect.Shielded])
-                        troop.StatusEffectRPC(StatusEffect.Shielded, false, 1);
+                    troop.StatusEffectRPC(StatusEffect.Shielded, false, 1);
                     troop.myCard.EndOfTurn(troop, 1);
                 }
             }
