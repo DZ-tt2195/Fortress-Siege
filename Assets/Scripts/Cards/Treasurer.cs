@@ -9,7 +9,7 @@ public class Treasurer : TroopCard
         this.coinCost = 4;
         this.power = 2;
         this.health = 4;
-        this.extraText = "End of turn: Deal 1 damage to the opposing player per unused Coin you have.";
+        this.extraText = "End of turn: The other player loses 1 Health unused Coin you have.";
         this.artistText = "Claus Stephan\nDominion: Renaissance\n(Treasurer)";
     }
 

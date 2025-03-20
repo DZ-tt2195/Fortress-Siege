@@ -9,7 +9,7 @@ public class Catapult : TroopCard
         this.coinCost = 2;
         this.power = 1;
         this.health = 3;
-        this.extraText = "When you play another Troop: Deal 1 damage to the other player.";
+        this.extraText = "When you play another Troop: The other player loses 1 Health.";
         this.artistText = "Matthias Catrein\nDominion: Empires\n(Catapult)";
     }
 

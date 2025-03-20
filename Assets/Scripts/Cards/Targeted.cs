@@ -7,7 +7,7 @@ public class Targeted : AuraCard
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 1;
-        this.extraText = "Start of combat: Deal 1 damage to the opposing Troop here.";
+        this.extraText = "Start of combat: The opposing Troop here loses 1 Health.";
         this.artistText = "Thomas Tang\nRandomly Generated RPG\n(Targeted)";
     }
 

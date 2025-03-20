@@ -7,7 +7,7 @@ public class Hex : AuraCard
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 3;
-        this.extraText = "Start of combat: If you have a Troop here, deal 3 damage to the other player.";
+        this.extraText = "Start of combat: If you have a Troop here, the other player loses 3 Health.";
         this.artistText = "Julien Delval\nDominion: Nocturne\n(Plague)";
     }
 
