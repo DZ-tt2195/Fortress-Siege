@@ -10,7 +10,7 @@ public class Healer : TroopCard
         this.power = 2;
         this.health = 1;
         this.extraText = "When you play this: All your Troops gets +1 Health (including this).";
-        this.artistText = "";
+        this.artistText = "Hans Krill\nDominion: Allies\n(Acolyte)";
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)

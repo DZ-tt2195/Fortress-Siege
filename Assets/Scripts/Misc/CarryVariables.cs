@@ -4,6 +4,8 @@ using MyBox;
 using TMPro;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System;
 
 public class CarryVariables : MonoBehaviour
 {
@@ -148,6 +150,17 @@ public class CarryVariables : MonoBehaviour
         for (int i = 0; i < numLines.Length; i++)
             list[i] = numLines[i].Split("\",");
         return list;
+    }
+
+    public Card AddCardComponent(GameObject obj, string cardName)
+    {
+        Type type = Type.GetType(cardName);
+        obj.AddComponent(type);
+        obj.name = Regex.Replace(cardName, "(?<=[a-z])(?=[A-Z])", " ");
+
+        Card card = obj.GetComponent<Card>();
+        card.layout.FillInCards(card);
+        return card;
     }
 
     #endregion

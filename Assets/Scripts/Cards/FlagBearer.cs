@@ -9,10 +9,10 @@ public class FlagBearer : TroopCard
         this.coinCost = 3;
         this.power = 1;
         this.health = 4;
-        this.extraText = "End of turn: All Troops get +1 Power.";
+        this.extraText = "Start of combat: All Troops get +1 Power.";
     }
 
-    public override void EndOfTurn(Entity entity, int logged)
+    public override void StartOfCombat(Entity entity, int logged)
     {
         foreach (Row row in Manager.inst.allRows)
         {

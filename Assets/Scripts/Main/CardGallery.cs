@@ -4,9 +4,6 @@ using MyBox;
 using TMPro;
 using UnityEngine.UI;
 using System;
-using System.Linq;
-using Photon.Pun;
-using System.Text.RegularExpressions;
 
 public class CardGallery : MonoBehaviour
 {
@@ -30,13 +27,7 @@ public class CardGallery : MonoBehaviour
         foreach (string cardName in CarryVariables.inst.cardScripts)
         { 
             GameObject nextObject = Instantiate(CarryVariables.inst.cardPrefab.gameObject);
-            Type type = Type.GetType(cardName);
-            nextObject.AddComponent(type);
-            nextObject.name = Regex.Replace(cardName, "(?<=[a-z])(?=[A-Z])", " ");
-
-            Card card = nextObject.GetComponent<Card>();
-            card.layout.FillInCards(card);
-            allCards.Add(card);
+            allCards.Add(CarryVariables.inst.AddCardComponent(nextObject, cardName));
         }
 
         SearchCards();

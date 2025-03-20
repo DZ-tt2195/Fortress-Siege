@@ -124,15 +124,10 @@ public class Player : PhotonCompatible
     void AddCard(int position, int ID, string cardName)
     {
         GameObject nextObject = PhotonView.Find(ID).gameObject;
-        nextObject.transform.SetParent(deck);
-        nextObject.transform.SetSiblingIndex(position);
-        nextObject.transform.localPosition = new(0, -10000);
-
-        Type type = Type.GetType(cardName);
-        nextObject.AddComponent(type);
-        nextObject.name = Regex.Replace(cardName, "(?<=[a-z])(?=[A-Z])", " ");
-        Card card = nextObject.GetComponent<Card>();
-        card.layout.FillInCards(card);
+        Card card = CarryVariables.inst.AddCardComponent(nextObject, cardName);
+        card.transform.SetParent(deck);
+        card.transform.SetSiblingIndex(position);
+        card.transform.localPosition = new(0, -10000);
     }
 
     [PunRPC]
