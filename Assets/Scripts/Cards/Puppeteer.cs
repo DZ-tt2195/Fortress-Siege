@@ -1,29 +1,27 @@
-using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
+using UnityEngine;
 
-public class Fairy : TroopCard
+public class Puppeteer : TroopCard
 {
     protected override void Awake()
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 2;
-        this.power = 2;
-        this.health = 3;
-        this.extraText = "When you play this: Move an opposing troop to another row.";
-        this.artistText = "Claus Stephan\nDominion: Nocturne\n(Pixie)";
+        this.coinCost = 3;
+        this.power = 4;
+        this.health = 2;
+        this.extraText = "When you play this: Switch the positions of 2 of your Troops.";
+        this.artistText = "James Ryman\nMTG: Kaladesh\n(Marionette Master)";
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)
     {
-        Log.inst.RememberStep(this, StepType.UndoPoint, () => CardDecision(player, createdEntity, logged));
+        Log.inst.RememberStep(this, StepType.UndoPoint, () => FirstDecision(player, createdEntity, logged));
     }
 
-    void CardDecision(Player player, Entity createdEntity, int logged)
+    void FirstDecision(Player player, Entity createdEntity, int logged)
     {
-        Player otherPlayer = Manager.inst.OpposingPlayer(player);
-        List<Row> withTroops = otherPlayer.FilterRows(true);
+        List<Row> withTroops = player.FilterRows(true);
 
         if (player.myType == PlayerType.Bot)
         {
@@ -35,8 +33,7 @@ public class Fairy : TroopCard
             }
             else
             {
-
-                if (withTroops.Count == 0 || withTroops.Count == 5)
+                if (withTroops.Count < 2)
                     player.NewChains(new List<int>() { -1 });
                 else
                     player.NewChains(player.RowsToInts(withTroops));
@@ -44,7 +41,7 @@ public class Fairy : TroopCard
         }
         else
         {
-            if (withTroops.Count == 0 || withTroops.Count == 5)
+            if (withTroops.Count < 2)
             {
                 Log.inst.undoToThis = null;
                 base.DonePlaying(player, createdEntity, logged);
@@ -52,7 +49,7 @@ public class Fairy : TroopCard
             }
             else
             {
-                player.ChooseRow(withTroops, "Move an opposing troop.", ChosenTroop);
+                player.ChooseRow(withTroops, "Choose your 1st troop to move.", ChosenTroop);
             }
         }
 
@@ -61,22 +58,22 @@ public class Fairy : TroopCard
             if (player.choice >= 0)
             {
                 Row targetRow = Manager.inst.allRows[player.choice];
-                MovingTroop targetTroop = targetRow.playerTroops[otherPlayer.playerPosition];
-                Log.inst.PreserveTextRPC($"{this.name} chooses {targetTroop.name}.", logged);
-                Log.inst.RememberStep(this, StepType.UndoPoint, () => MoveChosenTroop(player, createdEntity, targetTroop, logged));
+                MovingTroop firstTroop = targetRow.playerTroops[player.playerPosition];
+                Log.inst.PreserveTextRPC($"{this.name} chooses {firstTroop.name}.", logged);
+                Log.inst.RememberStep(this, StepType.UndoPoint, () => SecondDecision(player, createdEntity, firstTroop, logged));
             }
             else
             {
-                Log.inst.PreserveTextRPC($"{this.name} has no Troops to move.", logged);
+                Log.inst.PreserveTextRPC($"{this.name} doesn't have enough Troops to switch.", logged);
                 base.DonePlaying(player, createdEntity, logged);
             }
         }
     }
 
-    void MoveChosenTroop(Player player, Entity createdEntity, MovingTroop targetTroop, int logged)
+    void SecondDecision(Player player, Entity createdEntity, MovingTroop firstTroop, int logged)
     {
-        Player otherPlayer = Manager.inst.OpposingPlayer(player);
-        List<Row> blankSpots = otherPlayer.FilterRows(false);
+        List<Row> blankSpots = player.FilterRows(true);
+        blankSpots.Remove(Manager.inst.allRows[firstTroop.currentRow]);
 
         if (player.myType == PlayerType.Bot)
         {
@@ -93,13 +90,19 @@ public class Fairy : TroopCard
         }
         else
         {
-            player.ChooseRow(blankSpots, $"Move {targetTroop.name} to a different row.", MoveTarget);
+            player.ChooseRow(blankSpots, $"Choose your 2nd Troop to move.", MoveTarget);
         }
 
         void MoveTarget()
         {
-            int rememberChoice = Manager.inst.allRows[player.choice].position;
-            targetTroop.MoveEntityRPC(rememberChoice, logged);
+            Row targetRow = Manager.inst.allRows[player.choice];
+            MovingTroop secondTroop = targetRow.playerTroops[player.playerPosition];
+            int firstLocation = firstTroop.currentRow;
+            int secondLocation = secondTroop.currentRow;
+
+            firstTroop.MoveEntityRPC(secondLocation, logged);
+            secondTroop.MoveEntityRPC(firstLocation, logged);
+
             base.DonePlaying(player, createdEntity, logged);
         }
     }

@@ -191,18 +191,14 @@ public class MovingTroop : Entity
         if (undo)
         {
             if (newPosition > -1 && Manager.inst.allRows[newPosition].playerTroops[player.playerPosition] == this)
-            {
                 Manager.inst.allRows[newPosition].playerTroops[player.playerPosition] = null;
-            }
 
             this.currentRow = oldPosition;
         }
         else
         {
             if (oldPosition > -1 && Manager.inst.allRows[oldPosition].playerTroops[player.playerPosition] == this)
-            {
                 Manager.inst.allRows[oldPosition].playerTroops[player.playerPosition] = null;
-            }
 
             this.currentRow = newPosition;
             if (currentRow >= 0)
@@ -231,7 +227,8 @@ public class MovingTroop : Entity
 
     public void StatusEffectRPC(StatusEffect status, bool newStatus, int logged, string source = "")
     {
-        Log.inst.RememberStep(this, StepType.Revert, () => ChangeStatus(false, (int)status, newStatus, logged, source));
+        if (statusDict[status] != newStatus)
+            Log.inst.RememberStep(this, StepType.Revert, () => ChangeStatus(false, (int)status, newStatus, logged, source));
     }
 
     [PunRPC]
@@ -243,9 +240,8 @@ public class MovingTroop : Entity
         {
             statusDict[toChange] = !newStatus;
         }
-        else if (statusDict[toChange] != newStatus)
+        else
         {
-            statusDict[toChange] = newStatus;
             if (newStatus)
                 Log.inst.AddText($"{player.name}'s {this.name} is {toChange}{parathentical}.", logged);
             else

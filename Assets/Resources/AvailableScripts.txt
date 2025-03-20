@@ -30,6 +30,7 @@
     "Miner",
     "Ninja",
     "Piracy",
+    "Puppeteer",
     "Puppy",
     "Rats",
     "Recruiter",

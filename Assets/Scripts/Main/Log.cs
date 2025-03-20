@@ -69,7 +69,7 @@ public class Log : PhotonCompatible
         this.bottomType = this.GetType();
 
         inst = this;
-        waitTime = 0.5f;
+        waitTime = 0.25f;
         gridGroup = RT.GetComponent<GridLayoutGroup>();
         scroll = this.transform.GetChild(1).GetComponent<Scrollbar>();
 

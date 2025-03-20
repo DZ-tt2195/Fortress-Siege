@@ -248,7 +248,6 @@ public class Manager : PhotonCompatible
         void TroopsAttack()
         {
             SimulateBattle(true);
-            Log.inst.ShareSteps();
         }
 
         void CheckDeadPlayers()
@@ -313,7 +312,9 @@ public class Manager : PhotonCompatible
                 }
 
                 if (playing)
+                {
                     yield return Log.inst.AddWait();
+                }
             }
 
             CleanUp(2);
@@ -321,13 +322,16 @@ public class Manager : PhotonCompatible
 
         bool IsAlive(MovingTroop troop) => troop != null && troop.calcHealth >= 1;
 
-        EndRound();
+        EndRound(playing);
     }
 
-    void EndRound()
+    void EndRound(bool playing)
     {
-        Log.inst.PreserveTextRPC("", 0);
-        Log.inst.PreserveTextRPC($"End of round {turnNumber}.", 0);
+        if (playing)
+        {
+            Log.inst.PreserveTextRPC("", 0);
+            Log.inst.PreserveTextRPC($"End of round {turnNumber}.", 0);
+        }
 
         foreach (Row row in allRows)
         {
@@ -346,6 +350,9 @@ public class Manager : PhotonCompatible
         }
 
         CleanUp(1);
+
+        if (playing)
+            Log.inst.ShareSteps();
     }
 
     public void CleanUp(int logged)
