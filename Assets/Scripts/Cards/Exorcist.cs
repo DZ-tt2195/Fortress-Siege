@@ -11,7 +11,7 @@ public class Exorcist : TroopCard
         this.coinCost = 5;
         this.power = 3;
         this.health = 3;
-        this.extraText = "When you play this: Bounce an Aura.";
+        this.extraText = "When you play this: Return an Aura to its owner's hand.";
         this.artistText = "Joshua Stewart\nDominion: Nocturne\n(Exorcist)";
     }
 
@@ -48,7 +48,7 @@ public class Exorcist : TroopCard
             }
             else
             {
-                player.ChooseRow(withAuras, "Bounce an Aura.", null);
+                player.ChooseRow(withAuras, "Choose an Aura.", null);
             }
         }
 
@@ -62,7 +62,7 @@ public class Exorcist : TroopCard
             }
             else
             {
-                Log.inst.PreserveTextRPC($"{this.name} doesn't bounce an Aura.", logged);
+                Log.inst.PreserveTextRPC($"{this.name} can't target any Auras.", logged);
             }
             base.DonePlaying(player, createdEntity, logged);
         }

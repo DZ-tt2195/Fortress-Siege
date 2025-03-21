@@ -4,8 +4,6 @@ using TMPro;
 using System.Collections.Generic;
 using System;
 
-public enum StatusEffect { Shielded, Stunned }
-
 public class MovingTroop : Entity
 {
 
@@ -13,14 +11,11 @@ public class MovingTroop : Entity
 
     TMP_Text powerText;
     TMP_Text heartText;
-    TMP_Text statusText;
 
     int myHealth;
     int myPower;
     public int calcHealth { get; private set; }
     public int calcPower { get; private set; }
-
-    public Dictionary<StatusEffect, bool> statusDict = new();
 
     protected override void Awake()
     {
@@ -28,9 +23,6 @@ public class MovingTroop : Entity
         this.bottomType = this.GetType();
         heartText = this.transform.Find("Heart Text").GetComponent<TMP_Text>();
         powerText = this.transform.Find("Power Text").GetComponent<TMP_Text>();
-        statusText = this.transform.Find("Status Text").GetComponent<TMP_Text>();
-        foreach (StatusEffect value in Enum.GetValues(typeof(StatusEffect)))
-            statusDict.Add(value, false);
     }
 
     [PunRPC]
@@ -60,23 +52,8 @@ public class MovingTroop : Entity
 
 #region Gameplay
 
-    public void ChangeStatsRPC(int power, int health, int logged, string source = "", bool triggerAbilities = true)
+    public void ChangeStatsRPC(int power, int health, int logged, string source = "")
     {
-        string parathentical = source == "" ? "" : $" (to {source})";
-        if (statusDict[StatusEffect.Shielded])
-        {
-            if (power < 0)
-            {
-                Log.inst.AddText($"{player.name}'s {this.name} is Shielded from losing {Mathf.Abs(power)} Power{parathentical}.", logged);
-                power = 0;
-            }
-            if (health < 0)
-            {
-                Log.inst.AddText($"{player.name}'s {this.name} is Shielded from losing {Mathf.Abs(health)} Health{parathentical}.", logged);
-                health = 0;
-            }
-        }
-
         Log.inst.RememberStep(this, StepType.Revert, () => ChangeStats(false, power, health, logged, source));
     }
 
@@ -112,22 +89,15 @@ public class MovingTroop : Entity
         calcHealth = myHealth;
 
         (int troopPower, int troopHealth) = myCard.PassiveStats(this);
-        calcPower += (troopPower < 0 && statusDict[StatusEffect.Shielded]) ? 0 : troopPower;
-        calcHealth += (troopHealth < 0 && statusDict[StatusEffect.Shielded]) ? 0 : troopHealth;
-
-        statusText.text = "";
-        if (statusDict[StatusEffect.Stunned])
-            statusText.text += "StunImage";
-        if (statusDict[StatusEffect.Shielded])
-            statusText.text += "ShieldedImage";
-        statusText.text = KeywordTooltip.instance.EditText(statusText.text);
+        calcPower += troopPower;
+        calcHealth += troopHealth;
 
         MovingAura enviro = Manager.inst.allRows[currentRow].auraHere;
         if (enviro != null)
         {
             (int enviroPower, int enviroHealth) = enviro.myCard.PassiveStats(this, enviro);
-            calcPower += (enviroPower < 0 && statusDict[StatusEffect.Shielded]) ? 0 : enviroPower; ;
-            calcHealth += (enviroHealth < 0 && statusDict[StatusEffect.Shielded]) ? 0 : enviroHealth;
+            calcPower += enviroPower;
+            calcHealth += enviroHealth;
         }
 
         powerText.text = calcPower.ToString();
@@ -140,13 +110,7 @@ public class MovingTroop : Entity
         Player opposingPlayer = Manager.inst.OpposingPlayer(this.player);
         MovingTroop opposingTroop = Manager.inst.FindOpposingTroop(this.player, this.currentRow);
 
-        if (statusDict[StatusEffect.Stunned])
-        {
-            Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} can't attack (it's Stunned).", logged);
-            this.StatusEffectRPC(StatusEffect.Stunned, false, logged+1, "");
-            return 0;
-        }
-        else if (calcPower <= 0)
+        if (calcPower <= 0)
         {
             Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} can't attack (it has {calcPower} Power).", logged);
             return 0;
@@ -159,7 +123,7 @@ public class MovingTroop : Entity
                 foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
                     card.CardAttacked(entity, this, opposingTroop, logged + 1);
             }
-            opposingTroop.ChangeStatsRPC(0, -this.calcPower, logged + 1, "", false);
+            opposingTroop.ChangeStatsRPC(0, -this.calcPower, logged + 1, "");
             return this.calcPower;
         }
         else
@@ -223,31 +187,6 @@ public class MovingTroop : Entity
             player.availableTroops.Add(this);
             this.transform.SetParent(null);
         }
-    }
-
-    public void StatusEffectRPC(StatusEffect status, bool newStatus, int logged, string source = "")
-    {
-        if (statusDict[status] != newStatus)
-            Log.inst.RememberStep(this, StepType.Revert, () => ChangeStatus(false, (int)status, newStatus, logged, source));
-    }
-
-    [PunRPC]
-    void ChangeStatus(bool undo, int statusNumber, bool newStatus, int logged, string source)
-    {
-        StatusEffect toChange = (StatusEffect)statusNumber;
-        string parathentical = source == "" ? "" : $" ({source})";
-        if (undo)
-        {
-            statusDict[toChange] = !newStatus;
-        }
-        else
-        {
-            if (newStatus)
-                Log.inst.AddText($"{player.name}'s {this.name} is {toChange}{parathentical}.", logged);
-            else
-                Log.inst.AddText($"{player.name}'s {this.name} is no longer {toChange}{parathentical}.", logged);
-        }
-        RecalculateStats();
     }
 
     #endregion

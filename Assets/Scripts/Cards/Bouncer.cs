@@ -10,7 +10,7 @@ public class Bouncer : TroopCard
         this.coinCost = 5;
         this.power = 2;
         this.health = 4;
-        this.extraText = "When you play this: Bounce an opposing Troop.";
+        this.extraText = "When you play this: Return an opposing Troop to its owner's hand.";
         this.artistText = "";
     }
 
@@ -47,7 +47,7 @@ public class Bouncer : TroopCard
             }
             else
             {
-                player.ChooseRow(withTroops, "Choose an opposing Troop to Bounce.", LosePower);
+                player.ChooseRow(withTroops, "Choose an opposing Troop to return.", LosePower);
             }
         }
 
@@ -61,7 +61,7 @@ public class Bouncer : TroopCard
             }
             else
             {
-                Log.inst.PreserveTextRPC($"{this.name} can't Bounce any Troops.", logged);
+                Log.inst.PreserveTextRPC($"{this.name} can't target any Troops.", logged);
             }
             base.DonePlaying(player, createdEntity, logged);
         }

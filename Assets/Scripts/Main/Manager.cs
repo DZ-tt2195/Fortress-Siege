@@ -342,10 +342,7 @@ public class Manager : PhotonCompatible
             foreach (MovingTroop troop in row.playerTroops)
             {
                 if (troop != null)
-                {
-                    troop.StatusEffectRPC(StatusEffect.Shielded, false, 1);
                     troop.myCard.EndOfTurn(troop, 1);
-                }
             }
         }
 

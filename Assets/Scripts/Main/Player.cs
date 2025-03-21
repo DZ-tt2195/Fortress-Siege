@@ -7,7 +7,6 @@ using UnityEngine.UI;
 using System.Linq;
 using MyBox;
 using System;
-using System.Text.RegularExpressions;
 
 [Serializable] public class DecisionChain
 {
@@ -306,7 +305,7 @@ public class Player : PhotonCompatible
         }
         else
         {
-            Log.inst.AddText($"{this.name}'s {card.name} gets Bounced{parathentical}.", logged);
+            Log.inst.AddText($"{card.name} gets returned to {this.name}{parathentical}.", logged);
             PutCardInHand(card);
         }
         SortHand();

@@ -7,7 +7,7 @@ public class Explosion : AuraCard
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 1;
-        this.extraText = "Start of combat: If both players have Troops here, Bounce them both.";
+        this.extraText = "Start of combat: If both players have Troops here, return both of them to their owner's hands.";
         this.artistText = "Tomasz Jedruszek\nMTG: War of the Spark\n(Casualties of War)";
     }
 
