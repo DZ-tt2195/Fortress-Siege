@@ -7,9 +7,9 @@ public class Bouncer : TroopCard
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 4;
+        this.coinCost = 5;
         this.power = 2;
-        this.health = 2;
+        this.health = 4;
         this.extraText = "When you play this: Bounce an opposing Troop.";
         this.artistText = "";
     }
@@ -47,7 +47,7 @@ public class Bouncer : TroopCard
             }
             else
             {
-                player.ChooseRow(withTroops, "Choose an opposing troop to Bounce.", LosePower);
+                player.ChooseRow(withTroops, "Choose an opposing Troop to Bounce.", LosePower);
             }
         }
 
@@ -61,7 +61,7 @@ public class Bouncer : TroopCard
             }
             else
             {
-                Log.inst.PreserveTextRPC($"{this.name} can't Bounce anything.", logged);
+                Log.inst.PreserveTextRPC($"{this.name} can't Bounce any Troops.", logged);
             }
             base.DonePlaying(player, createdEntity, logged);
         }
