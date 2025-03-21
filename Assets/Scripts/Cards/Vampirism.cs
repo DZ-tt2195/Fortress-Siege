@@ -13,7 +13,7 @@ public class Vampirism : AuraCard
 
     public override void CardAttacked(Entity entity, MovingTroop attacker, Entity defender, int logged)
     {
-        if (entity.player == attacker.player && defender.player != attacker.player)
-            attacker.player.myBase.ChangeHealthRPC(4, logged, this.name);
+        if (entity.player == attacker.player && entity.currentRow == attacker.currentRow && defender is PlayerBase enemyBase)
+            enemyBase.ChangeHealthRPC(4, logged, this.name);
     }
 }

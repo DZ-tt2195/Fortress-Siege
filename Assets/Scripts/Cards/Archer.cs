@@ -6,10 +6,10 @@ public class Archer : TroopCard
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 5;
-        this.power = 4;
+        this.coinCost = 4;
+        this.power = 3;
         this.health = 2;
-        this.extraText = "If there's no opposing Troop here, this gets +3 Power.";
+        this.extraText = "If there's no opposing Troop here, this gets +4 Power.";
         this.artistText = "Harald Lieske\nDominion: Allies\n(Archer)";
     }
 
@@ -19,6 +19,6 @@ public class Archer : TroopCard
         if (otherTroop != null)
             return (0, 0);
         else
-            return (3, 0);
+            return (4, 0);
     }
 }

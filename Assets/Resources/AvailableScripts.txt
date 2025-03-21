@@ -2,6 +2,7 @@
   [
     "Angel",
     "Archer",
+    "AuraHeal",
     "Bandit",
     "Barbarian",
     "Barrier",

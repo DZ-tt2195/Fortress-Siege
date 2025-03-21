@@ -59,7 +59,7 @@ public class AuraCard : Card
                 existingEnviro.MoveEntityRPC(-1, logged + 1);
 
             MovingAura newEnviro = player.availableEnviros[0];
-            Log.inst.RememberStep(newEnviro, StepType.Revert, () => newEnviro.AssignCardInfo(false, player.playerPosition, this.pv.ViewID));
+            newEnviro.AssignCardRPC(player, this);
             newEnviro.MoveEntityRPC(rememberChoice, logged + 1);
             DonePlaying(player, newEnviro, logged+1);
         }

@@ -25,27 +25,29 @@ public class MovingTroop : Entity
         powerText = this.transform.Find("Power Text").GetComponent<TMP_Text>();
     }
 
-    [PunRPC]
-    internal void AssignCardInfo(bool undo, int playerPosition, int cardID)
+    public void AssignCardRPC(Player newPlayer, Card newCard)
     {
-        if (!undo)
-        {
-            this.player = Manager.inst.playersInOrder[playerPosition];
-            this.image.transform.localScale = new(playerPosition == 0 ? 1 : -1, 1, 1);
-            if (border != null)
-                border.color = this.player.playerPosition == 0 ? Color.white : Color.black;
+        Log.inst.RememberStep(this, StepType.Revert, () => AssignCardInfo
+        (false, newPlayer.playerPosition, (myCard == null) ? -1 : myCard.pv.ViewID, newCard.pv.ViewID));
+    }
 
-            if (cardID >= 0)
-            {
-                myCard = PhotonView.Find(cardID).GetComponent<TroopCard>();
-                this.name = myCard.name;
-                this.image.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
+    [PunRPC]
+    void AssignCardInfo(bool undo, int playerPosition, int oldCard, int newCard)
+    {
+        this.player = Manager.inst.playersInOrder[playerPosition];
+        this.image.transform.localScale = new(playerPosition == 0 ? 1 : -1, 1, 1);
+        if (border != null)
+            border.color = this.player.playerPosition == 0 ? Color.white : Color.black;
 
-                TroopCard intoTroop = (TroopCard)myCard;
-                this.myHealth = intoTroop.health;
-                this.myPower = intoTroop.power;
-            }
-        }
+        if (undo && oldCard < 0) return;
+        myCard = PhotonView.Find(undo ? oldCard : newCard).GetComponent<TroopCard>();
+
+        this.name = myCard.name;
+        this.image.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
+
+        TroopCard intoTroop = (TroopCard)myCard;
+        this.myHealth = intoTroop.health;
+        this.myPower = intoTroop.power; 
     }
 
     #endregion
