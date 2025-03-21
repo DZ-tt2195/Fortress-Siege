@@ -11,7 +11,7 @@ public class Exorcist : TroopCard
         this.coinCost = 5;
         this.power = 3;
         this.health = 3;
-        this.extraText = "When you play this: Destroy an Aura.";
+        this.extraText = "When you play this: Bounce an Aura.";
         this.artistText = "Joshua Stewart\nDominion: Nocturne\n(Exorcist)";
     }
 
@@ -48,7 +48,7 @@ public class Exorcist : TroopCard
             }
             else
             {
-                player.ChooseRow(withAuras, "Destroy an Aura.", null);
+                player.ChooseRow(withAuras, "Bounce an Aura.", null);
             }
         }
 
@@ -57,12 +57,12 @@ public class Exorcist : TroopCard
             if (player.choice >= 0)
             {
                 Row toRemove = Manager.inst.allRows[player.choice];
-                MovingAura enviro = toRemove.auraHere;
-                enviro.DestroyEntityRPC(logged);
+                MovingAura aura = toRemove.auraHere;
+                aura.player.BounceCardRPC(aura, logged);
             }
             else
             {
-                Log.inst.PreserveTextRPC($"{this.name} doesn't destroy an Aura.", logged);
+                Log.inst.PreserveTextRPC($"{this.name} doesn't bounce an Aura.", logged);
             }
             base.DonePlaying(player, createdEntity, logged);
         }
