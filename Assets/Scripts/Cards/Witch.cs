@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class AuraHeal : TroopCard
+public class Witch : TroopCard
 {
     protected override void Awake()
     {
@@ -10,7 +10,7 @@ public class AuraHeal : TroopCard
         this.power = 2;
         this.health = 2;
         this.extraText = "When any player plays an Aura: You get +1 Health.";
-        this.artistText = "";
+        this.artistText = "Hans Krill\nDominion: Allies\n(Sorceress)";
     }
 
     public override void OtherCardPlayed(Entity thisEntity, Entity playedEntity, int logged)

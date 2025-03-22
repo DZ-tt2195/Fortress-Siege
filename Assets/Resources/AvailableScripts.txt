@@ -2,7 +2,6 @@
   [
     "Angel",
     "Archer",
-    "AuraHeal",
     "Bandit",
     "Barbarian",
     "Barrier",
@@ -41,6 +40,7 @@
     "Targeted",
     "Treasurer",
     "Vampirism",
+    "Witch",
     "Wizard"
   ]
 }
