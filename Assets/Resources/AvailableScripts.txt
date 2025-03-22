@@ -17,6 +17,7 @@
     "Explosion",
     "Fairy",
     "Feast",
+    "FirstStrike",
     "FlagBearer",
     "Ghost",
     "Gondola",
@@ -40,7 +41,6 @@
     "Targeted",
     "Treasurer",
     "Vampirism",
-    "Weakness",
     "Wizard"
   ]
 }
