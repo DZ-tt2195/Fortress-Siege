@@ -7,10 +7,10 @@ public class Ghost : TroopCard
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 2;
+        this.coinCost = 5;
         this.power = 2;
-        this.health = 1;
-        this.extraText = "When you play this: An opposing troop loses 1 Power and 1 Health.";
+        this.health = 4;
+        this.extraText = "When you play this: Return an opposing Troop to its owner's hand.";
         this.artistText = "Eric J. Carter\nDominion: Nocturne\n(Ghost)";
     }
 
@@ -29,16 +29,12 @@ public class Ghost : TroopCard
             if (player.chainTracker < player.currentChain.decisions.Count)
             {
                 int next = player.currentChain.decisions[player.chainTracker];
-                player.inReaction.Add(ChosenTroop);
+                player.inReaction.Add(LosePower);
                 player.DecisionMade(next);
             }
             else
             {
-
-                if (withTroops.Count == 0)
-                    player.NewChains(new List<int>() { -1 });
-                else
-                    player.NewChains(player.RowsToInts(withTroops));
+                player.NewChains(player.RowsToInts(withTroops));
             }
         }
         else
@@ -51,21 +47,21 @@ public class Ghost : TroopCard
             }
             else
             {
-                player.ChooseRow(withTroops, "Move an opposing troop.", ChosenTroop);
+                player.ChooseRow(withTroops, "Choose an opposing Troop to return.", LosePower);
             }
         }
 
-        void ChosenTroop()
+        void LosePower()
         {
             if (player.choice >= 0)
             {
                 Row targetRow = Manager.inst.allRows[player.choice];
                 MovingTroop targetTroop = targetRow.playerTroops[otherPlayer.playerPosition];
-                targetTroop.ChangeStatsRPC(-1, -1, logged);
+                otherPlayer.BounceCardRPC(targetTroop, logged);
             }
             else
             {
-                Log.inst.PreserveTextRPC($"{this.name} has no Troops to move.", logged);
+                Log.inst.PreserveTextRPC($"{this.name} can't target any Troops.", logged);
             }
             base.DonePlaying(player, createdEntity, logged);
         }

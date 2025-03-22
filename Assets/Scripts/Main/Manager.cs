@@ -469,7 +469,9 @@ public class Manager : PhotonCompatible
 
     public MovingTroop FindMyTroop(Player player, int row)
     {
-        if (player.playerPosition == 0)
+        if (row <= -1 || row >= 5)
+            return null;
+        else if (player.playerPosition == 0)
             return allRows[row].playerTroops[0];
         else
             return allRows[row].playerTroops[1];
@@ -477,7 +479,9 @@ public class Manager : PhotonCompatible
 
     public MovingTroop FindOpposingTroop(Player player, int row)
     {
-        if (player.playerPosition == 0)
+        if (row <= -1 || row >= 5)
+            return null;
+        else if (player.playerPosition == 0)
             return allRows[row].playerTroops[1];
         else
             return allRows[row].playerTroops[0];

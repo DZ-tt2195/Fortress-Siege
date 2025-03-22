@@ -1493,9 +1493,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Bouncer
-
-    Feast
+  m_text: '
 
     Shrink
 

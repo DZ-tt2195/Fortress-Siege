@@ -1,17 +1,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bouncer : TroopCard
+public class Spider : TroopCard
 {
     protected override void Awake()
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 5;
+        this.coinCost = 2;
         this.power = 2;
-        this.health = 4;
-        this.extraText = "When you play this: Return an opposing Troop to its owner's hand.";
-        this.artistText = "";
+        this.health = 1;
+        this.extraText = "When you play this: An opposing troop loses 1 Power and 1 Health.";
+        this.artistText = "Liva Prima\nMTG: Guilds of Ravnica\n(Hatchery Spider)";
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)
@@ -29,12 +29,16 @@ public class Bouncer : TroopCard
             if (player.chainTracker < player.currentChain.decisions.Count)
             {
                 int next = player.currentChain.decisions[player.chainTracker];
-                player.inReaction.Add(LosePower);
+                player.inReaction.Add(ChosenTroop);
                 player.DecisionMade(next);
             }
             else
             {
-                player.NewChains(player.RowsToInts(withTroops));
+
+                if (withTroops.Count == 0)
+                    player.NewChains(new List<int>() { -1 });
+                else
+                    player.NewChains(player.RowsToInts(withTroops));
             }
         }
         else
@@ -47,21 +51,21 @@ public class Bouncer : TroopCard
             }
             else
             {
-                player.ChooseRow(withTroops, "Choose an opposing Troop to return.", LosePower);
+                player.ChooseRow(withTroops, "Move an opposing troop.", ChosenTroop);
             }
         }
 
-        void LosePower()
+        void ChosenTroop()
         {
             if (player.choice >= 0)
             {
                 Row targetRow = Manager.inst.allRows[player.choice];
                 MovingTroop targetTroop = targetRow.playerTroops[otherPlayer.playerPosition];
-                otherPlayer.BounceCardRPC(targetTroop, logged);
+                targetTroop.ChangeStatsRPC(-1, -1, logged);
             }
             else
             {
-                Log.inst.PreserveTextRPC($"{this.name} can't target any Troops.", logged);
+                Log.inst.PreserveTextRPC($"{this.name} has no Troops to move.", logged);
             }
             base.DonePlaying(player, createdEntity, logged);
         }

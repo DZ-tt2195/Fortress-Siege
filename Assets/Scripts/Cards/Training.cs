@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Feast : AuraCard
+public class Training : AuraCard
 {
     protected override void Awake()
     {
@@ -8,7 +8,7 @@ public class Feast : AuraCard
         this.bottomType = this.GetType();
         this.coinCost = 2;
         this.extraText = "Start of combat: If your Troop here has more Health than Power, it gets +2 Power.";
-        this.artistText = "";
+        this.artistText = "Claus Stephan\nDominion: Allies\n(Skirmisher)";
     }
 
     public override void StartOfCombat(Entity entity, int logged)

@@ -8,7 +8,7 @@ public class Gondola : TroopCard
         this.bottomType = this.GetType();
         this.coinCost = 1;
         this.power = 0;
-        this.health = 4;
+        this.health = 3;
         this.extraText = "Start of combat: This gets +2 Power per other Troop you have. End of turn: This loses all its Power.";
         this.artistText = "Marcel-André Casasola Merkle\nDominion: Plunder\n(Gondola)";
     }
