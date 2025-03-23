@@ -6,9 +6,9 @@ public class Wizard : TroopCard
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 4;
-        this.power = 2;
-        this.health = 2;
+        this.coinCost = 5;
+        this.power = 3;
+        this.health = 3;
         this.extraText = "When any player plays an Aura: This does an attack.";
         this.artistText = "Harald Lieske\nDominion: Allies\n(Conjurer)";
     }

@@ -32,7 +32,9 @@ public class Entity : PhotonCompatible, IPointerClickHandler
 
     public void DestroyEntityRPC(int logged)
     {
+        int originalPosition = this.currentRow;
         MoveEntityRPC(-1, logged);
-        myCard.WhenDestroy(this, logged + 1);
+        foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
+            card.WhenDestroy(entity, this, originalPosition, logged + 1);
     }
 }

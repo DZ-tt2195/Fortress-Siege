@@ -186,7 +186,8 @@ public class MovingTroop : Entity
         }
         else
         {
-            player.availableTroops.Add(this);
+            if (!player.availableTroops.Contains(this))
+                player.availableTroops.Add(this);
             this.transform.SetParent(null);
         }
     }

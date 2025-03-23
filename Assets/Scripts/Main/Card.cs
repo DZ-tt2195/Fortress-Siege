@@ -121,7 +121,7 @@ public class Card : PhotonCompatible
     {
     }
 
-    public virtual void CardAttacked(Entity entity, MovingTroop attacker, Entity defender, int logged)
+    public virtual void CardAttacked(Entity thisEntity, MovingTroop attacker, Entity defender, int logged)
     {
     }
 
@@ -143,7 +143,7 @@ public class Card : PhotonCompatible
         return (0, 0);
     }
 
-    public virtual void WhenDestroy(Entity entity, int logged)
+    public virtual void WhenDestroy(Entity thisEntity, Entity destroyedEntity, int originalRow, int logged)
     {
     }
 

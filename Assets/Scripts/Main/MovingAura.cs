@@ -78,7 +78,8 @@ public class MovingAura : Entity
         }
         else
         {
-            player.availableEnviros.Add(this);
+            if (!player.availableEnviros.Contains(this))
+                player.availableEnviros.Add(this);
             this.transform.SetParent(null);
         }
 

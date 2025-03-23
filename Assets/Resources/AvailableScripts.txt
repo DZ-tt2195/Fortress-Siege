@@ -34,7 +34,7 @@
     "Rats",
     "Recruiter",
     "Researcher",
-    "Security",
+    "Resurrection",
     "Spider",
     "Spirit",
     "Targeted",
