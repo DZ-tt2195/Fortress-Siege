@@ -62,12 +62,12 @@ public class Fairy : TroopCard
             {
                 Row targetRow = Manager.inst.allRows[player.choice];
                 MovingTroop targetTroop = targetRow.playerTroops[otherPlayer.playerPosition];
-                Log.inst.PreserveTextRPC($"{this.name} chooses {targetTroop.name}.", logged);
+                Log.inst.AddTextRPC($"{this.name} chooses {targetTroop.name}.", LogAdd.Personal, logged);
                 Log.inst.RememberStep(this, StepType.UndoPoint, () => MoveChosenTroop(player, createdEntity, targetTroop, logged));
             }
             else
             {
-                Log.inst.PreserveTextRPC($"{this.name} has no Troops to move.", logged);
+                Log.inst.AddTextRPC($"{this.name} has no Troops to move.", LogAdd.Remember, logged);
                 base.DonePlaying(player, createdEntity, logged);
             }
         }

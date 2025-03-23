@@ -72,15 +72,15 @@ public class MovingTroop : Entity
         {
             myPower += power;
             if (power > 0)
-                Log.inst.AddText($"{player.name}'s {this.name} gets +{power} Power{parathentical}.", logged);
+                Log.inst.AddTextRPC($"{player.name}'s {this.name} gets +{power} Power{parathentical}.", LogAdd.Personal, logged);
             else if (power < 0)
-                Log.inst.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(power)} Power{parathentical}.", logged);
+                Log.inst.AddTextRPC($"{player.name}'s {this.name} loses {Mathf.Abs(power)} Power{parathentical}.", LogAdd.Personal, logged);
 
             myHealth += health;
             if (health > 0)
-                Log.inst.AddText($"{player.name}'s {this.name} gets +{health} Health{parathentical}.", logged);
+                Log.inst.AddTextRPC($"{player.name}'s {this.name} gets +{health} Health{parathentical}.", LogAdd.Personal, logged);
             else if (health < 0)
-                Log.inst.AddText($"{player.name}'s {this.name} loses {Mathf.Abs(health)} Health{parathentical}.", logged);
+                Log.inst.AddTextRPC($"{player.name}'s {this.name} loses {Mathf.Abs(health)} Health{parathentical}.", LogAdd.Personal, logged);
         }
         RecalculateStats();
     }
@@ -114,12 +114,12 @@ public class MovingTroop : Entity
 
         if (calcPower <= 0)
         {
-            Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} can't attack (it has {calcPower} Power).", logged);
+            Log.inst.AddTextRPC($"{this.player.name}'s {this.name} can't attack (it has {calcPower} Power).", LogAdd.Remember, logged);
             return 0;
         }
         else if (opposingTroop != null)
         {
-            Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} attacks {opposingPlayer.name}'s {opposingTroop.name}.", logged);
+            Log.inst.AddTextRPC($"{this.player.name}'s {this.name} attacks {opposingPlayer.name}'s {opposingTroop.name}.", LogAdd.Remember, logged);
             if (triggerAbilities)
             {
                 foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
@@ -130,7 +130,7 @@ public class MovingTroop : Entity
         }
         else
         {
-            Log.inst.PreserveTextRPC($"{this.player.name}'s {this.name} attacks {opposingPlayer.name}.", logged);
+            Log.inst.AddTextRPC($"{this.player.name}'s {this.name} attacks {opposingPlayer.name}.", LogAdd.Remember, logged);
             if (triggerAbilities)
             {
                 foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
@@ -168,9 +168,9 @@ public class MovingTroop : Entity
 
             this.currentRow = newPosition;
             if (currentRow >= 0)
-                Log.inst.AddText($"{player.name} moves {this.name} to row {newPosition + 1}.", logged);
+                Log.inst.AddTextRPC($"{player.name} moves {this.name} to row {newPosition + 1}.", LogAdd.Personal, logged);
             else
-                Log.inst.AddText($"{player.name}'s {this.name} is destroyed.", logged);
+                Log.inst.AddTextRPC($"{player.name}'s {this.name} is destroyed.", LogAdd.Personal, logged);
         }
 
         if (currentRow > -1)

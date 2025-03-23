@@ -61,9 +61,9 @@ public class MovingAura : Entity
 
             this.currentRow = newPosition;
             if (currentRow >= 0)
-                Log.inst.AddText($"{player.name} moves {this.name} to row {newPosition + 1}.", logged);
+                Log.inst.AddTextRPC($"{player.name} moves {this.name} to row {newPosition + 1}.", LogAdd.Personal, logged);
             else
-                Log.inst.AddText($"{player.name}'s {this.name} is destroyed.", logged);
+                Log.inst.AddTextRPC($"{player.name}'s {this.name} is destroyed.", LogAdd.Personal, logged);
         }
 
         if (currentRow > -1)

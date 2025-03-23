@@ -46,7 +46,7 @@ public class Kitsune : TroopCard
         void Decision()
         {
             if (player.choice == 0)
-                Log.inst.PreserveTextRPC($"{this.name} stays at 3 Power / 6 Health.", logged);
+                Log.inst.AddTextRPC($"{this.name} stays at 3 Power / 6 Health.", LogAdd.Remember, logged);
             else
                 troop.ChangeStatsRPC(-3, 3, logged);
             base.DonePlaying(player, createdEntity, logged);

@@ -62,7 +62,7 @@ public class Exorcist : TroopCard
             }
             else
             {
-                Log.inst.PreserveTextRPC($"{this.name} can't target any Auras.", logged);
+                Log.inst.AddTextRPC($"{this.name} can't target any Auras.", LogAdd.Remember, logged);
             }
             base.DonePlaying(player, createdEntity, logged);
         }

@@ -62,7 +62,7 @@ public class Puppy : TroopCard
             }
             else
             {
-                Log.inst.PreserveTextRPC($"{this.name} has no troops to target.", logged);
+                Log.inst.AddTextRPC($"{this.name} has no troops to target.", LogAdd.Remember, logged);
             }
             base.DonePlaying(player, createdEntity, logged);
         }

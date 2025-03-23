@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System;
 
 public enum StepType { None, UndoPoint, Revert, Wait }
+public enum LogAdd { Personal, Public, Remember }
 
 [Serializable]
 public class NextStep
@@ -98,10 +99,26 @@ public class Log : PhotonCompatible
         }
     }
 
-    [PunRPC]
-    public void AddText(string logText, int indent = 0)
+    public void AddTextRPC(string logText, LogAdd type, int indent = 0)
     {
-        if (indent < 0)
+        switch (type)
+        {
+            case LogAdd.Personal:
+                AddText(false, logText, indent);
+                break;
+            case LogAdd.Public:
+                DoFunction(() => AddText(false, logText, indent));
+                break;
+            case LogAdd.Remember:
+                RememberStep(this, StepType.Revert, () => AddText(false, logText, indent));
+                break;
+        }
+    }
+
+    [PunRPC]
+    void AddText(bool undo, string logText, int indent = 0)
+    {
+        if (undo || indent < 0)
             return;
 
         LogText newText = Instantiate(textBoxClone, RT.transform);
@@ -154,19 +171,7 @@ public class Log : PhotonCompatible
         undoButton.gameObject.SetActive(undosInLog.Count > 0);
 
         if (Application.isEditor && Input.GetKeyDown(KeyCode.Space))
-            AddText($"test {RT.transform.childCount}");
-    }
-
-    public void PreserveTextRPC(string text, int logged = 0)
-    {
-        RememberStep(this, StepType.Revert, () => TextShared(false, text, logged));
-    }
-
-    [PunRPC]
-    void TextShared(bool undo, string text, int logged)
-    {
-        if (!undo)
-            AddText(text, logged);
+            AddTextRPC($"test {RT.transform.childCount}", LogAdd.Personal);
     }
 
     /*

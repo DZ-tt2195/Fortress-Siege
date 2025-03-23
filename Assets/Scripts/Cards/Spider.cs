@@ -65,7 +65,7 @@ public class Spider : TroopCard
             }
             else
             {
-                Log.inst.PreserveTextRPC($"{this.name} has no Troops to move.", logged);
+                Log.inst.AddTextRPC($"{this.name} has no Troops to move.", LogAdd.Remember, logged);
             }
             base.DonePlaying(player, createdEntity, logged);
         }

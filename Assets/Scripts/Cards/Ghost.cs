@@ -61,7 +61,7 @@ public class Ghost : TroopCard
             }
             else
             {
-                Log.inst.PreserveTextRPC($"{this.name} can't target any Troops.", logged);
+                Log.inst.AddTextRPC($"{this.name} can't target any Troops.", LogAdd.Remember, logged);
             }
             base.DonePlaying(player, createdEntity, logged);
         }

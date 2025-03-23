@@ -17,7 +17,7 @@ public class Bandit : TroopCard
     {
         if (player != entity.player)
         {
-            Log.inst.PreserveTextRPC($"{player.name} loses 1 Coin to {entity.name}.", logged);
+            Log.inst.AddTextRPC($"{player.name} loses 1 Coin ({entity.name}.)", LogAdd.Remember, logged);
             return -1;
         }
         else

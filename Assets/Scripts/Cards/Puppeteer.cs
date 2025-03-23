@@ -59,12 +59,12 @@ public class Puppeteer : TroopCard
             {
                 Row targetRow = Manager.inst.allRows[player.choice];
                 MovingTroop firstTroop = targetRow.playerTroops[player.playerPosition];
-                Log.inst.PreserveTextRPC($"{this.name} chooses {firstTroop.name}.", logged);
+                Log.inst.AddTextRPC($"{this.name} chooses {firstTroop.name}.", LogAdd.Personal, logged);
                 Log.inst.RememberStep(this, StepType.UndoPoint, () => SecondDecision(player, createdEntity, firstTroop, logged));
             }
             else
             {
-                Log.inst.PreserveTextRPC($"{this.name} doesn't have enough Troops to switch.", logged);
+                Log.inst.AddTextRPC($"{this.name} has no Troops to switch.", LogAdd.Remember, logged);
                 base.DonePlaying(player, createdEntity, logged);
             }
         }

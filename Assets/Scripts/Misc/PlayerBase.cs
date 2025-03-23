@@ -55,9 +55,9 @@ public class PlayerBase : Entity
         {
             myHealth += health;
             if (health > 0)
-                Log.inst.AddText($"{player.name} gets +{health} Health{parathentical}.", logged);
+                Log.inst.AddTextRPC($"{player.name} gets +{health} Health{parathentical}.", LogAdd.Personal, logged);
             else if (health < 0)
-                Log.inst.AddText($"{player.name} loses {Mathf.Abs(health)} Health{parathentical}.", logged);
+                Log.inst.AddTextRPC($"{player.name} loses {Mathf.Abs(health)} Health{parathentical}.", LogAdd.Personal, logged);
         }
         UpdateText();
     }

@@ -216,14 +216,14 @@ public class Player : PhotonCompatible
         {
             PutCardInHand(card);
             if (InControl() && myType == PlayerType.Human)
-                Log.inst.AddText($"{this.name} draws {card.name}{parathentical}.", logged);
+                Log.inst.AddTextRPC($"{this.name} draws {card.name}{parathentical}.", LogAdd.Personal, logged);
             else
-                Log.inst.AddText($"{this.name} draws 1 Card{parathentical}.", logged);
+                Log.inst.AddTextRPC($"{this.name} draws 1 Card{parathentical}.", LogAdd.Personal, logged);
         }
         SortHand();
     }
 
-    public void PutCardInHand(Card card)
+    void PutCardInHand(Card card)
     {
         cardsInHand.Add(card);
         card.transform.localPosition = new Vector2(0, -1100);
@@ -280,7 +280,7 @@ public class Player : PhotonCompatible
         {
             cardsInHand.Remove(card);
             card.transform.SetParent(null);
-            Log.inst.AddText($"{this.name} discards {card.name}.", logged);
+            Log.inst.AddTextRPC($"{this.name} discards {card.name}.", LogAdd.Personal, logged);
             StartCoroutine(card.MoveCard(new(0, -10000), 0.25f, Vector3.one));
         }
         SortHand();
@@ -305,7 +305,7 @@ public class Player : PhotonCompatible
         }
         else
         {
-            Log.inst.AddText($"{card.name} gets returned to {this.name}{parathentical}.", logged);
+            Log.inst.AddTextRPC($"{card.name} gets returned to {this.name}{parathentical}.", LogAdd.Personal, logged);
             PutCardInHand(card);
         }
         SortHand();
@@ -332,9 +332,9 @@ public class Player : PhotonCompatible
         {
             coins += amount;
             if (amount >= 0)
-                Log.inst.AddText($"{this.name} gains {amount} Coin{parathentical}.", logged);
+                Log.inst.AddTextRPC($"{this.name} gains {amount} Coin{parathentical}.", LogAdd.Personal, logged);
             else
-                Log.inst.AddText($"{this.name} loses {Mathf.Abs(amount)} Coin{parathentical}.", logged);
+                Log.inst.AddTextRPC($"{this.name} loses {Mathf.Abs(amount)} Coin{parathentical}.", LogAdd.Personal, logged);
         }
         if (myBase != null)
             myBase.UpdateText();
@@ -353,8 +353,8 @@ public class Player : PhotonCompatible
         Manager.inst.DoFunction(() => Manager.inst.Instructions($"Waiting on {this.name}..."));
         Manager.inst.DoFunction(() => Manager.inst.SetCurrentPlayer(this.playerPosition));
 
-        Log.inst.DoFunction(() => Log.inst.AddText("", 0));
-        Log.inst.DoFunction(() => Log.inst.AddText($"{this.name}'s turn", 0));
+        Log.inst.AddTextRPC("", LogAdd.Public, 0);
+        Log.inst.AddTextRPC($"{this.name}'s turn.", LogAdd.Public, 0);
         Log.inst.RememberStep(this, StepType.UndoPoint, () => MayPlayCard());
 
         if (myType == PlayerType.Bot)
@@ -434,7 +434,8 @@ public class Player : PhotonCompatible
             if (convertedChoice < canPlay.Count && convertedChoice >= 0)
             {
                 Card toPlay = canPlay[convertedChoice];
-                Log.inst.PreserveTextRPC($"{this.name} plays {toPlay.name}.", 0);
+                Log.inst.AddTextRPC($"{this.name} plays {toPlay.name}.", LogAdd.Remember, 0);
+
                 DiscardPlayerCard(toPlay, -1);
                 Log.inst.RememberStep(this, StepType.Revert, () => GainLoseCoin(false, -1 * toPlay.coinCost, 0, ""));
                 toPlay.OnPlayEffect(this, 0);
@@ -447,7 +448,7 @@ public class Player : PhotonCompatible
                 }
                 else
                 {
-                    Log.inst.PreserveTextRPC($"{this.name} ends their turn.");
+                    Log.inst.AddTextRPC($"{this.name} ends their turn.", LogAdd.Remember);
                     Manager.inst.DoFunction(() => Manager.inst.Instructions($""));
                     Log.inst.ShareSteps();
                 }

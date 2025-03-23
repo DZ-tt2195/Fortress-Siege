@@ -157,7 +157,7 @@ public class Manager : PhotonCompatible
         waiting--;
         if (waiting == 0)
         {
-            Log.inst.DoFunction(() => Log.inst.AddText($"{playersInOrder[0].name} vs {playersInOrder[1].name}", 0 ));
+            Log.inst.AddTextRPC($"{playersInOrder[0].name} vs {playersInOrder[1].name}.", LogAdd.Public, 0);
             Continue();
         }
     }
@@ -221,9 +221,8 @@ public class Manager : PhotonCompatible
         void NewResources()
         {
             turnNumber++;
-            Log.inst.PreserveTextRPC("", 0);
-            Log.inst.PreserveTextRPC($"Start of round {turnNumber}", 0);
-            Player host = FindThisPlayer();
+            Log.inst.AddTextRPC("", LogAdd.Remember, 0);
+            Log.inst.AddTextRPC($"Start of round {turnNumber}.", LogAdd.Remember, 0);
 
             foreach (Player player in playersInOrder)
             {
@@ -272,8 +271,8 @@ public class Manager : PhotonCompatible
 
     internal void SimulateBattle(bool playing)
     {
-        Log.inst.PreserveTextRPC("", 0);
-        Log.inst.PreserveTextRPC("Combat phase.", 0);
+        Log.inst.AddTextRPC("", LogAdd.Remember, 0);
+        Log.inst.AddTextRPC("Combat phase.", LogAdd.Remember, 0);
 
         foreach ((Card card, Entity entity) in GatherAbilities())
         {
@@ -296,7 +295,7 @@ public class Manager : PhotonCompatible
 
             if (firstAlive || secondAlive)
             {
-                Log.inst.PreserveTextRPC($"Row {row.position + 1}", 0);
+                Log.inst.AddTextRPC($"Row {row.position + 1}", LogAdd.Remember, 0);
                 int attack1 = firstAlive ? firstTroop.Attack(false, 1) : 0;
                 int attack2 = secondAlive ? secondTroop.Attack(false, 1) : 0;
 
@@ -329,8 +328,8 @@ public class Manager : PhotonCompatible
     {
         if (playing)
         {
-            Log.inst.PreserveTextRPC("", 0);
-            Log.inst.PreserveTextRPC($"End of round {turnNumber}.", 0);
+            Log.inst.AddTextRPC("", LogAdd.Remember, 0);
+            Log.inst.AddTextRPC($"End of round {turnNumber}.", LogAdd.Remember, 0);
         }
 
         foreach (Row row in allRows)
@@ -394,15 +393,15 @@ public class Manager : PhotonCompatible
         List<Player> playerLifeInOrder = playersInOrder.OrderByDescending(player => player.myBase.myHealth).ToList();
         int nextPlacement = 1;
 
-        Log.inst.AddText("");
-        Log.inst.AddText("The game has ended.");
+        Log.inst.AddTextRPC("", LogAdd.Personal);
+        Log.inst.AddTextRPC("The game has ended.", LogAdd.Personal);
         Instructions("The game has ended.");
 
         Player resignPlayer = null;
         if (resignPosition >= 0)
         {
             resignPlayer = playersInOrder[resignPosition];
-            Log.inst.AddText($"{resignPlayer.name} has resigned.");
+            Log.inst.AddTextRPC($"{resignPlayer.name} has resigned.", LogAdd.Personal);
         }
 
         for (int i = 0; i < playerLifeInOrder.Count; i++)

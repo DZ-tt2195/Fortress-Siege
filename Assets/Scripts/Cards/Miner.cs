@@ -17,7 +17,7 @@ public class Miner : TroopCard
     {
         if (player == entity.player)
         {
-            Log.inst.PreserveTextRPC($"{player.name}'s {entity.name} gives +1 Coin.", logged);
+            Log.inst.AddTextRPC($"{player.name}'s {entity.name} gives +1 Coin.", LogAdd.Remember, logged);
             return 1;
         }
         else
