@@ -6,7 +6,7 @@ public class FirstStrike : AuraCard
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 5;
+        this.coinCost = 4;
         this.extraText = "Start of combat: Your Troop here does an attack.";
         this.artistText = "Michael Watson\nDominion: Cornucopia & Guilds\n(Joust)";
     }

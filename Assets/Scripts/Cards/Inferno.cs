@@ -1,14 +1,14 @@
 using UnityEngine;
 
-public class Splash : AuraCard
+public class Inferno : AuraCard
 {
     protected override void Awake()
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 3;
-        this.extraText = "When you play a Troop here: All opposing Troops lose 1 Health.";
-        //this.artistText = "Martin Hoffmann\nDominion: Nocturne\n(Vampire)";
+        this.coinCost = 5;
+        this.extraText = "When you play a Troop here: All opposing Troops lose 2 Health.";
+        this.artistText = "Adam Paquette\nMTG: Theros\n(Peak Eruption)";
     }
 
     public override void OtherCardPlayed(Entity thisEntity, Entity playedEntity, int logged)
@@ -19,7 +19,7 @@ public class Splash : AuraCard
             {
                 MovingTroop troop = Manager.inst.FindOpposingTroop(playedEntity.player, row.position);
                 if (troop != null)
-                    troop.ChangeStatsRPC(0, -1, logged, this.name);
+                    troop.ChangeStatsRPC(0, -2, logged, this.name);
             }
         }
     }

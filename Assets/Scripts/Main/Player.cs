@@ -469,13 +469,13 @@ public class Player : PhotonCompatible
 
         float PlayerScore(Player player)
         {
-            int answer = player.myBase.myHealth + player.cardsInHand.Count * 2;
+            int answer = player.myBase.myHealth + player.cardsInHand.Count * 3;
 
             foreach ((Card card, Entity entity) in Manager.inst.GatherAbilities())
                 answer += card.CoinEffect(player, entity, -1);
 
             if (player == this)
-                answer -= coins * 2;
+                answer -= coins;
 
             foreach (Row row in Manager.inst.allRows)
             {

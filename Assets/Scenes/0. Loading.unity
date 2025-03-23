@@ -1493,9 +1493,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Splash
-
-    Shrink
+  m_text: '
 
     MakeCash'
   m_isRightToLeft: 0

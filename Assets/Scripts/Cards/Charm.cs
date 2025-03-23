@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Shrink : AuraCard
+public class Charm : AuraCard
 {
     protected override void Awake()
     {
@@ -8,6 +8,7 @@ public class Shrink : AuraCard
         this.bottomType = this.GetType();
         this.coinCost = 4;
         this.extraText = "Opposing Troops here with 4 Power or more get -4 Power.";
+        this.artistText = "Marcel-André Casasola Merkle\nDominion: Plunder\n(Siren)";
     }
 
     public override (int, int) PassiveStats(MovingTroop troop, MovingAura enviro = null)
