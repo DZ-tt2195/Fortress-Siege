@@ -36,6 +36,7 @@
     "Shrink",
     "Spider",
     "Spirit",
+    "Splash",
     "Targeted",
     "Training",
     "Treasurer",

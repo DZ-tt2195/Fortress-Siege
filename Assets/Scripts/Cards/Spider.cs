@@ -29,7 +29,7 @@ public class Spider : TroopCard
             if (player.chainTracker < player.currentChain.decisions.Count)
             {
                 int next = player.currentChain.decisions[player.chainTracker];
-                player.inReaction.Add(ChosenTroop);
+                player.inReaction.Add(NerfTroop);
                 player.DecisionMade(next);
             }
             else
@@ -51,11 +51,11 @@ public class Spider : TroopCard
             }
             else
             {
-                player.ChooseRow(withTroops, "Move an opposing troop.", ChosenTroop);
+                player.ChooseRow(withTroops, "Move an opposing troop.", NerfTroop);
             }
         }
 
-        void ChosenTroop()
+        void NerfTroop()
         {
             if (player.choice >= 0)
             {

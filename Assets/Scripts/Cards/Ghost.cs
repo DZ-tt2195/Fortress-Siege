@@ -29,7 +29,7 @@ public class Ghost : TroopCard
             if (player.chainTracker < player.currentChain.decisions.Count)
             {
                 int next = player.currentChain.decisions[player.chainTracker];
-                player.inReaction.Add(LosePower);
+                player.inReaction.Add(Bounce);
                 player.DecisionMade(next);
             }
             else
@@ -47,11 +47,11 @@ public class Ghost : TroopCard
             }
             else
             {
-                player.ChooseRow(withTroops, "Choose an opposing Troop to return.", LosePower);
+                player.ChooseRow(withTroops, "Choose an opposing Troop to return.", Bounce);
             }
         }
 
-        void LosePower()
+        void Bounce()
         {
             if (player.choice >= 0)
             {

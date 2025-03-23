@@ -6,7 +6,7 @@ public class Vampirism : AuraCard
     {
         base.Awake();
         this.bottomType = this.GetType();
-        this.coinCost = 3;
+        this.coinCost = 4;
         this.extraText = "When your Troop here attacks the other player: You get +1 Health per Power it has.";
         this.artistText = "Martin Hoffmann\nDominion: Nocturne\n(Vampire)";
     }
