@@ -10,6 +10,7 @@ public class FlagBearer : TroopCard
         this.power = 1;
         this.health = 4;
         this.extraText = "Start of combat: All Troops get +1 Power.";
+        this.artistText = "Grant Hansen\nDominion: Renaissance\n(Flag Bearer)";
     }
 
     public override void StartOfCombat(Entity entity, int logged)
