@@ -1,17 +1,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Devil : TroopCard
+public class Demon : TroopCard
 {
     protected override void Awake()
     {
         base.Awake();
         this.bottomType = this.GetType();
         this.coinCost = 5;
-        this.power = 6;
-        this.health = 6;
+        this.power = 7;
+        this.health = 5;
         this.extraText = "When you play this: One of your Troops loses 3 Health (could be this).";
-        this.artistText = "Jack Wang\nMTG: Shadows over Innistrad\n(Sin Prodder)";
+        this.artistText = "Vincent Proce\nMTG: Guilds of Ravnica\n(Doom Whisperer)";
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)
@@ -38,7 +38,7 @@ public class Devil : TroopCard
         }
         else
         {
-            player.ChooseRow(withTroops, "Deal 3 damage to one of your Troops.", DealDamage);
+            player.ChooseRow(withTroops, "Choose a Troop to lose 3 Health.", DealDamage);
         }
 
         void DealDamage()
