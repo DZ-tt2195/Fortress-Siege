@@ -9,8 +9,8 @@ public class Endbringer : TroopCard
         this.coinCost = 6;
         this.power = 5;
         this.health = 6;
-        this.extraText = "End of turn: Both players get +1 Card and -2 Health.";
-        this.artistText = "";
+        this.extraText = "End of each round: Both players get +1 Card and -2 Health.";
+        this.artistText = "Josh Hass\nMTG: Amonkhet Invocations\n(Omniscience)";
     }
 
     public override void EndOfTurn(Entity entity, int logged)

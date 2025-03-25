@@ -9,7 +9,7 @@ public class Researcher : TroopCard
         this.coinCost = 1;
         this.power = 4;
         this.health = 3;
-        this.extraText = "End of turn: The other player gets +1 Card.";
+        this.extraText = "End of each round: The other player gets +1 Card.";
         this.artistText = "Lie Setiawan\nMTG: Strixhaven: School of Mages\n(Solve the Equation)";
     }
 

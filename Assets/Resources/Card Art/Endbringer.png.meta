@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 0d86b71f558ef45949d9b14511782d8c
+guid: c08813630dc0e42ef898388b7776f49d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6897479667268090689
-    second: Demon_0
+      213: 6547020468377071638
+    second: Endbringer_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,7 +139,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Demon_0
+      name: Endbringer_0
       rect:
         serializedVersion: 2
         x: 0
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 14b7ef48635c8bf50800000000000000
-      internalID: 6897479667268090689
+      spriteID: 610b3daad60bbda50800000000000000
+      internalID: 6547020468377071638
       vertices: []
       indices: 
       edges: []
@@ -172,7 +172,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Demon_0: 6897479667268090689
+      Endbringer_0: 6547020468377071638
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

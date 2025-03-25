@@ -9,7 +9,7 @@ public class Bandit : TroopCard
         this.coinCost = 5;
         this.power = 4;
         this.health = 4;
-        this.extraText = "Start of turn: The other player loses 1 Coin.";
+        this.extraText = "Start of each round: The other player loses 1 Coin.";
         this.artistText = "Hans Krill\nDominion: Plunder\n(Cutthroat)";
     }
 

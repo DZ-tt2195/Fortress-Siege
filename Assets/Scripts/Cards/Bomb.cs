@@ -9,7 +9,7 @@ public class Bomb : TroopCard
         this.coinCost = 2;
         this.power = 5;
         this.health = 1;
-        this.extraText = "End of turn: This loses 1 Health.";
+        this.extraText = "End of each round: This loses 1 Health.";
         this.artistText = "Thomas Tang\nAll Shapes and Sizes\n(Bomb)";
     }
 

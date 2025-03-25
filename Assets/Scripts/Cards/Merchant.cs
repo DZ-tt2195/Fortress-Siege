@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MakeCash : TroopCard
+public class Merchant : TroopCard
 {
     protected override void Awake()
     {
@@ -11,7 +11,7 @@ public class MakeCash : TroopCard
         this.power = 3;
         this.health = 1;
         this.extraText = "When you play this: +2 Coin.";
-        this.artistText = "";
+        this.artistText = "Elisa Cella\nDominion: Renaissance\n(Silk Merchant)";
     }
 
     public override void DonePlaying(Player player, Entity createdEntity, int logged)

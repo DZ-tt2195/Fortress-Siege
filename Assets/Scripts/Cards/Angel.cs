@@ -9,7 +9,7 @@ public class Angel : TroopCard
         this.coinCost = 6;
         this.power = 4;
         this.health = 5;
-        this.extraText = "End of turn: You get +1 Health per Troop you have (including this).";
+        this.extraText = "End of each round: You get +1 Health per Troop you have (including this).";
         this.artistText = "Magali Villeneuve\nMTG: Oath of the Gatewatch\n(Linvala, the Preserver)";
     }
 

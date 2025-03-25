@@ -9,7 +9,7 @@ public class Miner : TroopCard
         this.coinCost = 1;
         this.power = 1;
         this.health = 1;
-        this.extraText = "Start of turn: +1 Coin.";
+        this.extraText = "Start of each round: +1 Coin.";
         this.artistText = "Martin Hoffmann\nDominion: Rising Sun\n(Gold Mine)";
     }
 

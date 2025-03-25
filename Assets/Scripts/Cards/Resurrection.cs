@@ -8,7 +8,7 @@ public class Resurrection : AuraCard
         this.bottomType = this.GetType();
         this.coinCost = 3;
         this.extraText = "When your Troop here is destroyed, return it to your hand.";
-        this.artistText = "";
+        this.artistText = "Magali Villeneuve\nMTG: Dominaria\n(Healing Grace)";
     }
 
     public override void WhenDestroy(Entity thisEntity, Entity destroyedEntity, int originalRow, int logged)

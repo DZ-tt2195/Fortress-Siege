@@ -27,7 +27,7 @@
     "Inferno",
     "Kitsune",
     "Kitty",
-    "MakeCash",
+    "Merchant",
     "Miner",
     "Ninja",
     "Piracy",
