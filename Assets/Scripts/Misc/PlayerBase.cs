@@ -31,6 +31,7 @@ public class PlayerBase : Entity
         this.myHealth = health;
 
         this.transform.SetParent(Manager.inst.canvas.transform);
+        this.transform.localScale = Vector3.Lerp(Vector3.one, Manager.inst.canvas.transform.localScale, 0.5f);
         this.image.color = (player.playerPosition == 0) ? Color.red : Color.blue;
         this.transform.localPosition = new(player.playerPosition == 0 ? -1075 : 400, 225);
         image.transform.localEulerAngles = new(0, 0, player.playerPosition == 0 ? 90 : -90);

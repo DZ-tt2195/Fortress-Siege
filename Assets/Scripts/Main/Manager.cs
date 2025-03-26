@@ -155,10 +155,12 @@ public class Manager : PhotonCompatible
     internal void PlayerDone()
     {
         waiting--;
-        if (waiting == 0)
+        if (waiting == 0 && PhotonNetwork.IsMasterClient)
         {
-            Log.inst.AddTextRPC($"{playersInOrder[0].name} vs {playersInOrder[1].name}.", LogAdd.Public, 0);
-            Continue();
+            Log.inst.AddTextRPC($"{playersInOrder[0].name} vs. {playersInOrder[1].name}.", LogAdd.Remember, 0);
+            foreach (Player player in playersInOrder)
+                player.DrawCardRPC(4, -1);
+            Log.inst.ShareSteps();
         }
     }
 

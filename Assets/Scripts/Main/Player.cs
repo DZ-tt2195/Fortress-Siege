@@ -150,6 +150,7 @@ public class Player : PhotonCompatible
         {
             GameObject obj = Manager.inst.MakeObject(CarryVariables.inst.playerBasePrefab.gameObject);
             DoFunction(() => GetBase(obj.GetComponent<PhotonView>().ViewID), RpcTarget.All);
+
             if (this.myType == PlayerType.Human)
             {
                 resignButton.onClick.AddListener(() => Manager.inst.DoFunction(() => Manager.inst.DisplayEnding(this.playerPosition), RpcTarget.All));
@@ -157,7 +158,6 @@ public class Player : PhotonCompatible
                 pv.Owner.NickName = this.name;
             }
 
-            DrawCardRPC(4, -1);
             Manager.inst.DoFunction(() => Manager.inst.PlayerDone());
         }
     }
@@ -226,6 +226,7 @@ public class Player : PhotonCompatible
     void PutCardInHand(Card card)
     {
         cardsInHand.Add(card);
+        card.transform.SetParent(keepHand);
         card.transform.localPosition = new Vector2(0, -1100);
         card.layout.FillInCards(card);
         card.layout.cg.alpha = 0;
